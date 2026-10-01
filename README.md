@@ -4,17 +4,11 @@ CivicWatch AI Kenya is an AI-powered civic engagement and public accountability 
 
 ---
 
-## Current Milestone: Milestone 0 (Project Foundation)
+## Current Milestone: Milestone 1 (Public Landing Page)
 
-This repository contains the technical foundation for the CivicWatch AI Kenya platform:
-* React 18 + Vite frontend (JavaScript/JSX, Tailwind CSS, React Router)
-* Node.js + Express REST API backend
-* MySQL 8+ database connection pool
-* Incremental SQL database migration runner
-* Security middleware foundation (Helmet, CORS, Rate Limiting)
-* Zod validation foundation
-* Centralized API error handling & sensitive-data-safe request logging
-* Real-time system health verification endpoint (`GET /api/health`)
+This repository contains the completed public presentation layer and foundation for CivicWatch AI Kenya:
+* **Landing Page**: Public website at `/` with responsive navigation, hero section, planned capabilities, workflow overview, responsible civic-tech principles, Open Civic Lab introduction, and transparent roadmap modals.
+* **M0 Foundation**: React 18 + Vite frontend, Express backend, MySQL connection pool, database migrations, security middleware, and real-time health verification endpoint (`GET /api/health` and `/status`).
 
 ---
 

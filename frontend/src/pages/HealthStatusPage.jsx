@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { getHealthStatus } from '../services/api';
 
 export default function HealthStatusPage() {
@@ -100,15 +101,20 @@ export default function HealthStatusPage() {
 
         {/* Actions & Metadata */}
         <footer className="mt-6 pt-4 border-t border-neutral-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-neutral-500">
-          <span>Last checked: {lastChecked || 'Never'}</span>
-          <button
-            type="button"
-            onClick={checkHealth}
-            disabled={loading}
-            className="w-full sm:w-auto px-4 py-1.5 bg-neutral-900 text-white font-medium rounded hover:bg-neutral-800 disabled:opacity-50 text-sm focus:outline-none focus:ring-2 focus:ring-neutral-500"
-          >
-            {loading ? 'Checking...' : 'Refresh Status'}
-          </button>
+          <Link to="/" className="text-emerald-900 font-semibold hover:underline">
+            ← Return to Landing Page
+          </Link>
+          <div className="flex items-center gap-3">
+            <span>Last checked: {lastChecked || 'Never'}</span>
+            <button
+              type="button"
+              onClick={checkHealth}
+              disabled={loading}
+              className="px-4 py-1.5 bg-neutral-900 text-white font-medium rounded hover:bg-neutral-800 disabled:opacity-50 text-sm focus:outline-none focus:ring-2 focus:ring-neutral-500"
+            >
+              {loading ? 'Checking...' : 'Refresh Status'}
+            </button>
+          </div>
         </footer>
       </div>
     </main>
