@@ -1,9 +1,11 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ArrowRight, FileText, CheckCircle2 } from 'lucide-react';
+import { useNavigate, Link } from 'react-router-dom';
+import { ArrowRight, FileText, CheckCircle2, LogIn, UserPlus, LayoutDashboard } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 export default function HeroSection({ onOpenUpcoming }) {
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
 
   function scrollToSection(id) {
     const el = document.getElementById(id);
@@ -66,23 +68,51 @@ export default function HeroSection({ onOpenUpcoming }) {
             </div>
           </div>
 
-          {/* CTAs */}
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 mb-6">
+          {/* CTAs with explicit, visible action buttons */}
+          <div className="flex flex-wrap items-center gap-3.5 mb-6">
             <button
               type="button"
               onClick={handleReportClick}
-              className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-navy-900 hover:bg-navy-950 text-white font-semibold text-base rounded-lg border-b-2 border-gold-500 shadow-xs focus:outline-none focus:ring-2 focus:ring-navy-800 transition-colors"
+              className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-navy-900 hover:bg-navy-950 text-white font-bold text-sm sm:text-base rounded-lg border-b-2 border-gold-500 shadow-sm focus:outline-none focus:ring-2 focus:ring-navy-800 transition-colors"
             >
               <FileText className="w-5 h-5 text-gold-400" />
-              Report an Issue
+              <span>Report an Issue (M4)</span>
             </button>
+
+            {isAuthenticated ? (
+              <Link
+                to="/dashboard"
+                className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-gold-500 hover:bg-gold-600 text-navy-950 font-bold text-sm sm:text-base rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-gold-400 transition-colors"
+              >
+                <LayoutDashboard className="w-5 h-5 text-navy-950" />
+                <span>My Dashboard</span>
+              </Link>
+            ) : (
+              <>
+                <Link
+                  to="/register"
+                  className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-gold-500 hover:bg-gold-600 text-navy-950 font-bold text-sm sm:text-base rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-gold-400 transition-colors"
+                >
+                  <UserPlus className="w-5 h-5 text-navy-950" />
+                  <span>Get Started / Register</span>
+                </Link>
+                <Link
+                  to="/login"
+                  className="inline-flex items-center justify-center gap-2 px-5 py-3.5 bg-white hover:bg-navy-50 text-navy-900 border-2 border-navy-900 font-bold text-sm sm:text-base rounded-lg shadow-xs focus:outline-none focus:ring-2 focus:ring-navy-800 transition-colors"
+                >
+                  <LogIn className="w-4 h-4 text-navy-900" />
+                  <span>Citizen Login</span>
+                </Link>
+              </>
+            )}
+
             <button
               type="button"
               onClick={() => scrollToSection('how-it-works')}
-              className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-white hover:bg-gold-50 text-navy-900 border border-stone-300 font-semibold text-base rounded-lg shadow-xs focus:outline-none focus:ring-2 focus:ring-navy-800 transition-colors"
+              className="inline-flex items-center justify-center gap-2 px-5 py-3.5 bg-stone-100 hover:bg-stone-200 text-stone-800 font-semibold text-sm sm:text-base rounded-lg border border-stone-300 transition-colors"
             >
-              Explore Capabilities
-              <ArrowRight className="w-4 h-4 text-gold-600" />
+              <span>Explore</span>
+              <ArrowRight className="w-4 h-4 text-stone-600" />
             </button>
           </div>
 

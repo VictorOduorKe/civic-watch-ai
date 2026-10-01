@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { HelpCircle, UserPlus, ArrowRight } from 'lucide-react';
+import { HelpCircle, UserPlus, LogIn, ArrowRight } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 export default function CtaSection() {
@@ -34,13 +34,22 @@ export default function CtaSection() {
                 <ArrowRight className="w-4 h-4" />
               </Link>
             ) : (
-              <Link
-                to="/register"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-gold-500 hover:bg-gold-600 text-navy-950 font-bold text-base rounded shadow-xs focus:outline-none focus:ring-2 focus:ring-gold-400 transition-colors"
-              >
-                <UserPlus className="w-5 h-5 text-navy-950" />
-                <span>Create Citizen Account</span>
-              </Link>
+              <>
+                <Link
+                  to="/register"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-gold-500 hover:bg-gold-600 text-navy-950 font-bold text-base rounded shadow-xs focus:outline-none focus:ring-2 focus:ring-gold-400 transition-colors"
+                >
+                  <UserPlus className="w-5 h-5 text-navy-950" />
+                  <span>Get Started / Register</span>
+                </Link>
+                <Link
+                  to="/login"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-white hover:bg-navy-50 text-navy-950 font-bold text-base rounded shadow-xs border-2 border-white focus:outline-none focus:ring-2 focus:ring-gold-400 transition-colors"
+                >
+                  <LogIn className="w-5 h-5 text-navy-900" />
+                  <span>Citizen Login</span>
+                </Link>
+              </>
             )}
 
             <button
