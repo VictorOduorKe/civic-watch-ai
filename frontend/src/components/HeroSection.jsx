@@ -2,10 +2,11 @@ import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { ArrowRight, FileText, CheckCircle2, LogIn, UserPlus, LayoutDashboard } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { getWorkspacePath, getWorkspaceLabel } from '../utils/roleUtils';
 
 export default function HeroSection({ onOpenUpcoming }) {
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
 
   function scrollToSection(id) {
     const el = document.getElementById(id);
@@ -81,11 +82,11 @@ export default function HeroSection({ onOpenUpcoming }) {
 
             {isAuthenticated ? (
               <Link
-                to="/dashboard"
+                to={getWorkspacePath(user?.role)}
                 className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-gold-500 hover:bg-gold-600 text-navy-950 font-bold text-sm sm:text-base rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-gold-400 transition-colors"
               >
                 <LayoutDashboard className="w-5 h-5 text-navy-950" />
-                <span>My Dashboard</span>
+                <span>{getWorkspaceLabel(user?.role)}</span>
               </Link>
             ) : (
               <>

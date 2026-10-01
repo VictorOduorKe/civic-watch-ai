@@ -3,12 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Eye, EyeOff, AlertCircle, ArrowLeft } from 'lucide-react';
 import logo from '../assets/logo.jpg';
-
-const ADMIN_ROLES = ['Admin', 'Moderator', 'Analyst'];
-
-function getDefaultRedirect(role) {
-  return ADMIN_ROLES.includes(role) ? '/admin' : '/dashboard';
-}
+import { getWorkspacePath } from '../utils/roleUtils';
 
 export default function LoginPage() {
   const { login, isAuthenticated, loading: authLoading, user } = useAuth();
@@ -27,7 +22,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (!authLoading && isAuthenticated && user) {
-      const dest = intendedPath || getDefaultRedirect(user.role);
+      const dest = intendedPath || getWorkspacePath(user.role);
       navigate(dest, { replace: true });
     }
   }, [isAuthenticated, authLoading, user, navigate, intendedPath]);
@@ -45,7 +40,7 @@ export default function LoginPage() {
     try {
       const result = await login({ email: email.trim(), password });
       // Route by role: admin roles → /admin, citizens → /dashboard
-      const dest = intendedPath || getDefaultRedirect(result?.user?.role);
+      const dest = intendedPath || getWorkspacePath(result?.user?.role);
       navigate(dest, { replace: true });
     } catch (err) {
       setErrorMessage(err.message || 'Invalid email or password.');

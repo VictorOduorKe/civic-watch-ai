@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Menu, X, LogOut, User } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import logoImg from '../assets/logo.jpg';
+import { getWorkspacePath, getWorkspaceLabel } from '../utils/roleUtils';
 
 export default function Navbar({ onOpenUpcoming }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -125,7 +126,7 @@ export default function Navbar({ onOpenUpcoming }) {
             {isAuthenticated ? (
               <div className="flex items-center gap-2.5">
                 <Link
-                  to="/dashboard"
+                  to={getWorkspacePath(user?.role)}
                   className="flex items-center gap-2 px-3 py-1.5 bg-navy-50 hover:bg-navy-100 border border-navy-200 rounded-lg text-xs font-semibold text-navy-900 focus:outline-none focus:ring-2 focus:ring-navy-800 transition-colors"
                 >
                   <User className="w-3.5 h-3.5 text-navy-800" />
@@ -238,11 +239,11 @@ export default function Navbar({ onOpenUpcoming }) {
             {isAuthenticated ? (
               <>
                 <Link
-                  to="/dashboard"
+                  to={getWorkspacePath(user?.role)}
                   onClick={() => setMobileMenuOpen(false)}
                   className="w-full text-center px-4 py-2.5 border border-navy-200 bg-navy-50 rounded-lg text-sm font-bold text-navy-900 hover:bg-navy-100"
                 >
-                  My Account ({firstName})
+                  {getWorkspaceLabel(user?.role)} ({firstName})
                 </Link>
                 <Link
                   to="/reports/new"

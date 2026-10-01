@@ -2,9 +2,10 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { HelpCircle, UserPlus, LogIn, ArrowRight } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { getWorkspacePath, getWorkspaceLabel } from '../utils/roleUtils';
 
 export default function CtaSection() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
 
   function scrollToHowItWorks() {
     const el = document.getElementById('how-it-works');
@@ -27,10 +28,10 @@ export default function CtaSection() {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             {isAuthenticated ? (
               <Link
-                to="/dashboard"
+                to={getWorkspacePath(user?.role)}
                 className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-gold-500 hover:bg-gold-600 text-navy-950 font-bold text-base rounded shadow-xs focus:outline-none focus:ring-2 focus:ring-gold-400 transition-colors"
               >
-                <span>Go to My Account</span>
+                <span>{getWorkspaceLabel(user?.role)}</span>
                 <ArrowRight className="w-4 h-4" />
               </Link>
             ) : (

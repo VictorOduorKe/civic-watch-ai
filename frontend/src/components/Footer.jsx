@@ -3,9 +3,10 @@ import { Link } from 'react-router-dom';
 import { Activity, ChevronRight, LogIn, UserPlus, FileText, ArrowRight } from 'lucide-react';
 import logoImg from '../assets/logo.jpg';
 import { useAuth } from '../context/AuthContext';
+import { getWorkspacePath, getWorkspaceLabel } from '../utils/roleUtils';
 
 export default function Footer({ onOpenUpcoming }) {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
 
   function scrollToSection(id) {
     if (id) {
@@ -174,10 +175,10 @@ export default function Footer({ onOpenUpcoming }) {
               {isAuthenticated ? (
                 <>
                   <Link
-                    to="/dashboard"
+                    to={getWorkspacePath(user?.role)}
                     className="inline-flex items-center justify-center gap-2 px-3.5 py-2 bg-gold-500 hover:bg-gold-600 text-navy-950 font-bold text-xs rounded-md shadow-sm transition-colors"
                   >
-                    <span>Go to My Dashboard</span>
+                    <span>{getWorkspaceLabel(user?.role)}</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </Link>
                   <Link
