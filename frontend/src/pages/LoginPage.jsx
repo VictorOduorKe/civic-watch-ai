@@ -4,8 +4,14 @@ import { useAuth } from '../context/AuthContext';
 import { Eye, EyeOff, AlertCircle, ArrowLeft } from 'lucide-react';
 import logo from '../assets/logo.jpg';
 
+const ADMIN_ROLES = ['Admin', 'Moderator', 'Analyst'];
+
+function getDefaultRedirect(role) {
+  return ADMIN_ROLES.includes(role) ? '/admin' : '/dashboard';
+}
+
 export default function LoginPage() {
-  const { login, isAuthenticated, loading: authLoading } = useAuth();
+  const { login, isAuthenticated, loading: authLoading, user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -15,13 +21,16 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
-  const redirectPath = location.state?.from?.pathname || '/dashboard';
+  // If the user was redirected here from a specific page (e.g. /admin), honour that;
+  // otherwise route by role: admins go to /admin, citizens go to /dashboard.
+  const intendedPath = location.state?.from?.pathname;
 
   useEffect(() => {
-    if (!authLoading && isAuthenticated) {
-      navigate('/dashboard', { replace: true });
+    if (!authLoading && isAuthenticated && user) {
+      const dest = intendedPath || getDefaultRedirect(user.role);
+      navigate(dest, { replace: true });
     }
-  }, [isAuthenticated, authLoading, navigate]);
+  }, [isAuthenticated, authLoading, user, navigate, intendedPath]);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -34,8 +43,10 @@ export default function LoginPage() {
 
     setLoading(true);
     try {
-      await login({ email: email.trim(), password });
-      navigate(redirectPath, { replace: true });
+      const result = await login({ email: email.trim(), password });
+      // Route by role: admin roles → /admin, citizens → /dashboard
+      const dest = intendedPath || getDefaultRedirect(result?.user?.role);
+      navigate(dest, { replace: true });
     } catch (err) {
       setErrorMessage(err.message || 'Invalid email or password.');
     } finally {
