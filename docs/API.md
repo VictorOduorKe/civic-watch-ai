@@ -117,30 +117,30 @@ Registers a new citizen account with county and contact details.
 
 * **HTTP Status**: `201 Created`
 * **Content-Type**: `application/json`
-* **Set-Cookie**: `token=<jwt>; HttpOnly; SameSite=Strict; Path=/`
+* **Set-Cookie**:
+  * `civicwatch_auth=<jwt>; HttpOnly; SameSite=Lax; Path=/; Max-Age=86400`
+  * `XSRF-TOKEN=<csrf_token>; SameSite=Lax; Path=/; Max-Age=86400`
 
 ```json
 {
   "success": true,
   "message": "Account created successfully.",
-  "data": {
-    "user": {
-      "id": 1,
-      "fullName": "Victor Oduor",
-      "email": "victor@example.com",
-      "phone": "+254712345678",
-      "county": "Nairobi",
-      "ward": "Kilimani",
-      "role": "Citizen",
-      "isActive": true,
-      "emailVerified": false,
-      "createdAt": "2026-10-01T11:12:31.000Z",
-      "lastLoginAt": null
-    },
-    "token": "eyJhbGciOi..."
+  "user": {
+    "id": 1,
+    "fullName": "Victor Oduor",
+    "email": "victor@example.com",
+    "phone": "+254712345678",
+    "county": "Nairobi",
+    "ward": "Kilimani",
+    "role": "Citizen",
+    "isActive": true,
+    "emailVerified": false,
+    "createdAt": "2026-10-01T11:12:31.000Z"
   }
 }
 ```
+
+*Note: In compliance with authentication hardening standards, raw JWT credentials are never returned in JSON and are stored exclusively in HttpOnly cookies.*
 
 #### Error Responses
 
@@ -163,14 +163,16 @@ Registers a new citizen account with county and contact details.
 
 ### `POST /api/auth/login`
 
-Authenticates an existing user and returns a signed JWT and user session profile.
+Authenticates an existing user and establishes an HttpOnly session cookie.
 
 #### Request
 
 * **Method**: `POST`
 * **URL**: `/api/auth/login`
 * **Authentication**: None (Public)
-* **Headers**: `Content-Type: application/json`
+* **Headers**:
+  * `Content-Type: application/json`
+  * `X-XSRF-TOKEN: <token>` (if CSRF cookie present)
 
 ```json
 {
@@ -183,27 +185,26 @@ Authenticates an existing user and returns a signed JWT and user session profile
 
 * **HTTP Status**: `200 OK`
 * **Content-Type**: `application/json`
-* **Set-Cookie**: `token=<jwt>; HttpOnly; SameSite=Strict; Path=/`
+* **Set-Cookie**:
+  * `civicwatch_auth=<jwt>; HttpOnly; SameSite=Lax; Path=/; Max-Age=86400`
+  * `XSRF-TOKEN=<csrf_token>; SameSite=Lax; Path=/; Max-Age=86400`
 
 ```json
 {
   "success": true,
   "message": "Login successful.",
-  "data": {
-    "user": {
-      "id": 1,
-      "fullName": "Victor Oduor",
-      "email": "victor@example.com",
-      "phone": "+254712345678",
-      "county": "Nairobi",
-      "ward": "Kilimani",
-      "role": "Citizen",
-      "isActive": true,
-      "emailVerified": false,
-      "createdAt": "2026-10-01T11:12:31.000Z",
-      "lastLoginAt": "2026-10-01T11:46:19.640Z"
-    },
-    "token": "eyJhbGciOi..."
+  "user": {
+    "id": 1,
+    "fullName": "Victor Oduor",
+    "email": "victor@example.com",
+    "phone": "+254712345678",
+    "county": "Nairobi",
+    "ward": "Kilimani",
+    "role": "Citizen",
+    "isActive": true,
+    "emailVerified": false,
+    "createdAt": "2026-10-01T11:12:31.000Z",
+    "lastLoginAt": "2026-10-01T11:46:19.640Z"
   }
 }
 ```
@@ -221,7 +222,7 @@ Authenticates an existing user and returns a signed JWT and user session profile
   ```json
   {
     "success": false,
-    "message": "Account has been deactivated. Please contact support."
+    "message": "Your account is currently inactive. Please contact support."
   }
   ```
 
@@ -229,14 +230,13 @@ Authenticates an existing user and returns a signed JWT and user session profile
 
 ### `GET /api/auth/me`
 
-Retrieves the currently authenticated user's profile and validates token freshness.
+Retrieves the currently authenticated user's profile using the HttpOnly cookie.
 
 #### Request
 
 * **Method**: `GET`
 * **URL**: `/api/auth/me`
-* **Authentication**: Bearer Token or Cookie
-* **Headers**: `Authorization: Bearer <token>`
+* **Authentication**: Automatic HttpOnly cookie (`civicwatch_auth`)
 
 #### Success Response
 
@@ -248,51 +248,80 @@ Retrieves the currently authenticated user's profile and validates token freshne
   "success": true,
   "user": {
     "id": 1,
-    "full_name": "Victor Oduor",
+    "fullName": "Victor Oduor",
     "email": "victor@civicwatch.ke",
     "phone": "+254712345678",
     "county": "Nairobi",
     "ward": "Kilimani",
     "role": "Citizen",
-    "created_at": "2026-10-01T11:15:32.000Z",
-    "last_login_at": "2026-10-01T11:40:00.000Z"
+    "isActive": true,
+    "emailVerified": false,
+    "createdAt": "2026-10-01T11:15:32.000Z",
+    "lastLoginAt": "2026-10-01T11:40:00.000Z"
   }
 }
 ```
 
 #### Error Response
 
-* **401 Unauthorized** (Missing, expired, or invalid token):
+* **401 Unauthorized** (Missing, expired, or invalid cookie):
   ```json
   {
     "success": false,
-    "message": "Authentication required. Invalid or expired token."
+    "message": "Authentication required. Please log in."
   }
   ```
 
 ---
 
+### `GET /api/auth/csrf-token`
+
+Issues a Double-Submit CSRF token cookie (`XSRF-TOKEN`) for client requests.
+
+#### Request
+
+* **Method**: `GET`
+* **URL**: `/api/auth/csrf-token`
+* **Authentication**: None (Public)
+
+#### Success Response
+
+* **HTTP Status**: `200 OK`
+* **Set-Cookie**: `XSRF-TOKEN=<token>; SameSite=Lax; Path=/`
+
+```json
+{
+  "success": true,
+  "csrfToken": "4f9b8c2e..."
+}
+```
+
+---
+
 ### `POST /api/auth/logout`
 
-Clears the authentication cookie and ends the client session.
+Clears both authentication and CSRF cookies, revoking the client session.
 
 #### Request
 
 * **Method**: `POST`
 * **URL**: `/api/auth/logout`
-* **Authentication**: Optional
+* **Headers**: `X-XSRF-TOKEN: <token>`
 
 #### Success Response
 
 * **HTTP Status**: `200 OK`
-* **Clear-Cookie**: `token=; Max-Age=0`
+* **Clear-Cookie**:
+  * `civicwatch_auth=; Path=/; Max-Age=0`
+  * `XSRF-TOKEN=; Path=/; Max-Age=0`
 
 ```json
 {
   "success": true,
-  "message": "Logged out successfully"
+  "message": "Logged out successfully."
 }
 ```
+
 
 ---
 

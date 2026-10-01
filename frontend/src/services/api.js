@@ -3,23 +3,29 @@ import axios from 'axios';
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 /**
- * Shared Axios client instance with standard defaults.
+ * Shared Axios client instance with standard security defaults.
+ * Configured with withCredentials: true for HttpOnly cookie authentication
+ * and Double-Submit CSRF token header attachments.
  */
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
   timeout: 10000,
   withCredentials: true,
+  xsrfCookieName: 'XSRF-TOKEN',
+  xsrfHeaderName: 'X-XSRF-TOKEN',
   headers: {
     'Content-Type': 'application/json'
   }
 });
 
-// Request interceptor: Attach JWT token if available in localStorage
+// Request interceptor: Attach CSRF token header from client-readable XSRF-TOKEN cookie
 apiClient.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('civicwatch_token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+    if (typeof document !== 'undefined') {
+      const match = document.cookie.match(/(?:^|;\s*)XSRF-TOKEN=([^;]+)/);
+      if (match && !config.headers['X-XSRF-TOKEN']) {
+        config.headers['X-XSRF-TOKEN'] = decodeURIComponent(match[1]);
+      }
     }
     return config;
   },
@@ -46,6 +52,7 @@ apiClient.interceptors.response.use(
 
 /**
  * Authentication API methods.
+ * Operates purely via HttpOnly cookies and safe user JSON; never touches localStorage.
  */
 export const authApi = {
   async register(userData) {
@@ -65,6 +72,11 @@ export const authApi = {
 
   async getMe() {
     const response = await apiClient.get('/auth/me');
+    return response.data;
+  },
+
+  async getCsrfToken() {
+    const response = await apiClient.get('/auth/csrf-token');
     return response.data;
   }
 };

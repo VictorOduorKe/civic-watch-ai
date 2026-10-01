@@ -1,37 +1,34 @@
 import jwt from 'jsonwebtoken';
 import { getUserById } from '../services/authService.js';
+import { AUTH_COOKIE_NAME } from '../config/authCookie.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'development_jwt_secret_change_in_production_min32chars';
 
 /**
  * Authentication verification middleware.
- * Verifies JWT from Authorization header (Bearer <token>) or cookies.
+ * Verifies JWT from HttpOnly cookie (primary) or Bearer header (fallback for CLI/tools).
  * Attaches verified user profile to req.user.
  */
 export async function requireAuth(req, res, next) {
   try {
     let token = null;
 
-    // Check Authorization: Bearer <token>
-    const authHeader = req.headers.authorization;
-    if (authHeader && authHeader.startsWith('Bearer ')) {
-      token = authHeader.substring(7).trim();
-    } else if (req.headers.cookie) {
-      // Check cookie if present
-      const match = req.headers.cookie.match(/(?:^|;\s*)token=([^;]+)/);
-      if (match) {
-        token = decodeURIComponent(match[1]);
-      }
+    // 1. Primary: Retrieve JWT from HttpOnly secure cookie
+    if (req.cookies && req.cookies[AUTH_COOKIE_NAME]) {
+      token = req.cookies[AUTH_COOKIE_NAME];
+    } else if (req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
+      // Secondary fallback for CLI tools and automated API testing
+      token = req.headers.authorization.substring(7).trim();
     }
 
     if (!token) {
       return res.status(401).json({
         success: false,
-        message: 'Authentication required. No token provided.'
+        message: 'Authentication required. Please log in.'
       });
     }
 
-    // Verify JWT signature & expiration
+    // 2. Verify JWT signature & expiration
     let decoded;
     try {
       decoded = jwt.verify(token, JWT_SECRET);
@@ -39,11 +36,11 @@ export async function requireAuth(req, res, next) {
       const isExpired = jwtErr.name === 'TokenExpiredError';
       return res.status(401).json({
         success: false,
-        message: isExpired ? 'Authentication token has expired. Please log in again.' : 'Invalid authentication token.'
+        message: isExpired ? 'Authentication session has expired. Please log in again.' : 'Invalid authentication credential.'
       });
     }
 
-    // Retrieve fresh user from database to ensure account is active and exists
+    // 3. Retrieve user from database to ensure account is active and exists
     const user = await getUserById(decoded.id);
     if (!user) {
       return res.status(401).json({
@@ -52,7 +49,7 @@ export async function requireAuth(req, res, next) {
       });
     }
 
-    // Attach verified user to request
+    // 4. Attach verified user to request object
     req.user = user;
     next();
   } catch (error) {

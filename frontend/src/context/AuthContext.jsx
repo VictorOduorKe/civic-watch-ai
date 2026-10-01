@@ -5,33 +5,25 @@ const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(() => localStorage.getItem('civicwatch_token'));
   const [loading, setLoading] = useState(true);
   const [authError, setAuthError] = useState(null);
 
-  // Restore authenticated session on application mount
+  // Restore authenticated session on application mount via HttpOnly cookie
   useEffect(() => {
     async function initAuth() {
-      const storedToken = localStorage.getItem('civicwatch_token');
-      if (!storedToken) {
-        setLoading(false);
-        return;
-      }
-
       try {
+        // Establish initial CSRF token cookie
+        await authApi.getCsrfToken().catch(() => {});
+
+        // Verify active authentication session via HttpOnly cookie
         const response = await authApi.getMe();
         if (response.success && response.user) {
           setUser(response.user);
         } else {
-          // Token invalid or user deactivated
-          localStorage.removeItem('civicwatch_token');
-          setToken(null);
           setUser(null);
         }
-      } catch (err) {
-        console.warn('[Auth] Session restoration failed:', err.message);
-        localStorage.removeItem('civicwatch_token');
-        setToken(null);
+      } catch {
+        // Unauthenticated or expired session - state safely remains null
         setUser(null);
       } finally {
         setLoading(false);
@@ -43,17 +35,16 @@ export function AuthProvider({ children }) {
 
   /**
    * User login handler.
+   * Authentication credential is set securely via HttpOnly cookie by Express.
+   * Zero sensitive credentials stored in browser localStorage or sessionStorage.
    */
   async function login(credentials) {
     setAuthError(null);
     try {
       const result = await authApi.login(credentials);
-      if (result.success && result.data) {
-        const { user: loggedInUser, token: authToken } = result.data;
-        localStorage.setItem('civicwatch_token', authToken);
-        setToken(authToken);
-        setUser(loggedInUser);
-        return { success: true, user: loggedInUser };
+      if (result.success && result.user) {
+        setUser(result.user);
+        return { success: true, user: result.user };
       }
       throw new Error(result.message || 'Login failed.');
     } catch (err) {
@@ -64,17 +55,15 @@ export function AuthProvider({ children }) {
 
   /**
    * User registration handler.
+   * Sets HttpOnly session cookie on successful creation.
    */
   async function register(userData) {
     setAuthError(null);
     try {
       const result = await authApi.register(userData);
-      if (result.success && result.data) {
-        const { user: registeredUser, token: authToken } = result.data;
-        localStorage.setItem('civicwatch_token', authToken);
-        setToken(authToken);
-        setUser(registeredUser);
-        return { success: true, user: registeredUser };
+      if (result.success && result.user) {
+        setUser(result.user);
+        return { success: true, user: result.user };
       }
       throw new Error(result.message || 'Registration failed.');
     } catch (err) {
@@ -85,29 +74,46 @@ export function AuthProvider({ children }) {
 
   /**
    * User logout handler.
+   * Calls server to clear the HttpOnly auth cookie and CSRF cookie, then resets user state.
    */
   async function logout() {
     try {
       await authApi.logout();
     } catch (err) {
-      console.warn('[Auth] Logout API notification failed:', err.message);
+      console.warn('[Auth] Logout API call failed:', err.message);
     } finally {
-      localStorage.removeItem('civicwatch_token');
-      setToken(null);
       setUser(null);
       setAuthError(null);
     }
   }
 
+  /**
+   * Refresh current user profile from server.
+   */
+  async function refreshUser() {
+    try {
+      const response = await authApi.getMe();
+      if (response.success && response.user) {
+        setUser(response.user);
+        return response.user;
+      }
+      setUser(null);
+      return null;
+    } catch {
+      setUser(null);
+      return null;
+    }
+  }
+
   const value = {
     user,
-    token,
     loading,
     isAuthenticated: Boolean(user),
     authError,
     login,
     register,
-    logout
+    logout,
+    refreshUser
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

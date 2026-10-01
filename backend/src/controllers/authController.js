@@ -1,20 +1,16 @@
 import { registerUser, loginUser } from '../services/authService.js';
-
-/**
- * Helper to set HttpOnly auth cookie if supported.
- */
-function setAuthCookie(res, token) {
-  const isProduction = process.env.NODE_ENV === 'production';
-  res.cookie('token', token, {
-    httpOnly: true,
-    secure: isProduction,
-    sameSite: isProduction ? 'strict' : 'lax',
-    maxAge: 24 * 60 * 60 * 1000 // 1 day
-  });
-}
+import {
+  setAuthCookie,
+  clearAuthCookie,
+  setCsrfCookie,
+  clearCsrfCookie,
+  generateCsrfToken
+} from '../config/authCookie.js';
 
 /**
  * POST /api/auth/register
+ * Creates new Citizen account, sets HttpOnly auth cookie, and issues CSRF token.
+ * Never returns the JWT in JSON.
  */
 export async function register(req, res, next) {
   try {
@@ -29,15 +25,17 @@ export async function register(req, res, next) {
       ward
     });
 
+    // Set HttpOnly auth cookie
     setAuthCookie(res, token);
+
+    // Issue CSRF cookie
+    const csrfToken = generateCsrfToken();
+    setCsrfCookie(res, csrfToken);
 
     return res.status(201).json({
       success: true,
       message: 'Account created successfully.',
-      data: {
-        user,
-        token
-      }
+      user
     });
   } catch (error) {
     next(error);
@@ -46,6 +44,8 @@ export async function register(req, res, next) {
 
 /**
  * POST /api/auth/login
+ * Verifies credentials, sets HttpOnly auth cookie, and issues CSRF token.
+ * Never returns the JWT in JSON.
  */
 export async function login(req, res, next) {
   try {
@@ -53,15 +53,17 @@ export async function login(req, res, next) {
 
     const { user, token } = await loginUser({ email, password });
 
+    // Set HttpOnly auth cookie
     setAuthCookie(res, token);
+
+    // Issue CSRF cookie
+    const csrfToken = generateCsrfToken();
+    setCsrfCookie(res, csrfToken);
 
     return res.status(200).json({
       success: true,
       message: 'Login successful.',
-      data: {
-        user,
-        token
-      }
+      user
     });
   } catch (error) {
     next(error);
@@ -70,10 +72,13 @@ export async function login(req, res, next) {
 
 /**
  * POST /api/auth/logout
+ * Clears HttpOnly auth cookie and CSRF cookie.
  */
 export async function logout(req, res, next) {
   try {
-    res.clearCookie('token');
+    clearAuthCookie(res);
+    clearCsrfCookie(res);
+
     return res.status(200).json({
       success: true,
       message: 'Logged out successfully.'
@@ -85,7 +90,7 @@ export async function logout(req, res, next) {
 
 /**
  * GET /api/auth/me
- * Retrieves current authenticated user's profile.
+ * Retrieves current authenticated user's profile via HttpOnly cookie.
  */
 export async function getMe(req, res, next) {
   try {
@@ -97,3 +102,23 @@ export async function getMe(req, res, next) {
     next(error);
   }
 }
+
+/**
+ * GET /api/auth/csrf-token
+ * Issues a fresh CSRF token cookie and returns it.
+ */
+export async function getCsrfToken(req, res, next) {
+  try {
+    const csrfToken = generateCsrfToken();
+    setCsrfCookie(res, csrfToken);
+
+    return res.status(200).json({
+      success: true,
+      csrfToken
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export default { register, login, logout, getMe, getCsrfToken };

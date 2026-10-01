@@ -4,12 +4,13 @@ CivicWatch AI Kenya is an AI-powered civic engagement and public accountability 
 
 ---
 
-## Current Milestone: Milestone 4 (Incident Reporting Module)
+## Current Milestone: Authentication Security Hardening (Pre-Milestone 5)
 
-This repository contains the completed public presentation layer, database foundation, real authentication system, citizen workspace, and authenticated incident reporting workflow for CivicWatch AI Kenya:
+This repository contains the completed public presentation layer, database foundation, hardened authentication system, citizen workspace, and authenticated incident reporting workflow for CivicWatch AI Kenya:
+* **Authentication Security Hardening**: Completely eliminated client-side token storage in `localStorage` and `sessionStorage`. Migrated to HttpOnly, SameSite secure cookies (`civicwatch_auth`), implemented two-layer CSRF protection (Origin verification + Double-Submit Cookie `XSRF-TOKEN`), zero credential exposure in login/registration JSON responses, and centralized credentialed Axios client.
 * **Incident Reporting Module (M4)**: Authenticated intake flow at `/reports/new`, dynamic category loading from database (12 categories with icons and descriptions), location metadata (47 Kenyan counties, sub-county, ward, landmark, GPS auto-detection), incident date/time, optional file attachments (up to 5 files, 5MB each, JPG/PNG/WEBP/PDF), anonymous submission privacy toggle, preferred contact selection, emergency 999/112 advisory, atomic database transactions with rollback cleanup, and server-side reference generation (`CWK-YYYY-XXXXXX`).
 * **Citizen Dashboard & Workspace (M3)**: Authenticated dashboard at `/dashboard` and profile at `/profile`, responsive sidebar & mobile navigation drawer, real user identity welcome banner, live report counters from database, quick action workflow triggers, recent activity empty states, and educational guidance cards.
-* **Authentication & Identity (M2)**: Registration with Kenyan county selection, secure login, profile inspection, JWT token lifecycle, persistent authentication context (`AuthContext`), password hashing with bcrypt, Zod validation, and protected routing.
+* **Authentication & Identity (M2)**: Registration with Kenyan county selection, secure login, profile inspection, persistent authentication context (`AuthContext`), password hashing with bcrypt, Zod validation, and protected routing.
 * **Landing Page (M1)**: Public website at `/` with responsive navigation, hero section, planned capabilities, workflow overview, responsible civic-tech principles, Open Civic Lab introduction, and transparent roadmap modals.
 * **M0 Foundation**: React 18 + Vite frontend, Express backend, MySQL connection pool, database migrations, security middleware, and real-time health verification endpoint (`GET /api/health` and `/status`).
 
@@ -86,6 +87,16 @@ DB_PASSWORD=your_mysql_password
 
 JWT_SECRET=development_jwt_secret_change_in_production_min32chars
 JWT_EXPIRES_IN=1d
+
+# Cookie & CSRF Security Settings
+AUTH_COOKIE_NAME=civicwatch_auth
+AUTH_COOKIE_SECURE=false
+AUTH_COOKIE_SAME_SITE=lax
+CSRF_COOKIE_NAME=XSRF-TOKEN
+
+MAX_REPORT_ATTACHMENT_SIZE_MB=5
+MAX_REPORT_ATTACHMENTS=5
+
 GEMINI_API_KEY=
 ```
 
@@ -144,15 +155,17 @@ npm run dev:frontend
 
 ### Key API Endpoints
 
-* **Authentication**:
-  * `POST /api/auth/register` — Register a new citizen account
-  * `POST /api/auth/login` — Sign in and obtain JWT
-  * `GET /api/auth/me` — Retrieve active profile (requires Bearer token or cookie)
-  * `POST /api/auth/logout` — Invalidate session cookie
+* **Authentication (Hardened HttpOnly Cookie)**:
+  * `POST /api/auth/register` — Register citizen account (sets HttpOnly cookie)
+  * `POST /api/auth/login` — Sign in (sets HttpOnly cookie, returns safe user JSON)
+  * `GET /api/auth/me` — Retrieve active profile via HttpOnly cookie
+  * `POST /api/auth/logout` — Clear auth and CSRF cookies
+  * `GET /api/auth/csrf-token` — Retrieve Double-Submit CSRF cookie
 * **Incident Reports (M4)**:
   * `GET /api/reports/categories` — Retrieve all active incident categories
-  * `POST /api/reports` — Submit new incident report (multipart/form-data)
+  * `POST /api/reports` — Submit new incident report (multipart/form-data with CSRF header)
   * `GET /api/reports/stats/me` — Retrieve current citizen report count stats
+
 
 ---
 

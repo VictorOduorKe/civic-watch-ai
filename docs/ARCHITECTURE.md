@@ -123,11 +123,11 @@ Milestone 2 introduces a complete, production-grade identity and authentication 
 │                 ├──────────────────────────────────►│ authRoutes (Rate Limit) │
 │  React Client   │                                   └────────────┬────────────┘
 │  (AuthContext)  │◄──────────────────────────────────┐            │
-│                 │   JWT Token + Safe User Profile   │            ▼
-└────────┬────────┘                                   │  validate(loginSchema)
+│                 │   Set-Cookie: HttpOnly (No JWT)   │            ▼
+└────────┬────────┘   Safe User Profile JSON          │  validate(loginSchema)
          │                                            └────────────┬────────────┘
-         │ Axios Interceptor                                       │
-         │ (Authorization: Bearer <token>)                         ▼
+         │ Axios (withCredentials: true)                           │
+         │ Automatic Browser Cookie + X-XSRF-TOKEN                 ▼
          ▼                                               authController.login
 ┌─────────────────────────────────┐                                │
 │        Protected API Request    │                                ▼
@@ -137,42 +137,44 @@ Milestone 2 introduces a complete, production-grade identity and authentication 
                  ▼                                       Bcrypt verify password
     authMiddleware.requireAuth                                     │
                  │                                                 ▼
-                 ├─► Verify JWT signature & expiration   Generate Signed JWT
-                 ├─► Query DB: user exists & is_active?            │
-                 └─► Attach req.user (safe, no password)           ▼
-                                                         Update last_login_at
+                 ├─► Read HttpOnly cookie (civicwatch_auth)  Generate Signed JWT
+                 ├─► Verify JWT signature & expiration             │
+                 ├─► Query DB: user exists & is_active?            ▼
+                 └─► Attach req.user (safe, no password)     Set HttpOnly Cookie
+                                                             Set CSRF Cookie
+                                                             Update last_login_at
 ```
 
-### Backend Components
+### Hardened Authentication & Security Components
 
-1. **Password Hashing (`authService.js`)**:
-   - Uses `bcryptjs` with 12 salt rounds. Plaintext passwords are never persisted or logged.
-2. **JWT Token Generation & Verification**:
-   - Signs tokens with `JWT_SECRET` and configurable expiration (`JWT_EXPIRES_IN=1d` default).
-   - Payload includes: `{ id, email, role, full_name, county }`.
-   - Dual delivery: Sent in JSON response body (for client localStorage / interceptor) and as an `HttpOnly`, `SameSite=Strict` cookie.
-3. **Protection Against Role Tampering**:
-   - The registration service explicitly overrides any role passed in the request body, strictly enforcing `'Citizen'` for public signups.
-4. **Auth Middleware (`requireAuth`, `requireRole`)**:
-   - `requireAuth`: Extracts token from `Authorization: Bearer <token>` or `req.cookies.token`, verifies signature, confirms user still exists and `is_active` in MySQL, and attaches sanitized `req.user` to the Express request.
-   - `requireRole(...roles)`: Verifies that `req.user.role` matches one of the authorized roles before proceeding, returning `403 Forbidden` if unauthorized.
+1. **HttpOnly Cookie Authentication Transport**:
+   - Sensitive JWT credentials are **never stored in `localStorage` or `sessionStorage`**, eliminating risk from cross-site scripting (XSS) token extraction.
+   - Credentials are set exclusively by the Express backend via `Set-Cookie`:
+     - Cookie name: `civicwatch_auth` (configurable via `AUTH_COOKIE_NAME`)
+     - `httpOnly: true` (strictly inaccessible to JavaScript)
+     - `secure: isProduction || AUTH_COOKIE_SECURE === 'true'` (requires HTTPS in production; supports HTTP on localhost development)
+     - `sameSite: process.env.AUTH_COOKIE_SAME_SITE || 'lax'` (prevents cross-site credential leakage)
+     - `path: '/'`
+     - `maxAge: 24 * 60 * 60 * 1000` (1 day, synchronized with JWT lifespan)
 
-### Frontend Components
+2. **CSRF Protection Architecture**:
+   - Implements two-layer CSRF defense for cookie-based authentication:
+     1. **Origin / Referer Verification**: All state-changing requests (`POST`, `PUT`, `PATCH`, `DELETE`) verify that the incoming `Origin` or `Referer` header matches the trusted `FRONTEND_URL`. Malicious origins receive `403 Forbidden`.
+     2. **Double-Submit Cookie Pattern**: A client-readable cookie `XSRF-TOKEN` is issued on initial visit or authentication. The Axios client automatically reads this cookie and sends the matching value in the `X-XSRF-TOKEN` header on state-changing requests. Malicious third-party sites cannot read or forge this cookie due to the Same-Origin Policy.
+   - The CSRF token contains a cryptographically random hex string (`crypto.randomBytes(32)`), preserving zero exposure of user credentials or JWTs.
 
-1. **Authentication Context (`AuthContext.jsx`)**:
-   - Manages global `user`, `token`, and `loading` states.
-   - Restores session on application load by querying `GET /api/auth/me` with stored token.
-   - Exposes `login()`, `register()`, and `logout()` helpers.
-2. **Axios Request Interceptor (`services/api.js`)**:
-   - Automatically attaches `Authorization: Bearer <token>` header to all outgoing requests if token is present in `localStorage`.
-   - Responds to `401 Unauthorized` by clearing stale credentials.
-3. **Protected Routes (`ProtectedRoute.jsx`)**:
-   - Wraps routes that require authentication (e.g. `/dashboard`).
-   - If user is unauthenticated and loading completes, redirects to `/login` with `from` location state for seamless post-login redirection.
-   - Supports role-based protection (`allowedRoles`).
-4. **Controlled Transition Destination (`AuthSuccessPage.jsx`)**:
-   - Milestone 2 strictly avoided implementing the Citizen Dashboard (Milestone 3).
-   - Displayed a clean, authenticated verification page confirming user identity, role, county, and session state.
+3. **Backend Middleware & Controllers**:
+   - **`cookieParser.js`**: Parses incoming HTTP `Cookie` header into `req.cookies`.
+   - **`csrfMiddleware.js`**: Enforces origin check and double-submit token match on state-changing endpoints.
+   - **`authMiddleware.js`**: Reads `req.cookies[AUTH_COOKIE_NAME]` as primary authentication transport, verifies signature and expiration, retrieves active user from MySQL, and attaches sanitized `req.user`.
+   - **`authController.js`**: Login and registration endpoints set cookies and return safe user profiles, strictly omitting `token` or `accessToken` from JSON bodies.
+
+4. **Frontend Architecture (`AuthContext.jsx` & `api.js`)**:
+   - **Zero Browser Storage**: Completely free of `localStorage.getItem("token")` or `localStorage.setItem("token")`.
+   - **Centralized Axios Client**: Instantiated with `withCredentials: true`, ensuring all requests automatically include the HttpOnly authentication cookie.
+   - **Session Rehydration**: On mount, calls `GET /api/auth/me`. If valid, populates user profile; if unauthenticated, cleanly clears user state without attempting to read or recover stale credentials from disk.
+   - **`ProtectedRoute.jsx`**: Relies on backend-authenticated user state; redirects unauthenticated visitors to `/login`.
+
 
 ---
 

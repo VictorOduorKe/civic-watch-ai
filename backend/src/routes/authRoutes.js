@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import rateLimit from 'express-rate-limit';
-import { register, login, logout, getMe } from '../controllers/authController.js';
+import { register, login, logout, getMe, getCsrfToken } from '../controllers/authController.js';
 import { validateRequest } from '../middleware/validate.js';
 import { registerSchema, loginSchema } from '../validators/authValidators.js';
 import { requireAuth } from '../middleware/authMiddleware.js';
@@ -28,7 +28,11 @@ router.post('/login', authLimiter, validateRequest(loginSchema), login);
 // Logout endpoint
 router.post('/logout', logout);
 
-// Profile endpoint (protected)
+// Profile endpoint (protected via HttpOnly cookie)
 router.get('/me', requireAuth, getMe);
 
+// CSRF token retrieval endpoint
+router.get('/csrf-token', getCsrfToken);
+
 export default router;
+
