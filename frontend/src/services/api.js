@@ -150,6 +150,16 @@ export const reportApi = {
 };
 
 /**
+ * Administrative OCL API methods (Milestone 6).
+ */
+export const adminApi = {
+  async getDashboardSummary(params = {}) {
+    const response = await apiClient.get('/admin/dashboard/summary', { params });
+    return response.data;
+  }
+};
+
+/**
  * Health check API service.
  * Fetches status from GET /api/health
  */

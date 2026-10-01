@@ -341,3 +341,66 @@ Paginated Report List                Citizen-Safe Dossier View
 
 
 
+
+---
+
+## Section 9 — Milestone 6: OCL Admin Dashboard
+
+### Overview
+
+Milestone 6 introduces the role-restricted OCL Administrative Workspace at `/admin`. Only users with roles `Admin`, `Moderator`, or `Analyst` may access it. Citizens receive a `403 Forbidden` screen on both the API and the frontend.
+
+### Frontend Architecture
+
+```
+frontend/src/
+  components/
+    AdminRoute.jsx          — Role gate (Admin|Moderator|Analyst); 403 screen for Citizens
+    admin/
+      AdminSidebar.jsx      — OCL-branded sidebar with nav groups and milestone preview actions
+      AdminHeader.jsx        — Sticky header with role pill, bell, citizen portal link, user summary
+      AdminComingSoonModal.jsx — Roadmap preview modal for future milestones
+      AdminStatCard.jsx      — Reusable stat metric card with color schemes
+      AdminEmptyState.jsx    — Empty chart/data placeholder component
+      ReportTrendChart.jsx   — Recharts AreaChart: submissions over time (gold accent)
+      ReportCategoryChart.jsx — Recharts BarChart: reports by category (navy bars)
+      ReportStatusChart.jsx  — Recharts BarChart: status distribution with per-status color cells
+      ReportCountyChart.jsx  — Recharts horizontal BarChart: top counties (gold bars)
+  layouts/
+    AdminLayout.jsx          — Shell: sidebar + header + <Outlet> + preview modal state
+  pages/
+    admin/
+      AdminDashboardPage.jsx — Dashboard: range selector, stat cards, 4 charts, user breakdown
+```
+
+### Backend Architecture
+
+```
+backend/src/
+  validators/adminDashboardValidators.js  — Zod schema: range allowlist validation
+  services/adminDashboardService.js       — Real SQL aggregations per date range
+  controllers/adminDashboardController.js — Express handler wrapping service
+  routes/adminRoutes.js                  — requireAuth + requireRole + rateLimit + validate
+```
+
+### RBAC
+
+| Role | Admin API | Admin UI |
+|---|---|---|
+| `Admin` | 200 OK | Full dashboard |
+| `Moderator` | 200 OK | Full dashboard |
+| `Analyst` | 200 OK | Full dashboard |
+| `Citizen` | 403 Forbidden | 403 Forbidden screen |
+| Unauthenticated | 401 Unauthorized | Redirect to /login |
+
+### Date Range Filtering
+
+The `?range` query parameter is validated against an allowlist before being mapped to MySQL `DATE_SUB` arithmetic:
+
+| Value | SQL Condition |
+|---|---|
+| `7d` | `created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)` |
+| `30d` | `created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)` |
+| `90d` | `created_at >= DATE_SUB(NOW(), INTERVAL 90 DAY)` |
+| `year` | `created_at >= DATE_SUB(NOW(), INTERVAL 1 YEAR)` |
+| `all` | No date filter applied |

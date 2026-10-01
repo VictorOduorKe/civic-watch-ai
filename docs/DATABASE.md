@@ -330,3 +330,32 @@ Migration 004 upgraded the `reports.status` column to consistently support:
 Every newly submitted report automatically creates an initial `report_status_history` entry with status `'Submitted'`, note `'Report submitted by citizen.'`, and `visible_to_citizen = TRUE` inside an atomic transaction.
 
 
+
+---
+
+## Migration 005 — Admin Dashboard Performance Indexes
+
+File: `database/migrations/005_add_admin_dashboard_indexes.sql`
+
+Added composite and simple indexes to optimize aggregate dashboard queries:
+
+| Index | Table | Purpose |
+|---|---|---|
+| `idx_reports_county` | `reports` | Accelerates `GROUP BY county` for county distribution charts |
+| `idx_users_is_active` | `users` | Accelerates active user count filters |
+
+---
+
+## Migration 006 — Admin Role Seed Accounts
+
+File: `database/migrations/006_seed_admin_roles.sql`
+
+Seeds three administrative test accounts for local development (password: `Password123!` hashed with bcrypt):
+
+| Email | Role | Purpose |
+|---|---|---|
+| `admin@civicwatch.ke` | `Admin` | Full administrative access |
+| `moderator@civicwatch.ke` | `Moderator` | Incident moderation |
+| `analyst@civicwatch.ke` | `Analyst` | Read-only analytics |
+
+> **Note**: These accounts are for development only and should not be seeded in production without changing credentials.

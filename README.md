@@ -4,9 +4,10 @@ CivicWatch AI Kenya is an AI-powered civic engagement and public accountability 
 
 ---
 
-## Current Milestone: Milestone 5 — Report Tracking (Completed)
+## Current Milestone: Milestone 6 — OCL Admin Dashboard (Completed)
 
-This repository contains the completed public presentation layer, database foundation, hardened authentication system, citizen workspace, authenticated incident reporting workflow, and report tracking module for CivicWatch AI Kenya:
+This repository contains the completed public presentation layer, database foundation, hardened authentication system, citizen workspace, authenticated incident reporting workflow, report tracking module, and the OCL Administrative Dashboard for CivicWatch AI Kenya:
+* **OCL Admin Dashboard (M6)**: Role-restricted administrative workspace at `/admin` for `Admin`, `Moderator`, and `Analyst` roles. Citizen accounts receive a 403 Forbidden screen. Features a dedicated AdminLayout with sidebar navigation, sticky header, and milestone roadmap preview modals. Real-time database aggregation dashboard with: date range selector (7d / 30d / 90d / year / all), 4 Recharts visualizations (AreaChart trends, status BarChart, category BarChart, horizontal county BarChart), 4 stat cards (total reports, active, resolved, users), and a user account role breakdown table.
 * **Citizen Report Tracking (M5)**: Authenticated citizen tracking at `/reports`, paginated report listing, dynamic debounced search, status filtering, category filtering, responsive table and card layouts, detailed dossier view at `/reports/:reference`, copyable reference code with clipboard confirmation, plain-text stored XSS protection, OCL-branded status badges, authentic chronological status progression timeline (`report_status_history`), secure authorized attachment downloads, and strict server-side tenant ownership isolation.
 * **Authentication Security Hardening**: Completely eliminated client-side token storage in `localStorage` and `sessionStorage`. Migrated to HttpOnly, SameSite secure cookies (`civicwatch_auth`), implemented two-layer CSRF protection (Origin verification + Double-Submit Cookie `XSRF-TOKEN`), zero credential exposure in login/registration JSON responses, and centralized credentialed Axios client.
 * **Incident Reporting Module (M4)**: Authenticated intake flow at `/reports/new`, dynamic category loading from database (12 categories with icons and descriptions), location metadata (47 Kenyan counties, sub-county, ward, landmark, GPS auto-detection), incident date/time, optional file attachments (up to 5 files, 5MB each, JPG/PNG/WEBP/PDF), anonymous submission privacy toggle, preferred contact selection, emergency 999/112 advisory, atomic database transactions with rollback cleanup, and server-side reference generation (`CWK-YYYY-XXXXXX`).
@@ -19,7 +20,7 @@ This repository contains the completed public presentation layer, database found
 
 ## Technology Stack
 
-* **Frontend**: React 18, Vite, React Router v6, Tailwind CSS v3, Axios
+* **Frontend**: React 18, Vite, React Router v6, Tailwind CSS v3, Axios, Recharts
 * **Backend**: Node.js v20+, Express.js v4, mysql2, dotenv, cors, helmet, express-rate-limit, zod, bcryptjs, jsonwebtoken
 * **Database**: MySQL 8+ / MariaDB 10.5+
 * **Language**: JavaScript (ES Modules, JSX) — *No TypeScript*
@@ -154,6 +155,7 @@ npm run dev:frontend
 * **Report Detail & Timeline (M5)**: `http://localhost:5173/reports/:reference` (Protected)
 * **Citizen Incident Report (M4)**: `http://localhost:5173/reports/new` (Protected)
 * **Citizen Profile (M3)**: `http://localhost:5173/profile` (Protected)
+* **OCL Admin Dashboard (M6)**: `http://localhost:5173/admin` (Admin / Moderator / Analyst only)
 * **System Status Page**: `http://localhost:5173/status`
 
 ### Key API Endpoints
@@ -172,6 +174,8 @@ npm run dev:frontend
   * `GET /api/reports/my/:reference` — Inspect citizen-safe report details, attachments, and status timeline
   * `GET /api/reports/my/:reference/attachments/:attachmentId` — Securely download authorized attachment
   * `GET /api/reports/stats/me` — Retrieve current citizen report count stats for dashboard
+* **Admin Dashboard (M6 — Admin / Moderator / Analyst only)**:
+  * `GET /api/admin/dashboard/summary` — Aggregate report counts by status, category, county, trend, and user breakdown (accepts `?range=7d|30d|90d|year|all`)
 
 ---
 
@@ -185,4 +189,12 @@ npm run dev:frontend
 
 ## Next Milestone
 
-* **Milestone 6**: Official Administrative Review & Assignment Workflows
+* **Milestone 7**: Incident Review, Assignment & Status Mutation Workflows
+
+### Admin Test Accounts (Seeded — M6)
+
+| Email | Password | Role |
+|---|---|---|
+| `admin@civicwatch.ke` | `Password123!` | Admin |
+| `moderator@civicwatch.ke` | `Password123!` | Moderator |
+| `analyst@civicwatch.ke` | `Password123!` | Analyst |

@@ -665,3 +665,83 @@ Securely downloads an attachment belonging to an owned report after verifying th
 
 
 
+
+---
+
+## Admin Dashboard API (Milestone 6)
+
+All admin endpoints require authentication (`civicwatch_auth` HttpOnly cookie) and one of the roles: `Admin`, `Moderator`, or `Analyst`. Citizens receive `403 Forbidden`.
+
+---
+
+### `GET /api/admin/dashboard/summary`
+
+Returns aggregated civic incident and user statistics for the OCL Administrative Dashboard.
+
+#### Request
+
+* **Method**: `GET`
+* **URL**: `/api/admin/dashboard/summary`
+* **Authentication**: Cookie (`civicwatch_auth`) — Required
+* **Authorization**: Roles `Admin`, `Moderator`, `Analyst` only
+* **Rate Limit**: 150 requests per 15 minutes per IP
+* **Query Parameters**:
+
+| Parameter | Type | Required | Values | Default |
+|---|---|---|---|---|
+| `range` | `string` | No | `7d`, `30d`, `90d`, `year`, `all` | `30d` |
+
+#### Success Response
+
+* **HTTP Status**: `200 OK`
+
+```json
+{
+  "success": true,
+  "data": {
+    "total_reports": 16,
+    "reports_by_status": {
+      "Submitted": 4,
+      "Under Review": 3,
+      "Verified": 1,
+      "Assigned": 2,
+      "In Progress": 2,
+      "Resolved": 3,
+      "Closed": 1,
+      "Rejected": 0
+    },
+    "reports_by_category": [
+      { "category_name": "Road & Infrastructure", "count": 5 }
+    ],
+    "reports_by_county": [
+      { "county": "Nairobi", "count": 7 }
+    ],
+    "reports_over_time": [
+      { "date": "2026-09-25", "count": 2 }
+    ],
+    "users": {
+      "total": 17,
+      "citizens": 14,
+      "admins": 1,
+      "moderators": 1,
+      "analysts": 1
+    }
+  }
+}
+```
+
+#### Error Responses
+
+| HTTP Status | Condition |
+|---|---|
+| `400 Bad Request` | Invalid `range` parameter |
+| `401 Unauthorized` | Not authenticated |
+| `403 Forbidden` | Authenticated but role is `Citizen` |
+| `429 Too Many Requests` | Rate limit exceeded |
+| `500 Internal Server Error` | Database or server error |
+
+#### Security Notes
+
+* Returns `403` for `Citizen` role accounts.
+* `range` is validated with a strict Zod allowlist before use in SQL.
+* All date arithmetic uses parameterized MySQL `DATE_SUB` — no string interpolation.
