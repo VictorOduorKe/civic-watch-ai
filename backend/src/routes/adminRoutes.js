@@ -4,6 +4,7 @@ import { requireAuth, requireRole } from '../middleware/authMiddleware.js';
 import { validateRequest } from '../middleware/validate.js';
 import { adminDashboardSummarySchema } from '../validators/adminDashboardValidators.js';
 import { getDashboardSummary } from '../controllers/adminDashboardController.js';
+import adminIncidentRoutes from './adminIncidentRoutes.js';
 
 const router = Router();
 
@@ -30,5 +31,8 @@ router.get(
   validateRequest(adminDashboardSummarySchema),
   getDashboardSummary
 );
+
+// Incident management routes (Milestone 7)
+router.use('/incidents', adminIncidentRoutes);
 
 export default router;

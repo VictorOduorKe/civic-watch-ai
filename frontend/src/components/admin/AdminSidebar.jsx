@@ -47,24 +47,11 @@ export default function AdminSidebar({
       items: [
         {
           name: 'Incidents',
-          path: null,
+          path: '/admin/incidents',
           icon: AlertTriangle,
-          active: false,
-          badge: 'M7',
-          action: () =>
-            onFeaturePreview({
-              title: 'Incident Review & Assignment',
-              milestone: 'Milestone 7',
-              icon: <AlertTriangle className="w-5 h-5 text-gold-500" />,
-              description:
-                'Full administrative triage, operational assignment to county departments, status mutation controls, internal case notes, and official public updates will be activated in Milestone 7.',
-              plannedCapabilities: [
-                'Triage queue for new citizen reports',
-                'Status progression controls (Under Review -> In Progress -> Resolved)',
-                'County department & liaison assignment',
-                'Internal staff investigation notes & referral records'
-              ]
-            })
+          active: location.pathname.startsWith('/admin/incidents'),
+          badge: null,
+          action: null
         },
         {
           name: 'Users',

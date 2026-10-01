@@ -333,6 +333,18 @@ export async function getCitizenReportDetail({ userId, reference }) {
     [reportId]
   );
 
+  // 4. Fetch published citizen updates (Milestone 7 integration)
+  const [updateRows] = await pool.query(
+    `SELECT
+      id,
+      message,
+      created_at
+    FROM report_updates
+    WHERE report_id = ?
+    ORDER BY created_at ASC, id ASC`,
+    [reportId]
+  );
+
   return {
     reference: reportRow.reference,
     title: reportRow.title,
@@ -367,6 +379,11 @@ export async function getCitizenReportDetail({ userId, reference }) {
       status: hist.status,
       note: hist.note,
       created_at: hist.created_at
+    })),
+    citizen_updates: updateRows.map((upd) => ({
+      id: upd.id,
+      message: upd.message,
+      created_at: upd.created_at
     }))
   };
 }

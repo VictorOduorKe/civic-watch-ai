@@ -359,3 +359,170 @@ Seeds three administrative test accounts for local development (password: `Passw
 | `analyst@civicwatch.ke` | `Analyst` | Read-only analytics |
 
 > **Note**: These accounts are for development only and should not be seeded in production without changing credentials.
+
+---
+
+## Migration 007 — Extend Status History with Actor Tracking
+
+File: `database/migrations/007_extend_report_status_history.sql`
+
+Extends the `report_status_history` table to record which authenticated administrator or moderator executed the status transition.
+
+```sql
+ALTER TABLE report_status_history
+  ADD COLUMN changed_by_user_id INT NULL AFTER note,
+  ADD CONSTRAINT fk_status_history_changed_by FOREIGN KEY (changed_by_user_id) REFERENCES users(id) ON DELETE SET NULL,
+  ADD INDEX idx_status_history_changed_by (changed_by_user_id);
+```
+
+| Column | Type | Constraints | Description |
+|---|---|---|---|
+| `changed_by_user_id` | `INT` | `NULL`, FK to `users(id)` | User who triggered the status change. Left `NULL` for citizen submissions or legacy records. |
+
+---
+
+## Migration 008 — Report Assignments Table
+
+File: `database/migrations/008_create_report_assignments.sql`
+
+Tracks internal case assignment to authorized staff (Admin and Moderator roles). Preserves complete reassignment history using `unassigned_at`.
+
+```sql
+CREATE TABLE IF NOT EXISTS report_assignments (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  report_id INT NOT NULL,
+  assigned_to_user_id INT NOT NULL,
+  assigned_by_user_id INT NOT NULL,
+  assignment_note TEXT NULL,
+  assigned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  unassigned_at TIMESTAMP NULL DEFAULT NULL,
+  CONSTRAINT fk_assignments_report FOREIGN KEY (report_id) REFERENCES reports(id) ON DELETE CASCADE,
+  CONSTRAINT fk_assignments_assigned_to FOREIGN KEY (assigned_to_user_id) REFERENCES users(id) ON DELETE RESTRICT,
+  CONSTRAINT fk_assignments_assigned_by FOREIGN KEY (assigned_by_user_id) REFERENCES users(id) ON DELETE RESTRICT,
+  INDEX idx_assignments_report (report_id),
+  INDEX idx_assignments_assigned_to (assigned_to_user_id),
+  INDEX idx_assignments_active (report_id, unassigned_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+```
+
+#### Field Descriptions
+
+| Column | Type | Constraints | Description |
+|---|---|---|---|
+| `id` | `INT` | `AUTO_INCREMENT`, `PRIMARY KEY` | Assignment record ID |
+| `report_id` | `INT` | `NOT NULL`, FK to `reports(id)` | Parent report ID |
+| `assigned_to_user_id` | `INT` | `NOT NULL`, FK to `users(id)` | Staff member receiving case assignment (Admin/Moderator only) |
+| `assigned_by_user_id` | `INT` | `NOT NULL`, FK to `users(id)` | Staff member authorizing assignment (from JWT cookie) |
+| `assignment_note` | `TEXT` | `NULL` | Internal assignment instructions or jurisdiction context |
+| `assigned_at` | `TIMESTAMP` | Default `CURRENT_TIMESTAMP` | Assignment timestamp |
+| `unassigned_at` | `TIMESTAMP` | `NULL`, Default `NULL` | Set when reassigned or unassigned; `NULL` indicates currently active assignment |
+
+---
+
+## Migration 009 — Internal Notes Table
+
+File: `database/migrations/009_create_report_internal_notes.sql`
+
+Stores staff-only operational investigation notes. These records are strictly restricted to administrative users and are **never** returned through citizen-facing APIs.
+
+```sql
+CREATE TABLE IF NOT EXISTS report_internal_notes (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  report_id INT NOT NULL,
+  author_user_id INT NOT NULL,
+  note TEXT NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  CONSTRAINT fk_internal_notes_report FOREIGN KEY (report_id) REFERENCES reports(id) ON DELETE CASCADE,
+  CONSTRAINT fk_internal_notes_author FOREIGN KEY (author_user_id) REFERENCES users(id) ON DELETE RESTRICT,
+  INDEX idx_internal_notes_report (report_id, created_at),
+  INDEX idx_internal_notes_author (author_user_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+```
+
+#### Field Descriptions
+
+| Column | Type | Constraints | Description |
+|---|---|---|---|
+| `id` | `INT` | `AUTO_INCREMENT`, `PRIMARY KEY` | Internal note ID |
+| `report_id` | `INT` | `NOT NULL`, FK to `reports(id)` | Parent report ID |
+| `author_user_id` | `INT` | `NOT NULL`, FK to `users(id)` | Authenticated staff member who authored the note |
+| `note` | `TEXT` | `NOT NULL` | Plain-text operational note |
+| `created_at` | `TIMESTAMP` | Default `CURRENT_TIMESTAMP` | Creation timestamp |
+| `updated_at` | `TIMESTAMP` | Default `CURRENT_TIMESTAMP` ON UPDATE | Last update timestamp |
+
+---
+
+## Migration 010 — Citizen Updates Table
+
+File: `database/migrations/010_create_report_updates.sql`
+
+Stores public status notices intentionally published by staff to the reporting citizen. Kept strictly distinct from internal notes to prevent accidental data leakage.
+
+```sql
+CREATE TABLE IF NOT EXISTS report_updates (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  report_id INT NOT NULL,
+  author_user_id INT NOT NULL,
+  message TEXT NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  CONSTRAINT fk_updates_report FOREIGN KEY (report_id) REFERENCES reports(id) ON DELETE CASCADE,
+  CONSTRAINT fk_updates_author FOREIGN KEY (author_user_id) REFERENCES users(id) ON DELETE RESTRICT,
+  INDEX idx_updates_report (report_id, created_at),
+  INDEX idx_updates_author (author_user_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+```
+
+#### Field Descriptions
+
+| Column | Type | Constraints | Description |
+|---|---|---|---|
+| `id` | `INT` | `AUTO_INCREMENT`, `PRIMARY KEY` | Citizen update notice ID |
+| `report_id` | `INT` | `NOT NULL`, FK to `reports(id)` | Parent report ID |
+| `author_user_id` | `INT` | `NOT NULL`, FK to `users(id)` | Authenticated staff member who published the notice |
+| `message` | `TEXT` | `NOT NULL` | Citizen-visible announcement text |
+| `created_at` | `TIMESTAMP` | Default `CURRENT_TIMESTAMP` | Notice publication timestamp |
+| `updated_at` | `TIMESTAMP` | Default `CURRENT_TIMESTAMP` ON UPDATE | Last update timestamp |
+
+---
+
+## Migration 011 — Report Referrals Table
+
+File: `database/migrations/011_create_report_referrals.sql`
+
+Tracks formal external referrals to oversight agencies, civil society, emergency services, or public authorities.
+
+```sql
+CREATE TABLE IF NOT EXISTS report_referrals (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  report_id INT NOT NULL,
+  referral_type VARCHAR(100) NOT NULL,
+  organization_name VARCHAR(255) NOT NULL,
+  reason TEXT NOT NULL,
+  status ENUM('Pending', 'Sent', 'Accepted', 'Declined', 'Completed', 'Cancelled') NOT NULL DEFAULT 'Pending',
+  referred_by_user_id INT NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  CONSTRAINT fk_referrals_report FOREIGN KEY (report_id) REFERENCES reports(id) ON DELETE CASCADE,
+  CONSTRAINT fk_referrals_referred_by FOREIGN KEY (referred_by_user_id) REFERENCES users(id) ON DELETE RESTRICT,
+  INDEX idx_referrals_report (report_id, created_at),
+  INDEX idx_referrals_status (status),
+  INDEX idx_referrals_referred_by (referred_by_user_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+```
+
+#### Field Descriptions
+
+| Column | Type | Constraints | Description |
+|---|---|---|---|
+| `id` | `INT` | `AUTO_INCREMENT`, `PRIMARY KEY` | Referral record ID |
+| `report_id` | `INT` | `NOT NULL`, FK to `reports(id)` | Parent report ID |
+| `referral_type` | `VARCHAR(100)` | `NOT NULL` | Routing category (e.g. `Public Service Authority`, `Human Rights Organization`) |
+| `organization_name` | `VARCHAR(255)` | `NOT NULL` | Designated agency / partner organization |
+| `reason` | `TEXT` | `NOT NULL` | Neutral, factual basis for referral routing |
+| `status` | `ENUM` | `NOT NULL`, Default `'Pending'` | Referral workflow state: `Pending`, `Sent`, `Accepted`, `Declined`, `Completed`, `Cancelled` |
+| `referred_by_user_id` | `INT` | `NOT NULL`, FK to `users(id)` | Authenticated staff member who initiated referral |
+| `created_at` | `TIMESTAMP` | Default `CURRENT_TIMESTAMP` | Referral creation timestamp |
+| `updated_at` | `TIMESTAMP` | Default `CURRENT_TIMESTAMP` ON UPDATE | Last update timestamp |
+

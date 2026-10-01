@@ -5,6 +5,8 @@ import ProtectedRoute from './components/ProtectedRoute';
 import AdminRoute from './components/AdminRoute';
 import AdminLayout from './layouts/AdminLayout';
 import AdminDashboardPage from './pages/admin/AdminDashboardPage';
+import IncidentListPage from './pages/admin/IncidentListPage';
+import IncidentDetailPage from './pages/admin/IncidentDetailPage';
 import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
@@ -69,7 +71,7 @@ export default function App() {
             }
           />
 
-          {/* OCL Admin Workspace (Milestone 6) — restricted to Admin, Moderator, Analyst */}
+          {/* OCL Admin Workspace (Milestone 6 & 7) — restricted to Admin, Moderator, Analyst */}
           <Route
             path="/admin"
             element={
@@ -79,6 +81,8 @@ export default function App() {
             }
           >
             <Route index element={<AdminDashboardPage />} />
+            <Route path="incidents" element={<IncidentListPage />} />
+            <Route path="incidents/:reference" element={<IncidentDetailPage />} />
           </Route>
 
           {/* Fallback */}

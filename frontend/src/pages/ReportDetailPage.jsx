@@ -323,6 +323,42 @@ export default function ReportDetailPage() {
 
               {/* Right Column: Status Progress Timeline & Verification Info */}
               <div className="lg:col-span-5 space-y-6">
+                {/* Section: Official Operational Updates (Milestone 7 Integration) */}
+                {report.citizen_updates && report.citizen_updates.length > 0 && (
+                  <div className="bg-white border border-gold-300 rounded-xl p-5 sm:p-6 shadow-xs space-y-4">
+                    <div className="flex items-center gap-2">
+                      <div className="w-6 h-6 rounded-md bg-gold-100 text-gold-700 flex items-center justify-center">
+                        <Share2 className="w-3.5 h-3.5 text-gold-600" />
+                      </div>
+                      <div>
+                        <h2 className="text-sm font-bold text-navy-950 uppercase tracking-wider">
+                          Official Case Notices ({report.citizen_updates.length})
+                        </h2>
+                        <p className="text-[11px] text-stone-500">
+                          Direct updates published by the oversight team.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="space-y-3">
+                      {report.citizen_updates.map((update) => (
+                        <div
+                          key={update.id}
+                          className="p-3.5 bg-gold-50/30 border border-gold-200/80 rounded-lg text-xs space-y-1.5"
+                        >
+                          <div className="flex items-center justify-between text-[11px] text-stone-400">
+                            <span className="font-bold text-navy-950">OCL Operational Desk</span>
+                            <span>{formatDateTime(update.created_at)}</span>
+                          </div>
+                          <p className="text-stone-800 whitespace-pre-wrap leading-relaxed">
+                            {update.message}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 {/* Section: Status Progression Timeline */}
                 <div className="bg-white border border-stone-200 rounded-xl p-5 sm:p-6 shadow-xs space-y-4">
                   <div>

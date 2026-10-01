@@ -160,6 +160,71 @@ export const adminApi = {
 };
 
 /**
+ * Administrative Incident Management API methods (Milestone 7).
+ */
+export const adminIncidentApi = {
+  async listIncidents(params = {}) {
+    const response = await apiClient.get('/admin/incidents', { params });
+    return response.data;
+  },
+  async getAssignees() {
+    const response = await apiClient.get('/admin/incidents/assignees');
+    return response.data;
+  },
+  async getIncidentDetail(reference) {
+    const response = await apiClient.get(`/admin/incidents/${encodeURIComponent(reference)}`);
+    return response.data;
+  },
+  async updateStatus(reference, data) {
+    const response = await apiClient.patch(`/admin/incidents/${encodeURIComponent(reference)}/status`, data);
+    return response.data;
+  },
+  async assignIncident(reference, data) {
+    const response = await apiClient.post(`/admin/incidents/${encodeURIComponent(reference)}/assign`, data);
+    return response.data;
+  },
+  async unassignIncident(reference, data = {}) {
+    const response = await apiClient.post(`/admin/incidents/${encodeURIComponent(reference)}/unassign`, data);
+    return response.data;
+  },
+  async addInternalNote(reference, data) {
+    const response = await apiClient.post(`/admin/incidents/${encodeURIComponent(reference)}/internal-notes`, data);
+    return response.data;
+  },
+  async addCitizenUpdate(reference, data) {
+    const response = await apiClient.post(`/admin/incidents/${encodeURIComponent(reference)}/updates`, data);
+    return response.data;
+  },
+  async createReferral(reference, data) {
+    const response = await apiClient.post(`/admin/incidents/${encodeURIComponent(reference)}/referrals`, data);
+    return response.data;
+  },
+  async updateReferralStatus(reference, referralId, data) {
+    const response = await apiClient.patch(
+      `/admin/incidents/${encodeURIComponent(reference)}/referrals/${encodeURIComponent(referralId)}`,
+      data
+    );
+    return response.data;
+  },
+  async downloadAttachment(reference, attachmentId, filename) {
+    const response = await apiClient.get(
+      `/admin/incidents/${encodeURIComponent(reference)}/attachments/${encodeURIComponent(attachmentId)}`,
+      { responseType: 'blob' }
+    );
+    const contentType = response.headers['content-type'] || 'application/octet-stream';
+    const blob = new Blob([response.data], { type: contentType });
+    const downloadUrl = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = downloadUrl;
+    link.download = filename || 'attachment';
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(downloadUrl);
+  }
+};
+
+/**
  * Health check API service.
  * Fetches status from GET /api/health
  */

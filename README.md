@@ -4,9 +4,10 @@ CivicWatch AI Kenya is an AI-powered civic engagement and public accountability 
 
 ---
 
-## Current Milestone: Milestone 6 — OCL Admin Dashboard (Completed)
+## Current Milestone: Milestone 7 — Incident Management (Completed)
 
-This repository contains the completed public presentation layer, database foundation, hardened authentication system, citizen workspace, authenticated incident reporting workflow, report tracking module, and the OCL Administrative Dashboard for CivicWatch AI Kenya:
+This repository contains the completed public presentation layer, database foundation, hardened authentication system, citizen workspace, authenticated incident reporting workflow, report tracking module, OCL Administrative Dashboard, and full Administrative Incident Management workspace for CivicWatch AI Kenya:
+* **OCL Administrative Incident Management (M7)**: Controlled operational workspace at `/admin/incidents` and `/admin/incidents/:reference` for `Admin`, `Moderator`, and `Analyst` roles (citizens strictly prohibited). Includes: debounced full-text and code search; multi-filter criteria (status, category, county, assignment state, date range); tabular and mobile card views; pagination; complete incident dossier inspection; staff case assignment and reassignment preserving history with `unassigned_at`; operational status mutation with transaction rollback safety and transition validation; private internal staff notes; official citizen-visible case notices (`report_updates`) integrated directly into citizen tracking (M5); formal external agency referrals (KeNHA, EACC, KNCHR, NPS, etc.); whistleblowing anonymity protections; emergency 999/112 protocol warnings; and secure administrative attachment delivery.
 * **OCL Admin Dashboard (M6)**: Role-restricted administrative workspace at `/admin` for `Admin`, `Moderator`, and `Analyst` roles. Citizen accounts receive a 403 Forbidden screen. Features a dedicated AdminLayout with sidebar navigation, sticky header, and milestone roadmap preview modals. Real-time database aggregation dashboard with: date range selector (7d / 30d / 90d / year / all), 4 Recharts visualizations (AreaChart trends, status BarChart, category BarChart, horizontal county BarChart), 4 stat cards (total reports, active, resolved, users), and a user account role breakdown table.
 * **Citizen Report Tracking (M5)**: Authenticated citizen tracking at `/reports`, paginated report listing, dynamic debounced search, status filtering, category filtering, responsive table and card layouts, detailed dossier view at `/reports/:reference`, copyable reference code with clipboard confirmation, plain-text stored XSS protection, OCL-branded status badges, authentic chronological status progression timeline (`report_status_history`), secure authorized attachment downloads, and strict server-side tenant ownership isolation.
 * **Authentication Security Hardening**: Completely eliminated client-side token storage in `localStorage` and `sessionStorage`. Migrated to HttpOnly, SameSite secure cookies (`civicwatch_auth`), implemented two-layer CSRF protection (Origin verification + Double-Submit Cookie `XSRF-TOKEN`), zero credential exposure in login/registration JSON responses, and centralized credentialed Axios client.
@@ -156,6 +157,8 @@ npm run dev:frontend
 * **Citizen Incident Report (M4)**: `http://localhost:5173/reports/new` (Protected)
 * **Citizen Profile (M3)**: `http://localhost:5173/profile` (Protected)
 * **OCL Admin Dashboard (M6)**: `http://localhost:5173/admin` (Admin / Moderator / Analyst only)
+* **OCL Incident Management List (M7)**: `http://localhost:5173/admin/incidents` (Admin / Moderator / Analyst only)
+* **OCL Incident Management Dossier (M7)**: `http://localhost:5173/admin/incidents/:reference` (Admin / Moderator / Analyst only)
 * **System Status Page**: `http://localhost:5173/status`
 
 ### Key API Endpoints
@@ -171,11 +174,23 @@ npm run dev:frontend
   * `POST /api/reports` — Submit new incident report (atomic transaction with initial status history)
   * `GET /api/reports/my` — List paginated reports submitted by authenticated user (search, filter, sort)
   * `GET /api/reports/my/summary` — Retrieve status breakdown counts for citizen reports
-  * `GET /api/reports/my/:reference` — Inspect citizen-safe report details, attachments, and status timeline
+  * `GET /api/reports/my/:reference` — Inspect citizen-safe report details, attachments, published citizen updates, and status timeline
   * `GET /api/reports/my/:reference/attachments/:attachmentId` — Securely download authorized attachment
   * `GET /api/reports/stats/me` — Retrieve current citizen report count stats for dashboard
 * **Admin Dashboard (M6 — Admin / Moderator / Analyst only)**:
   * `GET /api/admin/dashboard/summary` — Aggregate report counts by status, category, county, trend, and user breakdown (accepts `?range=7d|30d|90d|year|all`)
+* **Admin Incident Management (M7 — Admin / Moderator / Analyst; mutations restricted to Admin / Moderator)**:
+  * `GET /api/admin/incidents` — Paginated, searchable, filtered incident queue
+  * `GET /api/admin/incidents/assignees` — Eligible staff members for assignment
+  * `GET /api/admin/incidents/:reference` — Complete operational incident dossier
+  * `GET /api/admin/incidents/:reference/attachments/:attachmentId` — Authorized administrative attachment download
+  * `PATCH /api/admin/incidents/:reference/status` — Transactional status update with validation rules
+  * `POST /api/admin/incidents/:reference/assign` — Case assignment / reassignment
+  * `POST /api/admin/incidents/:reference/unassign` — Case unassignment preserving history
+  * `POST /api/admin/incidents/:reference/internal-notes` — Staff-only investigation notes
+  * `POST /api/admin/incidents/:reference/updates` — Publish citizen-visible case update
+  * `POST /api/admin/incidents/:reference/referrals` — Create referral to external organization
+  * `PATCH /api/admin/incidents/:reference/referrals/:referralId` — Update external referral status
 
 ---
 
@@ -189,7 +204,7 @@ npm run dev:frontend
 
 ## Next Milestone
 
-* **Milestone 7**: Incident Review, Assignment & Status Mutation Workflows
+* **Milestone 8**: Notification Infrastructure & Citizen Alerts
 
 ### Admin Test Accounts (Seeded — M6)
 

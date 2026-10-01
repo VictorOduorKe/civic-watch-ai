@@ -404,3 +404,71 @@ The `?range` query parameter is validated against an allowlist before being mapp
 | `90d` | `created_at >= DATE_SUB(NOW(), INTERVAL 90 DAY)` |
 | `year` | `created_at >= DATE_SUB(NOW(), INTERVAL 1 YEAR)` |
 | `all` | No date filter applied |
+
+---
+
+## Section 10 — Milestone 7: Administrative Incident Management
+
+### Overview
+
+Milestone 7 transforms the OCL Administrative Workspace from an aggregate overview into a controlled operational incident triage and resolution platform. It introduces role-restricted incident inspection, assignment, status mutation workflows, internal case notes, published citizen updates, and agency referrals.
+
+### Incident Management Architectural Topology
+
+```text
+                                 [ Citizen User ]
+                                        │
+                         M5 Tracking API (/api/reports/my)
+                         - Status Progression Timeline
+                         - Official Case Notices (report_updates)
+                         - NO Internal Notes or Referrals
+                                        ▲
+                                        │ (Database Separation)
+                                        ▼
+[ Admin / Moderator / Analyst ] ────────┴──────── [ Database Tables ]
+       │                                          ├── reports
+       ▼                                          ├── report_status_history
+/admin/incidents                                  ├── report_assignments
+  ├── Search, Multi-Filter, Pagination            ├── report_internal_notes
+/admin/incidents/:reference                       ├── report_updates
+  ├── Status Mutation Controller (Admin/Mod)      └── report_referrals
+  ├── Assignment & Reassignment (Admin/Mod)
+  ├── Internal Notes Desk (Staff Only)
+  ├── Official Citizen Notice Publisher
+  └── External Organization Referrals
+```
+
+### RBAC Permission Matrix
+
+| Capability | Admin | Moderator | Analyst | Citizen |
+|---|---|---|---|---|
+| View Incident List | Yes | Yes | Yes | No (Own via M5) |
+| Filter & Search Incidents | Yes | Yes | Yes | No (Own via M5) |
+| View Incident Detail | Yes | Yes | Yes | No (Own via M5) |
+| Download Attachments | Yes | Yes | Yes | Own only |
+| Mutate Status | Yes | Yes | No (403) | No (403) |
+| Assign / Reassign Staff | Yes | Yes | No (403) | No (403) |
+| Add Internal Notes | Yes | Yes | No (403) | No (403) |
+| Publish Citizen Updates | Yes | Yes | No (403) | No (403) |
+| Create / Update Referrals | Yes | Yes | No (403) | No (403) |
+| View Internal Notes | Yes | Yes | Controlled | Never |
+| View Referral Records | Yes | Yes | Controlled | Never |
+
+### Transactional Integrity & Workflow Safeguards
+
+1. **Atomic Status Mutation**:
+   - Status updates are executed within database transactions (`BEGIN ... COMMIT / ROLLBACK`).
+   - `reports.status` and `report_status_history` are updated together.
+   - If `publish_citizen_update` is requested, the citizen notice is inserted in the exact same transaction.
+   - State jumping is rejected via the transition validation matrix.
+
+2. **Assignment & Historical Integrity**:
+   - Reassigning an incident sets `unassigned_at = CURRENT_TIMESTAMP` on the active record and creates a new row. Historical assignments are never overwritten or deleted.
+   - Assignees are strictly validated against active users possessing `Admin` or `Moderator` roles. Citizen accounts are rejected with `422 Unprocessable Entity`.
+   - The assigning actor (`assigned_by_user_id`) is strictly extracted from the authenticated session, never trusted from client request parameters.
+
+3. **Privacy Invariant & Separation of Concerns**:
+   - Internal notes (`report_internal_notes`) and citizen updates (`report_updates`) reside in separate database tables.
+   - Citizen APIs (`/api/reports/my/:reference`) explicitly join `report_updates` but strictly avoid joining `report_internal_notes` or `report_referrals`.
+   - Anonymous submissions (`is_anonymous = true`) conceal reporter contact information across both the API and UI to safeguard civic whistleblowers.
+

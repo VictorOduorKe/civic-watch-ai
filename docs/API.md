@@ -745,3 +745,283 @@ Returns aggregated civic incident and user statistics for the OCL Administrative
 * Returns `403` for `Citizen` role accounts.
 * `range` is validated with a strict Zod allowlist before use in SQL.
 * All date arithmetic uses parameterized MySQL `DATE_SUB` — no string interpolation.
+
+---
+
+## Admin Incident Management API (Milestone 7)
+
+All incident management endpoints require authentication via the secure HttpOnly cookie (`civicwatch_auth`).
+* **Read Access** (`GET`): Permitted for `Admin`, `Moderator`, and `Analyst` roles.
+* **Mutation Access** (`POST`, `PATCH`): Restricted to `Admin` and `Moderator` roles only. `Analyst` and `Citizen` roles receive `403 Forbidden`.
+* **Citizen Boundary**: Citizens are strictly blocked from all `/api/admin/incidents` routes.
+
+---
+
+### `GET /api/admin/incidents`
+
+Lists reports with debounced search, filtering, sorting, and pagination.
+
+#### Query Parameters
+
+| Parameter | Type | Required | Description |
+|---|---|---|---|
+| `page` | `integer` | No | Page number (default: 1) |
+| `limit` | `integer` | No | Items per page (default: 20, max: 50) |
+| `status` | `string` | No | Filter by report status |
+| `category_id` | `integer` | No | Filter by category ID |
+| `county` | `string` | No | Filter by Kenyan county |
+| `search` | `string` | No | Search across reference code, title, and description |
+| `assigned` | `string` | No | `all`, `assigned`, or `unassigned` |
+| `date_from` | `string` | No | ISO date (`YYYY-MM-DD`) |
+| `date_to` | `string` | No | ISO date (`YYYY-MM-DD`) |
+| `sort` | `string` | No | `updated_at`, `created_at`, `incident_date`, `status`, `title` |
+| `order` | `string` | No | `ASC` or `DESC` (default: `DESC`) |
+
+#### Success Response (`200 OK`)
+
+```json
+{
+  "success": true,
+  "incidents": [
+    {
+      "reference": "CWK-2026-000001",
+      "title": "Damaged culvert near trading center",
+      "category": { "id": 1, "name": "Road & Infrastructure" },
+      "county": "Mombasa",
+      "sub_county": "Nyali",
+      "ward": "Frere Town",
+      "status": "Under Review",
+      "is_anonymous": false,
+      "attachment_count": 2,
+      "incident_date": "2026-09-30T10:00:00.000Z",
+      "created_at": "2026-10-01T08:15:00.000Z",
+      "updated_at": "2026-10-01T09:20:00.000Z",
+      "assigned_to": {
+        "id": 2,
+        "name": "Civic Oversight Moderator",
+        "role": "Moderator",
+        "assigned_at": "2026-10-01T09:20:00.000Z"
+      }
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "limit": 20,
+    "total": 1,
+    "totalPages": 1
+  }
+}
+```
+
+---
+
+### `GET /api/admin/incidents/assignees`
+
+Returns active staff members eligible to receive case assignments (`Admin` and `Moderator` roles only).
+
+#### Success Response (`200 OK`)
+
+```json
+{
+  "success": true,
+  "assignees": [
+    {
+      "id": 1,
+      "full_name": "System Administrator",
+      "email": "admin@civicwatch.ke",
+      "role": "Admin",
+      "county": "Nairobi"
+    },
+    {
+      "id": 2,
+      "full_name": "Civic Oversight Moderator",
+      "email": "moderator@civicwatch.ke",
+      "role": "Moderator",
+      "county": "Nairobi"
+    }
+  ]
+}
+```
+
+---
+
+### `GET /api/admin/incidents/:reference`
+
+Retrieves complete incident dossier for administrative review, including current assignment, internal notes, published citizen updates, referrals, attachments, and complete status timeline.
+
+#### Success Response (`200 OK`)
+
+```json
+{
+  "success": true,
+  "incident": {
+    "reference": "CWK-2026-000001",
+    "title": "Damaged culvert near trading center",
+    "description": "Culvert collapse causing water stagnation and road hazard.",
+    "status": "Under Review",
+    "is_anonymous": false,
+    "incident_date": "2026-09-30T10:00:00.000Z",
+    "created_at": "2026-10-01T08:15:00.000Z",
+    "updated_at": "2026-10-01T09:20:00.000Z",
+    "location": {
+      "county": "Mombasa",
+      "sub_county": "Nyali",
+      "ward": "Frere Town",
+      "landmark": "Near Main Market",
+      "latitude": -4.0435,
+      "longitude": 39.6682
+    },
+    "category": {
+      "id": 1,
+      "name": "Road & Infrastructure"
+    },
+    "reporter": {
+      "id": 4,
+      "name": "Victor Citizen",
+      "email": "citizen@example.com",
+      "phone": "+254712345678"
+    },
+    "current_assignment": {
+      "id": 1,
+      "assigned_to_user_id": 2,
+      "assigned_to_name": "Civic Oversight Moderator",
+      "assigned_to_email": "moderator@civicwatch.ke",
+      "assigned_to_role": "Moderator",
+      "assigned_by_user_id": 1,
+      "assigned_by_name": "System Administrator",
+      "assignment_note": "Please review highway authority jurisdiction.",
+      "assigned_at": "2026-10-01T09:20:00.000Z"
+    },
+    "assignment_history": [],
+    "internal_notes": [],
+    "citizen_updates": [],
+    "referrals": [],
+    "status_history": [],
+    "attachments": []
+  }
+}
+```
+
+*Note: For anonymous submissions (`is_anonymous = true`), `reporter` contains only `{ is_anonymous: true }` unless the authenticated role possesses explicit user management privileges.*
+
+---
+
+### `PATCH /api/admin/incidents/:reference/status`
+
+Changes report status. Validates transition rules, records status history with actor tracking, and optionally publishes a citizen-visible notice within an atomic transaction.
+
+#### Request Body
+
+```json
+{
+  "status": "Under Review",
+  "note": "Case opened for operational triage and preliminary verification.",
+  "publish_citizen_update": true,
+  "citizen_message": "Your report has been received and is currently under review by our triage team."
+}
+```
+
+#### Transition Matrix
+
+* `Submitted` → `Under Review`, `Rejected`, `Dismissed`
+* `Under Review` → `Verified`, `Assigned`, `In Progress`, `Rejected`, `Dismissed`, `Submitted`
+* `Verified` → `Assigned`, `In Progress`, `Under Review`, `Rejected`, `Dismissed`
+* `Assigned` → `In Progress`, `Under Review`, `Verified`, `Rejected`, `Dismissed`
+* `In Progress` → `Resolved`, `Under Review`, `Assigned`, `Rejected`, `Dismissed`
+* `Resolved` → `Closed`, `In Progress`, `Under Review`
+* `Closed` → `Under Review` *(Controlled reopen)*
+* `Rejected` / `Dismissed` → `Under Review`, `Submitted`
+
+---
+
+### `POST /api/admin/incidents/:reference/assign`
+
+Assigns or reassigns the incident to an eligible staff member (`Admin` or `Moderator`). Automatically marks previous assignment with `unassigned_at` timestamp.
+
+#### Request Body
+
+```json
+{
+  "assigned_to_user_id": 2,
+  "assignment_note": "Assigned to regional moderator for county liaison."
+}
+```
+
+---
+
+### `POST /api/admin/incidents/:reference/unassign`
+
+Removes the active assignment without deleting historical records (`unassigned_at` set to current timestamp).
+
+#### Request Body
+
+```json
+{
+  "reason": "Reallocating regional workload."
+}
+```
+
+---
+
+### `POST /api/admin/incidents/:reference/internal-notes`
+
+Appends a staff-only investigation note.
+
+#### Request Body
+
+```json
+{
+  "note": "Spoke with county engineer; site visit scheduled for tomorrow morning."
+}
+```
+
+---
+
+### `POST /api/admin/incidents/:reference/updates`
+
+Publishes a formal operational notice to the citizen who submitted the report.
+
+#### Request Body
+
+```json
+{
+  "message": "County engineers have been dispatched to inspect the reported culvert."
+}
+```
+
+---
+
+### `POST /api/admin/incidents/:reference/referrals`
+
+Creates a formal external referral record.
+
+#### Request Body
+
+```json
+{
+  "referral_type": "Public Service Authority",
+  "organization_name": "Kenya National Highways Authority (KeNHA)",
+  "reason": "Road maintenance on national highway corridor falls under KeNHA jurisdiction."
+}
+```
+
+---
+
+### `PATCH /api/admin/incidents/:reference/referrals/:referralId`
+
+Updates referral status (`Pending`, `Sent`, `Accepted`, `Declined`, `Completed`, `Cancelled`).
+
+#### Request Body
+
+```json
+{
+  "status": "Sent"
+}
+```
+
+---
+
+### `GET /api/admin/incidents/:reference/attachments/:attachmentId`
+
+Securely downloads an incident attachment after verifying administrative authorization.
+
