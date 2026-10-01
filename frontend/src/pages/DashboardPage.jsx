@@ -122,29 +122,29 @@ export default function DashboardPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <StatCard
                 title="Reports Submitted"
-                count={stats.submitted}
-                subtext={stats.submitted === 0 ? "No reports submitted yet" : `${stats.submitted} record(s) recorded in MySQL`}
+                count={stats.total !== undefined ? stats.total : stats.submitted}
+                subtext={(stats.total || stats.submitted) === 0 ? "No reports submitted yet" : `${stats.total || stats.submitted} record(s) recorded in MySQL`}
                 icon={FileText}
                 statusColor="stone"
               />
               <StatCard
                 title="Under Review"
                 count={stats.underReview}
-                subtext="Zero pending review"
+                subtext={stats.underReview === 0 ? "Zero pending review" : `${stats.underReview} pending review`}
                 icon={Clock}
                 statusColor="amber"
               />
               <StatCard
                 title="In Progress"
                 count={stats.inProgress}
-                subtext="Active investigations"
+                subtext={stats.inProgress === 0 ? "No active investigations" : `${stats.inProgress} in progress`}
                 icon={AlertCircle}
                 statusColor="blue"
               />
               <StatCard
                 title="Resolved"
                 count={stats.resolved}
-                subtext="Community issues resolved"
+                subtext={stats.resolved === 0 ? "Zero resolved cases" : `${stats.resolved} issue(s) resolved`}
                 icon={CheckCircle}
                 statusColor="green"
               />
@@ -174,23 +174,9 @@ export default function DashboardPage() {
               <QuickActionCard
                 title="View My Reports"
                 description="Track status progression, official responses, and resolution timelines for your submitted cases."
-                milestone="M5 Preview"
+                milestone="Active (M5)"
                 icon={FileText}
-                onClick={() =>
-                  onFeaturePreview({
-                    title: 'Report Tracking & Status Hub',
-                    milestone: 'Milestone 5',
-                    icon: <FileText className="w-5 h-5 text-gold-500" />,
-                    description:
-                      'Milestone 5 establishes the citizen tracking dashboard. Filter by status, inspect response logs from local leaders, and share public case updates.',
-                    plannedCapabilities: [
-                      'Chronological timeline of investigation steps',
-                      'Direct public official response logs',
-                      'Community validation upvotes and corroborations',
-                      'PDF export for ward barazas and community meetings'
-                    ]
-                  })
-                }
+                onClick={() => navigate('/reports')}
               />
 
               <QuickActionCard

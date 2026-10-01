@@ -98,20 +98,27 @@ export default function ReportSuccess({ reportResult, onReset }) {
       <div className="bg-stone-50 border border-stone-200 rounded-lg p-3.5 max-w-md mx-auto text-left space-y-1.5 mb-6 text-xs text-stone-600">
         <div className="flex items-center gap-1.5 font-bold text-neutral-900">
           <ShieldCheck className="w-4 h-4 text-navy-900" />
-          <span>Next Steps & Platform Integrity</span>
+          <span>Report Tracking & Platform Integrity</span>
         </div>
         <p className="text-[11px] leading-relaxed">
-          Your report will be reviewed and assigned during subsequent milestone workflows. Full report timeline tracking will be activated in <strong>Milestone 5</strong>. Please save your reference number for future inquiries.
+          Your report has been assigned reference code <strong>{reference}</strong>. You can follow its status progression, agency responses, and official timeline updates anytime under <strong>My Reports</strong>.
         </p>
       </div>
 
       {/* Actions */}
       <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
         <Link
-          to="/dashboard"
-          className="w-full sm:w-auto px-5 py-2.5 bg-navy-900 text-white text-xs font-semibold rounded-lg hover:bg-navy-950 border-b-2 border-gold-500 transition-colors shadow-xs"
+          to={`/reports/${reference}`}
+          className="w-full sm:w-auto px-5 py-2.5 bg-navy-900 text-white text-xs font-semibold rounded-lg hover:bg-navy-950 border-b-2 border-gold-500 transition-colors shadow-xs inline-flex items-center justify-center gap-1.5"
         >
-          Return to Dashboard
+          <FileText className="w-3.5 h-3.5 text-gold-400" />
+          <span>Track This Report</span>
+        </Link>
+        <Link
+          to="/reports"
+          className="w-full sm:w-auto px-5 py-2.5 bg-stone-100 border border-stone-300 text-navy-950 text-xs font-semibold rounded-lg hover:bg-stone-200 transition-colors inline-flex items-center justify-center"
+        >
+          View My Reports
         </Link>
         <button
           type="button"

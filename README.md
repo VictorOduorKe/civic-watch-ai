@@ -4,9 +4,10 @@ CivicWatch AI Kenya is an AI-powered civic engagement and public accountability 
 
 ---
 
-## Current Milestone: Authentication Security Hardening (Pre-Milestone 5)
+## Current Milestone: Milestone 5 — Report Tracking (Completed)
 
-This repository contains the completed public presentation layer, database foundation, hardened authentication system, citizen workspace, and authenticated incident reporting workflow for CivicWatch AI Kenya:
+This repository contains the completed public presentation layer, database foundation, hardened authentication system, citizen workspace, authenticated incident reporting workflow, and report tracking module for CivicWatch AI Kenya:
+* **Citizen Report Tracking (M5)**: Authenticated citizen tracking at `/reports`, paginated report listing, dynamic debounced search, status filtering, category filtering, responsive table and card layouts, detailed dossier view at `/reports/:reference`, copyable reference code with clipboard confirmation, plain-text stored XSS protection, OCL-branded status badges, authentic chronological status progression timeline (`report_status_history`), secure authorized attachment downloads, and strict server-side tenant ownership isolation.
 * **Authentication Security Hardening**: Completely eliminated client-side token storage in `localStorage` and `sessionStorage`. Migrated to HttpOnly, SameSite secure cookies (`civicwatch_auth`), implemented two-layer CSRF protection (Origin verification + Double-Submit Cookie `XSRF-TOKEN`), zero credential exposure in login/registration JSON responses, and centralized credentialed Axios client.
 * **Incident Reporting Module (M4)**: Authenticated intake flow at `/reports/new`, dynamic category loading from database (12 categories with icons and descriptions), location metadata (47 Kenyan counties, sub-county, ward, landmark, GPS auto-detection), incident date/time, optional file attachments (up to 5 files, 5MB each, JPG/PNG/WEBP/PDF), anonymous submission privacy toggle, preferred contact selection, emergency 999/112 advisory, atomic database transactions with rollback cleanup, and server-side reference generation (`CWK-YYYY-XXXXXX`).
 * **Citizen Dashboard & Workspace (M3)**: Authenticated dashboard at `/dashboard` and profile at `/profile`, responsive sidebar & mobile navigation drawer, real user identity welcome banner, live report counters from database, quick action workflow triggers, recent activity empty states, and educational guidance cards.
@@ -149,6 +150,8 @@ npm run dev:frontend
 * **Citizen Login Page**: `http://localhost:5173/login`
 * **Citizen Registration Page**: `http://localhost:5173/register`
 * **Citizen Workspace (M3)**: `http://localhost:5173/dashboard` (Protected)
+* **My Reports Tracking (M5)**: `http://localhost:5173/reports` (Protected)
+* **Report Detail & Timeline (M5)**: `http://localhost:5173/reports/:reference` (Protected)
 * **Citizen Incident Report (M4)**: `http://localhost:5173/reports/new` (Protected)
 * **Citizen Profile (M3)**: `http://localhost:5173/profile` (Protected)
 * **System Status Page**: `http://localhost:5173/status`
@@ -161,11 +164,14 @@ npm run dev:frontend
   * `GET /api/auth/me` — Retrieve active profile via HttpOnly cookie
   * `POST /api/auth/logout` — Clear auth and CSRF cookies
   * `GET /api/auth/csrf-token` — Retrieve Double-Submit CSRF cookie
-* **Incident Reports (M4)**:
+* **Incident Reports & Citizen Tracking (M4 & M5)**:
   * `GET /api/reports/categories` — Retrieve all active incident categories
-  * `POST /api/reports` — Submit new incident report (multipart/form-data with CSRF header)
-  * `GET /api/reports/stats/me` — Retrieve current citizen report count stats
-
+  * `POST /api/reports` — Submit new incident report (atomic transaction with initial status history)
+  * `GET /api/reports/my` — List paginated reports submitted by authenticated user (search, filter, sort)
+  * `GET /api/reports/my/summary` — Retrieve status breakdown counts for citizen reports
+  * `GET /api/reports/my/:reference` — Inspect citizen-safe report details, attachments, and status timeline
+  * `GET /api/reports/my/:reference/attachments/:attachmentId` — Securely download authorized attachment
+  * `GET /api/reports/stats/me` — Retrieve current citizen report count stats for dashboard
 
 ---
 
@@ -179,4 +185,4 @@ npm run dev:frontend
 
 ## Next Milestone
 
-* **Milestone 5**: Incident Tracking & Citizen Report Status (Reference Search, Timeline, Feedback)
+* **Milestone 6**: Official Administrative Review & Assignment Workflows

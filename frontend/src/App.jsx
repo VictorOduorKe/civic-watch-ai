@@ -8,6 +8,8 @@ import RegisterPage from './pages/RegisterPage';
 import DashboardPage from './pages/DashboardPage';
 import ProfilePage from './pages/ProfilePage';
 import NewReportPage from './pages/NewReportPage';
+import MyReportsPage from './pages/MyReportsPage';
+import ReportDetailPage from './pages/ReportDetailPage';
 import HealthStatusPage from './pages/HealthStatusPage';
 
 export default function App() {
@@ -22,7 +24,7 @@ export default function App() {
           <Route path="/status" element={<HealthStatusPage />} />
           <Route path="/health" element={<HealthStatusPage />} />
 
-          {/* Authenticated Citizen Workspace (Milestone 3 & 4) */}
+          {/* Authenticated Citizen Workspace (Milestones 3, 4, 5) */}
           <Route
             path="/dashboard"
             element={
@@ -40,10 +42,26 @@ export default function App() {
             }
           />
           <Route
+            path="/reports"
+            element={
+              <ProtectedRoute>
+                <MyReportsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path="/reports/new"
             element={
               <ProtectedRoute>
                 <NewReportPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/reports/:reference"
+            element={
+              <ProtectedRoute>
+                <ReportDetailPage />
               </ProtectedRoute>
             }
           />

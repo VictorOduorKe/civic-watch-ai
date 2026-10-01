@@ -102,3 +102,79 @@ export const createReportSchema = z.object({
     )
   })
 });
+
+const ALLOWED_STATUSES = [
+  'Submitted',
+  'Under Review',
+  'Verified',
+  'Assigned',
+  'In Progress',
+  'Resolved',
+  'Closed',
+  'Rejected',
+  'Dismissed'
+];
+
+/**
+ * Validator for citizen report listing with pagination, search, and filters.
+ */
+export const listMyReportsSchema = z.object({
+  query: z.object({
+    page: z.preprocess(
+      (val) => (val !== undefined && val !== null && val !== '' ? parseInt(String(val), 10) : 1),
+      z.number().int().min(1, 'Page must be at least 1').default(1)
+    ),
+    limit: z.preprocess(
+      (val) => (val !== undefined && val !== null && val !== '' ? parseInt(String(val), 10) : 10),
+      z.number().int().min(1, 'Limit must be at least 1').max(50, 'Limit must not exceed 50').default(10)
+    ),
+    status: z.preprocess(
+      (val) => (val ? String(val).trim() : undefined),
+      z.enum(ALLOWED_STATUSES).optional()
+    ).optional(),
+    category_id: z.preprocess(
+      (val) => (val !== undefined && val !== null && val !== '' ? parseInt(String(val), 10) : undefined),
+      z.number().int().positive().optional()
+    ),
+    search: z.preprocess(
+      (val) => (val ? String(val).trim() : undefined),
+      z.string().max(100, 'Search query must not exceed 100 characters').optional()
+    ),
+    sort: z.preprocess(
+      (val) => (val ? String(val).trim().toLowerCase() : 'updated_at'),
+      z.enum(['created_at', 'updated_at', 'incident_date']).default('updated_at')
+    ),
+    order: z.preprocess(
+      (val) => (val ? String(val).trim().toUpperCase() : 'DESC'),
+      z.enum(['ASC', 'DESC']).default('DESC')
+    )
+  })
+});
+
+/**
+ * Validator for report reference param.
+ */
+export const reportReferenceSchema = z.object({
+  params: z.object({
+    reference: z
+      .string({ required_error: 'Report reference is required' })
+      .trim()
+      .regex(/^CWK-\d{4}-\d{6}$/, 'Invalid report reference format (expected CWK-YYYY-XXXXXX)')
+  })
+});
+
+/**
+ * Validator for attachment download param.
+ */
+export const reportAttachmentParamSchema = z.object({
+  params: z.object({
+    reference: z
+      .string({ required_error: 'Report reference is required' })
+      .trim()
+      .regex(/^CWK-\d{4}-\d{6}$/, 'Invalid report reference format'),
+    attachmentId: z.preprocess(
+      (val) => (val !== undefined && val !== null && val !== '' ? parseInt(String(val), 10) : NaN),
+      z.number({ required_error: 'Attachment ID is required' }).int().positive('Invalid attachment ID')
+    )
+  })
+});

@@ -284,5 +284,60 @@ Milestone 4 introduces the authenticated citizen incident reporting workflow (`/
    - Report creation endpoint is shielded by a dedicated Express rate limiter: maximum 25 report submissions per 15 minutes per IP.
    - Input fields are strictly validated via Zod schemas (`reportValidators.js`) prior to processing.
 
+---
+
+## 8. Milestone 5: Citizen Report Tracking Architecture
+
+### Overview
+
+Milestone 5 introduces the Citizen Report Tracking Module, allowing authenticated citizens to view, search, filter, and inspect reports they have submitted, and to follow the official chronological status history of their cases.
+
+```
+Authenticated Citizen (HttpOnly Cookie)
+              │
+              ▼
+   Authentication Middleware (requireAuth)
+              │
+              ▼
+    req.user (Strict Server-Side ID)
+              │
+  ┌───────────┴───────────────────────────────┐
+  ▼                                           ▼
+GET /api/reports/my                  GET /api/reports/my/:reference
+(Scoped: WHERE user_id = req.user.id) (Scoped: WHERE user_id = req.user.id AND reference = :ref)
+  │                                           │
+  ▼                                           ▼
+Paginated Report List                Citizen-Safe Dossier View
+- Debounced Search (Ref, Title)      - Original Description (Plain Text Safe)
+- Status Filter (All, Submitted...)   - Location & Optional GPS Coordinates
+- Category Filter (Active List)      - Citizen-Visible History (visible_to_citizen = TRUE)
+- Real Database Summary Counts        - Secure Attachments (Download Token / Endpoint)
+```
+
+### Architectural Principles & Enforcement
+
+1. **Strict Ownership Authorization Rule**:
+   - The backend NEVER trusts a `user_id` supplied in request bodies, query parameters, or route paths.
+   - All queries are strictly scoped to `req.user.id` obtained from the verified HttpOnly JWT authentication cookie.
+   - If a citizen attempts to access a report reference belonging to another user, the backend returns a generic `404 Not Found` (`"Report not found"`). This prevents tenancy probing or confirming whether a reference exists under another user.
+
+2. **Authentic Chronological Status History (`report_status_history`)**:
+   - Reports do not rely on simulated or hardcoded future progression steps.
+   - Only authentic recorded events from `report_status_history` are rendered.
+   - Initial report creation atomically records the `'Submitted'` event with `note: 'Report submitted by citizen.'` and `visible_to_citizen: true`.
+   - Internal administrative notes and workflows will use `visible_to_citizen: false`, ensuring internal notes are filtered out at the SQL layer and never leaked over the wire.
+
+3. **Secure Attachment Delivery Chain**:
+   - Attachments are served only via the authorized endpoint:
+     `GET /api/reports/my/:reference/attachments/:attachmentId`.
+   - The backend validates the complete relational chain:
+     `req.user.id` owns `reports.id`, which matches `report_reference`, which owns `report_attachments.id`.
+   - Internal filesystem paths (`storage_path`) and internal disk filenames are never exposed to the client.
+
+4. **Information Leakage & Stored XSS Prevention**:
+   - Citizen descriptions and titles are rendered strictly as plain text on the frontend, never as `dangerouslySetInnerHTML`.
+   - SQL queries utilize parameterized statements for all filter, search, reference, and pagination parameters.
+   - Rate limiting is configured on `GET /api/reports/my/:reference` (120 requests / 15 min) to prevent automated reference enumeration.
+
 
 

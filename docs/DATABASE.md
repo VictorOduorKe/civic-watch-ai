@@ -278,4 +278,55 @@ CREATE TABLE IF NOT EXISTS report_attachments (
 | `storage_path` | `VARCHAR(500)` | `NOT NULL` | Relative storage path (`uploads/reports/...`) |
 | `created_at` | `TIMESTAMP` | Default `CURRENT_TIMESTAMP` | Attachment upload timestamp |
 
+---
+
+## Tables Established in Milestone 5
+
+### `report_status_history` Table
+
+Tracks the authentic chronological status progression and official lifecycle events for incident reports. Supports filtering citizen-visible entries from future administrative internal notes.
+
+#### Schema
+
+```sql
+CREATE TABLE IF NOT EXISTS report_status_history (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  report_id INT NOT NULL,
+  status ENUM(
+    'Submitted',
+    'Under Review',
+    'Verified',
+    'Assigned',
+    'In Progress',
+    'Resolved',
+    'Closed',
+    'Rejected',
+    'Dismissed'
+  ) NOT NULL,
+  note TEXT NULL,
+  visible_to_citizen BOOLEAN NOT NULL DEFAULT TRUE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_status_history_report_created (report_id, created_at),
+  CONSTRAINT fk_status_history_report FOREIGN KEY (report_id) REFERENCES reports(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+```
+
+#### Field Descriptions
+
+| Column | Type | Constraints | Description |
+|---|---|---|---|
+| `id` | `INT` | `AUTO_INCREMENT`, `PRIMARY KEY` | Event history ID |
+| `report_id` | `INT` | `NOT NULL`, FK to `reports(id)` | Parent report ID (cascades on delete) |
+| `status` | `ENUM` | `NOT NULL` | Lifecycle state: `Submitted`, `Under Review`, `Verified`, `Assigned`, `In Progress`, `Resolved`, `Closed`, `Rejected`, `Dismissed` |
+| `note` | `TEXT` | `NULL` | Contextual note explaining status change (e.g. `"Report submitted by citizen."`) |
+| `visible_to_citizen` | `BOOLEAN` | `NOT NULL`, Default `TRUE` | When `TRUE`, returned in citizen API `/reports/my/:reference`; when `FALSE`, strictly excluded |
+| `created_at` | `TIMESTAMP` | Default `CURRENT_TIMESTAMP` | Event timestamp |
+
+#### Status Lifecycle Consistency
+
+Migration 004 upgraded the `reports.status` column to consistently support:
+`'Submitted'`, `'Under Review'`, `'Verified'`, `'Assigned'`, `'In Progress'`, `'Resolved'`, `'Closed'`, `'Rejected'`, `'Dismissed'`.
+
+Every newly submitted report automatically creates an initial `report_status_history` entry with status `'Submitted'`, note `'Report submitted by citizen.'`, and `visible_to_citizen = TRUE` inside an atomic transaction.
+
 

@@ -34,24 +34,10 @@ export default function DashboardSidebar({
     },
     {
       name: 'My Reports',
-      path: null,
+      path: '/reports',
       icon: FileText,
-      active: false,
-      badge: 'M5',
-      action: () =>
-        onFeaturePreview({
-          title: 'My Reports & Tracking',
-          milestone: 'Milestone 5',
-          icon: <FileText className="w-5 h-5 text-gold-500" />,
-          description:
-            'A centralized incident tracking center where you can follow public response timelines, official agency correspondence, and citizen verification statuses.',
-          plannedCapabilities: [
-            'Real-time status updates (Under Review, Investigating, Resolved)',
-            'Agency correspondence and official action notices',
-            'Interactive incident map and community verification upvotes',
-            'Exportable PDF case dossiers for community advocacy'
-          ]
-        })
+      active: location.pathname.startsWith('/reports') && location.pathname !== '/reports/new',
+      action: null
     },
     {
       name: 'Report an Issue',

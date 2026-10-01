@@ -472,9 +472,196 @@ Retrieves real report counts submitted by the authenticated citizen.
     "submitted": 2,
     "underReview": 0,
     "inProgress": 0,
-    "resolved": 0
+    "resolved": 0,
+    "total": 2
   }
 }
 ```
+
+---
+
+### `GET /api/reports/my`
+
+Retrieves paginated incident reports submitted by the authenticated citizen with search, status filtering, category filtering, and sorting.
+
+#### Request
+
+* **Method**: `GET`
+* **URL**: `/api/reports/my`
+* **Authentication**: Cookie (`civicwatch_auth`) or Bearer token (`requireAuth`)
+* **Query Parameters**:
+  * `page` (optional integer, min: 1, default: 1)
+  * `limit` (optional integer, min: 1, max: 50, default: 10)
+  * `status` (optional string, e.g. `'Submitted'`, `'Under Review'`, `'In Progress'`, `'Resolved'`)
+  * `category_id` (optional integer)
+  * `search` (optional string, max 100 chars, searches reference, title, description)
+  * `sort` (optional string whitelist: `'created_at'`, `'updated_at'`, `'incident_date'`, default: `'updated_at'`)
+  * `order` (optional string whitelist: `'ASC'`, `'DESC'`, default: `'DESC'`)
+
+#### Success Response
+
+* **HTTP Status**: `200 OK`
+* **Content-Type**: `application/json`
+
+```json
+{
+  "success": true,
+  "reports": [
+    {
+      "reference": "CWK-2026-000001",
+      "title": "Major Pothole along Argwings Kodhek Road",
+      "category": {
+        "id": 1,
+        "name": "Infrastructure"
+      },
+      "county": "Nairobi",
+      "sub_county": "Kilimani",
+      "ward": "Kilimani",
+      "status": "Submitted",
+      "is_anonymous": false,
+      "attachment_count": 1,
+      "incident_date": "2026-10-01",
+      "created_at": "2026-10-01T12:30:42.000Z",
+      "updated_at": "2026-10-01T12:30:42.000Z"
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "limit": 10,
+    "total": 1,
+    "totalPages": 1
+  }
+}
+```
+
+---
+
+### `GET /api/reports/my/summary`
+
+Retrieves real database counts of the authenticated citizen's reports categorized by lifecycle status.
+
+#### Request
+
+* **Method**: `GET`
+* **URL**: `/api/reports/my/summary`
+* **Authentication**: Cookie (`civicwatch_auth`) or Bearer token (`requireAuth`)
+
+#### Success Response
+
+* **HTTP Status**: `200 OK`
+* **Content-Type**: `application/json`
+
+```json
+{
+  "success": true,
+  "summary": {
+    "total": 4,
+    "submitted": 2,
+    "underReview": 1,
+    "verified": 0,
+    "assigned": 0,
+    "inProgress": 1,
+    "resolved": 0,
+    "closed": 0,
+    "rejected": 0
+  }
+}
+```
+
+---
+
+### `GET /api/reports/my/:reference`
+
+Retrieves citizen-safe details, attachments metadata, and visible status progression timeline for a report owned by the authenticated citizen.
+
+#### Request
+
+* **Method**: `GET`
+* **URL**: `/api/reports/my/:reference`
+* **Authentication**: Cookie (`civicwatch_auth`) or Bearer token (`requireAuth`)
+* **Path Parameters**:
+  * `reference`: Valid report reference format (`CWK-YYYY-XXXXXX`)
+
+#### Ownership Authorization Rule
+
+If the report reference belongs to another user, or does not exist, the API returns a generic `404 Not Found` response with message `"Report not found"`. No information regarding whether the reference exists under another user is revealed.
+
+#### Success Response
+
+* **HTTP Status**: `200 OK`
+* **Content-Type**: `application/json`
+
+```json
+{
+  "success": true,
+  "report": {
+    "reference": "CWK-2026-000001",
+    "title": "Major Pothole along Argwings Kodhek Road",
+    "description": "Severe road surface erosion causing dangerous vehicle swerving.",
+    "category": {
+      "id": 1,
+      "name": "Infrastructure",
+      "description": "Issues involving roads, potholes, drainage..."
+    },
+    "county": "Nairobi",
+    "sub_county": "Kilimani",
+    "ward": "Kilimani",
+    "location_text": "Near the intersection",
+    "latitude": -1.286389,
+    "longitude": 36.817223,
+    "incident_date": "2026-10-01",
+    "incident_time": "14:20",
+    "is_anonymous": false,
+    "preferred_contact": "none",
+    "status": "Submitted",
+    "created_at": "2026-10-01T12:30:42.000Z",
+    "updated_at": "2026-10-01T12:30:42.000Z",
+    "attachments": [
+      {
+        "id": 1,
+        "original_name": "evidence.pdf",
+        "mime_type": "application/pdf",
+        "size_bytes": 1048576,
+        "created_at": "2026-10-01T12:30:42.000Z"
+      }
+    ],
+    "status_history": [
+      {
+        "id": 1,
+        "status": "Submitted",
+        "note": "Report submitted by citizen.",
+        "created_at": "2026-10-01T12:30:42.000Z"
+      }
+    ]
+  }
+}
+```
+
+---
+
+### `GET /api/reports/my/:reference/attachments/:attachmentId`
+
+Securely downloads an attachment belonging to an owned report after verifying the complete ownership chain (`User -> Report -> Attachment`).
+
+#### Request
+
+* **Method**: `GET`
+* **URL**: `/api/reports/my/:reference/attachments/:attachmentId`
+* **Authentication**: Cookie (`civicwatch_auth`) or Bearer token (`requireAuth`)
+* **Headers**: `X-Content-Type-Options: nosniff`
+
+#### Security Checks
+
+1. Requester must be authenticated.
+2. Report with `:reference` must exist and belong to `req.user.id`.
+3. Attachment with `:attachmentId` must belong to this specific report.
+4. If any check fails, returns `404 Not Found`.
+
+#### Success Response
+
+* **HTTP Status**: `200 OK`
+* **Content-Type**: `<attachment.mime_type>`
+* **Content-Disposition**: `attachment; filename="<original_name>"`
+
 
 

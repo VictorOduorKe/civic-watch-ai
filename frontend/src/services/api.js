@@ -102,6 +102,50 @@ export const reportApi = {
   async getMyStats() {
     const response = await apiClient.get('/reports/stats/me');
     return response.data;
+  },
+
+  /**
+   * Milestone 5: Retrieve paginated reports for authenticated citizen
+   */
+  async getMyReports(params = {}) {
+    const response = await apiClient.get('/reports/my', { params });
+    return response.data;
+  },
+
+  /**
+   * Milestone 5: Retrieve real database summary breakdown of citizen report statuses
+   */
+  async getMySummary() {
+    const response = await apiClient.get('/reports/my/summary');
+    return response.data;
+  },
+
+  /**
+   * Milestone 5: Retrieve full details, attachments metadata, and visible timeline of an owned report
+   */
+  async getMyReportDetail(reference) {
+    const response = await apiClient.get(`/reports/my/${encodeURIComponent(reference)}`);
+    return response.data;
+  },
+
+  /**
+   * Milestone 5: Securely fetch and trigger browser download of an owned attachment
+   */
+  async downloadAttachment(reference, attachmentId, filename) {
+    const response = await apiClient.get(
+      `/reports/my/${encodeURIComponent(reference)}/attachments/${encodeURIComponent(attachmentId)}`,
+      { responseType: 'blob' }
+    );
+    const contentType = response.headers['content-type'] || 'application/octet-stream';
+    const blob = new Blob([response.data], { type: contentType });
+    const downloadUrl = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = downloadUrl;
+    link.download = filename || 'attachment';
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(downloadUrl);
   }
 };
 
