@@ -90,28 +90,28 @@ Registers a new citizen account with county and contact details.
 
 ```json
 {
-  "full_name": "Victor Oduor",
-  "email": "victor@civicwatch.ke",
+  "fullName": "Victor Oduor",
+  "email": "victor@example.com",
   "phone": "+254712345678",
   "password": "Password123!",
-  "confirm_password": "Password123!",
+  "confirmPassword": "Password123!",
   "county": "Nairobi",
   "ward": "Kilimani",
-  "terms": true
+  "termsAccepted": true
 }
 ```
 
 #### Validation Rules
 
-* `full_name`: 2–255 characters, required
+* `fullName`: 2–100 characters, required
 * `email`: Valid email format, normalized to lower case, unique in database
-* `phone`: Valid Kenyan or international phone format (e.g. `+254...`, `07...`)
-* `password`: Minimum 8 characters, at least 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character
-* `confirm_password`: Must match `password`
-* `county`: Must be one of Kenya's 47 counties
-* `ward`: Optional, up to 100 characters
-* `terms`: Boolean, must be `true`
-* *Note: Any `role` field sent in the request body is intentionally stripped and defaulted to `Citizen` to prevent privilege escalation.*
+* `phone`: Valid format, 9–20 characters, digits and symbols
+* `password`: Minimum 8 characters
+* `confirmPassword`: Must match `password`
+* `county`: Non-empty string, up to 100 characters
+* `ward`: Optional string, up to 100 characters
+* `termsAccepted`: Boolean, must be `true`
+* *Note: Any `role` field sent in the request body is intentionally ignored and defaulted to `Citizen` to prevent privilege escalation.*
 
 #### Success Response
 
@@ -122,17 +122,22 @@ Registers a new citizen account with county and contact details.
 ```json
 {
   "success": true,
-  "message": "User registered successfully",
-  "token": "eyJhbGciOi...",
-  "user": {
-    "id": 1,
-    "full_name": "Victor Oduor",
-    "email": "victor@civicwatch.ke",
-    "phone": "+254712345678",
-    "county": "Nairobi",
-    "ward": "Kilimani",
-    "role": "Citizen",
-    "created_at": "2026-10-01T11:15:32.000Z"
+  "message": "Account created successfully.",
+  "data": {
+    "user": {
+      "id": 1,
+      "fullName": "Victor Oduor",
+      "email": "victor@example.com",
+      "phone": "+254712345678",
+      "county": "Nairobi",
+      "ward": "Kilimani",
+      "role": "Citizen",
+      "isActive": true,
+      "emailVerified": false,
+      "createdAt": "2026-10-01T11:12:31.000Z",
+      "lastLoginAt": null
+    },
+    "token": "eyJhbGciOi..."
   }
 }
 ```
@@ -150,7 +155,7 @@ Registers a new citizen account with county and contact details.
   ```json
   {
     "success": false,
-    "message": "An account with this email already exists"
+    "message": "An account with this email address already exists."
   }
   ```
 
@@ -169,7 +174,7 @@ Authenticates an existing user and returns a signed JWT and user session profile
 
 ```json
 {
-  "email": "victor@civicwatch.ke",
+  "email": "victor@example.com",
   "password": "Password123!"
 }
 ```
@@ -183,18 +188,22 @@ Authenticates an existing user and returns a signed JWT and user session profile
 ```json
 {
   "success": true,
-  "message": "Login successful",
-  "token": "eyJhbGciOi...",
-  "user": {
-    "id": 1,
-    "full_name": "Victor Oduor",
-    "email": "victor@civicwatch.ke",
-    "phone": "+254712345678",
-    "county": "Nairobi",
-    "ward": "Kilimani",
-    "role": "Citizen",
-    "created_at": "2026-10-01T11:15:32.000Z",
-    "last_login_at": "2026-10-01T11:40:00.000Z"
+  "message": "Login successful.",
+  "data": {
+    "user": {
+      "id": 1,
+      "fullName": "Victor Oduor",
+      "email": "victor@example.com",
+      "phone": "+254712345678",
+      "county": "Nairobi",
+      "ward": "Kilimani",
+      "role": "Citizen",
+      "isActive": true,
+      "emailVerified": false,
+      "createdAt": "2026-10-01T11:12:31.000Z",
+      "lastLoginAt": "2026-10-01T11:46:19.640Z"
+    },
+    "token": "eyJhbGciOi..."
   }
 }
 ```
