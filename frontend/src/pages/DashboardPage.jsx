@@ -53,7 +53,7 @@ export default function DashboardPage() {
       <CitizenLayout>
         {() => (
           <div className="flex flex-col items-center justify-center min-h-[60vh] gap-3">
-            <div className="w-8 h-8 border-4 border-emerald-900 border-t-transparent rounded-full animate-spin"></div>
+            <div className="w-8 h-8 border-4 border-navy-900 border-t-transparent rounded-full animate-spin"></div>
             <p className="text-sm font-medium text-stone-600">
               Loading your citizen workspace...
             </p>
@@ -74,20 +74,20 @@ export default function DashboardPage() {
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div>
                 <div className="flex items-center gap-2 mb-1.5">
-                  <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold bg-emerald-100 text-emerald-900 border border-emerald-200">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 mr-1.5"></span>
+                  <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold bg-green-50 text-green-800 border border-green-200">
+                    <span className="w-1.5 h-1.5 rounded-full bg-green-600 mr-1.5"></span>
                     Verified {user?.role || 'Citizen'}
                   </span>
                   {user?.county && (
                     <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium bg-stone-100 text-stone-700 border border-stone-200">
-                      <MapPin className="w-3 h-3 text-emerald-800" />
+                      <MapPin className="w-3 h-3 text-gold-600" />
                       <span>{user.county} County</span>
                       {user.ward && <span>• {user.ward} Ward</span>}
                     </span>
                   )}
                 </div>
 
-                <h2 className="text-xl sm:text-2xl font-extrabold text-neutral-900 tracking-tight">
+                <h2 className="text-xl sm:text-2xl font-extrabold text-navy-950 tracking-tight">
                   Welcome back, {firstName}
                 </h2>
                 <p className="mt-1 text-xs sm:text-sm text-stone-600 max-w-2xl leading-relaxed">
@@ -99,9 +99,9 @@ export default function DashboardPage() {
               <div className="shrink-0">
                 <Link
                   to="/reports/new"
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-emerald-900 text-white text-xs font-semibold rounded-lg hover:bg-emerald-950 transition-colors shadow-xs"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-navy-900 text-white text-xs font-semibold rounded-lg hover:bg-navy-950 transition-colors shadow-xs border-b-2 border-gold-500"
                 >
-                  <PlusCircle className="w-4 h-4" />
+                  <PlusCircle className="w-4 h-4 text-gold-400" />
                   <span>Report an Issue (M4)</span>
                 </Link>
               </div>
@@ -146,7 +146,7 @@ export default function DashboardPage() {
                 count={stats.resolved}
                 subtext="Community issues resolved"
                 icon={CheckCircle}
-                statusColor="emerald"
+                statusColor="green"
               />
             </div>
           </section>
@@ -180,7 +180,7 @@ export default function DashboardPage() {
                   onFeaturePreview({
                     title: 'Report Tracking & Status Hub',
                     milestone: 'Milestone 5',
-                    icon: <FileText className="w-5 h-5 text-emerald-900" />,
+                    icon: <FileText className="w-5 h-5 text-gold-500" />,
                     description:
                       'Milestone 5 establishes the citizen tracking dashboard. Filter by status, inspect response logs from local leaders, and share public case updates.',
                     plannedCapabilities: [
@@ -202,7 +202,7 @@ export default function DashboardPage() {
                   onFeaturePreview({
                     title: 'AI Civic Verification Engine',
                     milestone: 'Milestone 9',
-                    icon: <ShieldCheck className="w-5 h-5 text-emerald-900" />,
+                    icon: <ShieldCheck className="w-5 h-5 text-gold-500" />,
                     description:
                       'Milestone 9 connects Gemini AI to Kenyan legal frameworks, County Integrated Development Plans (CIDP), and gazetted notices to verify claims and dispel misinformation.',
                     plannedCapabilities: [
@@ -224,7 +224,7 @@ export default function DashboardPage() {
                   onFeaturePreview({
                     title: 'Civic Alerts & Public Advisories',
                     milestone: 'Milestone 11',
-                    icon: <Radio className="w-5 h-5 text-emerald-900" />,
+                    icon: <Radio className="w-5 h-5 text-gold-500" />,
                     description:
                       'Milestone 11 integrates county emergency networks and public utility boards to broadcast real-time localized advisories and infrastructure downtime notices.',
                     plannedCapabilities: [

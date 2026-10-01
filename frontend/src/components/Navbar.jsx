@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Menu, X, Shield, LogOut, User } from 'lucide-react';
+import { Menu, X, LogOut, User } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import logoImg from '../assets/logo.jpg';
 
 export default function Navbar({ onOpenUpcoming }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -25,11 +26,11 @@ export default function Navbar({ onOpenUpcoming }) {
   function handleActionClick(actionType) {
     setMobileMenuOpen(false);
     if (actionType === 'reports') {
-      onOpenUpcoming({
-        title: 'Incident Reporting & Tracking',
-        milestone: 'Milestone 4',
-        description: 'Structured citizen reporting for public services and community concerns will be introduced in Milestone 4.'
-      });
+      if (isAuthenticated) {
+        navigate('/reports/new');
+      } else {
+        navigate('/login', { state: { from: { pathname: '/reports/new' } } });
+      }
     } else if (actionType === 'alerts') {
       onOpenUpcoming({
         title: 'Civic Alerts System',
@@ -48,23 +49,25 @@ export default function Navbar({ onOpenUpcoming }) {
   const firstName = user?.fullName ? user.fullName.split(' ')[0] : 'Citizen';
 
   return (
-    <header className="sticky top-0 z-40 bg-white border-b border-stone-200">
+    <header className="sticky top-0 z-40 bg-white border-b border-stone-200 shadow-xs">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          {/* Brand Logo & Title */}
+          {/* Brand Logo & Title with Official OCL Logo */}
           <div className="flex items-center gap-3">
             <Link
               to="/"
-              className="flex items-center gap-2 text-left focus:outline-none focus:ring-2 focus:ring-emerald-800 rounded p-1"
+              className="flex items-center gap-2.5 text-left focus:outline-none focus:ring-2 focus:ring-navy-800 rounded-lg p-1"
             >
-              <div className="w-9 h-9 rounded bg-emerald-900 text-white flex items-center justify-center font-bold">
-                <Shield className="w-5 h-5 text-white" />
-              </div>
+              <img
+                src={logoImg}
+                alt="Open Civic Lab Logo"
+                className="w-9 h-9 rounded-full object-cover border-2 border-gold-500 shadow-xs shrink-0"
+              />
               <div>
-                <span className="block text-base sm:text-lg font-black tracking-tight text-neutral-900 leading-none">
+                <span className="block text-base sm:text-lg font-black tracking-tight text-navy-900 leading-none">
                   CIVICWATCH
                 </span>
-                <span className="block text-[10px] font-semibold uppercase tracking-wider text-emerald-900">
+                <span className="block text-[10px] font-semibold uppercase tracking-wider text-gold-600">
                   AI Kenya • Open Civic Lab
                 </span>
               </div>
@@ -76,44 +79,44 @@ export default function Navbar({ onOpenUpcoming }) {
             <Link
               to="/"
               onClick={() => handleNavClick(null)}
-              className="text-sm font-medium text-stone-700 hover:text-emerald-900 transition-colors focus:outline-none focus:underline"
+              className="text-sm font-medium text-stone-700 hover:text-navy-900 transition-colors focus:outline-none focus:underline"
             >
               Home
             </Link>
             <button
               type="button"
               onClick={() => handleNavClick('how-it-works')}
-              className="text-sm font-medium text-stone-700 hover:text-emerald-900 transition-colors focus:outline-none focus:underline"
+              className="text-sm font-medium text-stone-700 hover:text-navy-900 transition-colors focus:outline-none focus:underline"
             >
               How It Works
             </button>
             <button
               type="button"
               onClick={() => handleNavClick('features')}
-              className="text-sm font-medium text-stone-700 hover:text-emerald-900 transition-colors focus:outline-none focus:underline"
+              className="text-sm font-medium text-stone-700 hover:text-navy-900 transition-colors focus:outline-none focus:underline"
             >
               Features
             </button>
             <button
               type="button"
               onClick={() => handleActionClick('reports')}
-              className="text-sm font-medium text-stone-700 hover:text-emerald-900 transition-colors focus:outline-none focus:underline"
+              className="text-sm font-medium text-stone-700 hover:text-navy-900 transition-colors focus:outline-none focus:underline"
             >
-              Reports
+              Report an Issue
             </button>
             <button
               type="button"
               onClick={() => handleActionClick('alerts')}
-              className="text-sm font-medium text-stone-700 hover:text-emerald-900 transition-colors focus:outline-none focus:underline"
+              className="text-sm font-medium text-stone-700 hover:text-navy-900 transition-colors focus:outline-none focus:underline"
             >
               Alerts
             </button>
             <button
               type="button"
               onClick={() => handleNavClick('about')}
-              className="text-sm font-medium text-stone-700 hover:text-emerald-900 transition-colors focus:outline-none focus:underline"
+              className="text-sm font-medium text-stone-700 hover:text-navy-900 transition-colors focus:outline-none focus:underline"
             >
-              About
+              About OCL
             </button>
           </nav>
 
@@ -123,18 +126,18 @@ export default function Navbar({ onOpenUpcoming }) {
               <div className="flex items-center gap-3">
                 <Link
                   to="/dashboard"
-                  className="flex items-center gap-2 px-3 py-1.5 bg-stone-100 hover:bg-stone-200 border border-stone-300 rounded text-xs font-semibold text-stone-900 focus:outline-none focus:ring-2 focus:ring-emerald-800"
+                  className="flex items-center gap-2 px-3 py-1.5 bg-navy-50 hover:bg-navy-100 border border-navy-200 rounded-lg text-xs font-semibold text-navy-900 focus:outline-none focus:ring-2 focus:ring-navy-800 transition-colors"
                 >
-                  <User className="w-3.5 h-3.5 text-emerald-900" />
-                  <span>Welcome, {firstName}</span>
-                  <span className="px-1.5 py-0.2 bg-emerald-900 text-white rounded text-[10px]">
+                  <User className="w-3.5 h-3.5 text-navy-800" />
+                  <span>{firstName}</span>
+                  <span className="px-1.5 py-0.5 bg-gold-500 text-navy-950 font-bold rounded text-[10px]">
                     {user?.role}
                   </span>
                 </Link>
                 <button
                   type="button"
                   onClick={handleLogout}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-stone-700 hover:text-neutral-900 border border-stone-300 rounded hover:bg-stone-50 focus:outline-none focus:ring-2 focus:ring-emerald-800"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-stone-700 hover:text-neutral-900 border border-stone-300 rounded-lg hover:bg-stone-50 focus:outline-none focus:ring-2 focus:ring-navy-800 transition-colors"
                 >
                   <LogOut className="w-3.5 h-3.5" />
                   Logout
@@ -144,13 +147,13 @@ export default function Navbar({ onOpenUpcoming }) {
               <>
                 <Link
                   to="/login"
-                  className="px-3.5 py-1.5 text-sm font-semibold text-stone-800 hover:text-emerald-900 focus:outline-none focus:ring-2 focus:ring-emerald-800 rounded"
+                  className="px-3.5 py-1.5 text-sm font-semibold text-navy-900 hover:text-navy-700 focus:outline-none focus:ring-2 focus:ring-navy-800 rounded-md transition-colors"
                 >
                   Login
                 </Link>
                 <Link
                   to="/register"
-                  className="px-4 py-2 text-sm font-semibold text-white bg-emerald-900 hover:bg-emerald-950 rounded transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-800"
+                  className="px-4 py-2 text-sm font-semibold text-white bg-navy-900 hover:bg-navy-950 rounded-lg transition-colors border-b-2 border-gold-500 shadow-xs focus:outline-none focus:ring-2 focus:ring-navy-800"
                 >
                   Get Started
                 </Link>
@@ -165,7 +168,7 @@ export default function Navbar({ onOpenUpcoming }) {
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-expanded={mobileMenuOpen}
               aria-label="Toggle navigation menu"
-              className="p-2 rounded text-stone-700 hover:text-neutral-900 hover:bg-stone-100 focus:outline-none focus:ring-2 focus:ring-emerald-800"
+              className="p-2 rounded-lg text-stone-700 hover:text-navy-900 hover:bg-stone-100 focus:outline-none focus:ring-2 focus:ring-navy-800"
             >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
@@ -179,44 +182,44 @@ export default function Navbar({ onOpenUpcoming }) {
           <Link
             to="/"
             onClick={() => handleNavClick(null)}
-            className="block w-full text-left px-3 py-2 rounded text-base font-medium text-stone-800 hover:bg-stone-100 hover:text-emerald-900"
+            className="block w-full text-left px-3 py-2 rounded-lg text-base font-medium text-stone-800 hover:bg-navy-50 hover:text-navy-900"
           >
             Home
           </Link>
           <button
             type="button"
             onClick={() => handleNavClick('how-it-works')}
-            className="block w-full text-left px-3 py-2 rounded text-base font-medium text-stone-800 hover:bg-stone-100 hover:text-emerald-900"
+            className="block w-full text-left px-3 py-2 rounded-lg text-base font-medium text-stone-800 hover:bg-navy-50 hover:text-navy-900"
           >
             How It Works
           </button>
           <button
             type="button"
             onClick={() => handleNavClick('features')}
-            className="block w-full text-left px-3 py-2 rounded text-base font-medium text-stone-800 hover:bg-stone-100 hover:text-emerald-900"
+            className="block w-full text-left px-3 py-2 rounded-lg text-base font-medium text-stone-800 hover:bg-navy-50 hover:text-navy-900"
           >
             Features
           </button>
           <button
             type="button"
             onClick={() => handleActionClick('reports')}
-            className="block w-full text-left px-3 py-2 rounded text-base font-medium text-stone-800 hover:bg-stone-100 hover:text-emerald-900"
+            className="block w-full text-left px-3 py-2 rounded-lg text-base font-medium text-stone-800 hover:bg-navy-50 hover:text-navy-900"
           >
-            Reports
+            Report an Issue
           </button>
           <button
             type="button"
             onClick={() => handleActionClick('alerts')}
-            className="block w-full text-left px-3 py-2 rounded text-base font-medium text-stone-800 hover:bg-stone-100 hover:text-emerald-900"
+            className="block w-full text-left px-3 py-2 rounded-lg text-base font-medium text-stone-800 hover:bg-navy-50 hover:text-navy-900"
           >
             Alerts
           </button>
           <button
             type="button"
             onClick={() => handleNavClick('about')}
-            className="block w-full text-left px-3 py-2 rounded text-base font-medium text-stone-800 hover:bg-stone-100 hover:text-emerald-900"
+            className="block w-full text-left px-3 py-2 rounded-lg text-base font-medium text-stone-800 hover:bg-navy-50 hover:text-navy-900"
           >
-            About
+            About OCL
           </button>
 
           <div className="pt-4 border-t border-stone-200 flex flex-col gap-2">
@@ -225,14 +228,14 @@ export default function Navbar({ onOpenUpcoming }) {
                 <Link
                   to="/dashboard"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="w-full text-center px-4 py-2 border border-stone-300 rounded text-sm font-semibold text-stone-800 hover:bg-stone-50"
+                  className="w-full text-center px-4 py-2 border border-navy-200 bg-navy-50 rounded-lg text-sm font-semibold text-navy-900 hover:bg-navy-100"
                 >
                   My Account ({firstName})
                 </Link>
                 <button
                   type="button"
                   onClick={handleLogout}
-                  className="w-full text-center px-4 py-2 bg-stone-900 text-white rounded text-sm font-semibold hover:bg-stone-800"
+                  className="w-full text-center px-4 py-2 bg-stone-900 text-white rounded-lg text-sm font-semibold hover:bg-stone-800"
                 >
                   Sign Out
                 </button>
@@ -242,14 +245,14 @@ export default function Navbar({ onOpenUpcoming }) {
                 <Link
                   to="/login"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="w-full text-center px-4 py-2 border border-stone-300 rounded text-sm font-semibold text-stone-800 hover:bg-stone-50"
+                  className="w-full text-center px-4 py-2 border border-stone-300 rounded-lg text-sm font-semibold text-stone-800 hover:bg-stone-50"
                 >
                   Login
                 </Link>
                 <Link
                   to="/register"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="w-full text-center px-4 py-2 bg-emerald-900 text-white rounded text-sm font-semibold hover:bg-emerald-950"
+                  className="w-full text-center px-4 py-2 bg-navy-900 text-white rounded-lg text-sm font-semibold hover:bg-navy-950 border-b-2 border-gold-500"
                 >
                   Get Started
                 </Link>

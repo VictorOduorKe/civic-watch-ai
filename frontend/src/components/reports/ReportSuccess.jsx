@@ -24,8 +24,8 @@ export default function ReportSuccess({ reportResult, onReset }) {
   return (
     <div className="max-w-2xl mx-auto bg-white border border-stone-200 rounded-xl p-6 sm:p-8 shadow-xs animate-fadeIn text-center">
       {/* Success Badge */}
-      <div className="w-14 h-14 bg-emerald-100 text-emerald-900 rounded-full flex items-center justify-center mx-auto mb-4 border border-emerald-200">
-        <CheckCircle2 className="w-8 h-8 text-emerald-800" />
+      <div className="w-14 h-14 bg-green-100 text-green-900 rounded-full flex items-center justify-center mx-auto mb-4 border border-green-200">
+        <CheckCircle2 className="w-8 h-8 text-green-700" />
       </div>
 
       <h2 className="text-xl sm:text-2xl font-extrabold text-neutral-900 tracking-tight">
@@ -41,25 +41,25 @@ export default function ReportSuccess({ reportResult, onReset }) {
           Official Report Reference
         </span>
         <div className="flex items-center justify-center gap-2">
-          <span className="font-mono text-xl sm:text-2xl font-black text-emerald-950 tracking-wider">
+          <span className="font-mono text-xl sm:text-2xl font-black text-navy-950 tracking-wider">
             {reference}
           </span>
           <button
             type="button"
             onClick={handleCopy}
-            className="p-1.5 text-stone-500 hover:text-emerald-900 hover:bg-stone-200 rounded transition-colors"
+            className="p-1.5 text-stone-500 hover:text-navy-900 hover:bg-stone-200 rounded transition-colors"
             title="Copy reference code"
             aria-label="Copy reference code"
           >
             {copied ? (
-              <Check className="w-4 h-4 text-emerald-700" />
+              <Check className="w-4 h-4 text-green-600" />
             ) : (
               <Copy className="w-4 h-4" />
             )}
           </button>
         </div>
         {copied && (
-          <p className="text-[10px] text-emerald-800 font-semibold mt-1">
+          <p className="text-[10px] text-green-700 font-semibold mt-1">
             Reference copied to clipboard!
           </p>
         )}
@@ -70,7 +70,7 @@ export default function ReportSuccess({ reportResult, onReset }) {
         <div>
           <span className="text-stone-500 block text-[11px]">Initial Status:</span>
           <span className="font-semibold text-neutral-900 inline-flex items-center gap-1 mt-0.5">
-            <span className="w-2 h-2 rounded-full bg-emerald-600"></span>
+            <span className="w-2 h-2 rounded-full bg-green-600"></span>
             {reportResult?.status || 'Submitted'}
           </span>
         </div>
@@ -97,7 +97,7 @@ export default function ReportSuccess({ reportResult, onReset }) {
       {/* Governance & Integrity Notice */}
       <div className="bg-stone-50 border border-stone-200 rounded-lg p-3.5 max-w-md mx-auto text-left space-y-1.5 mb-6 text-xs text-stone-600">
         <div className="flex items-center gap-1.5 font-bold text-neutral-900">
-          <ShieldCheck className="w-4 h-4 text-emerald-800" />
+          <ShieldCheck className="w-4 h-4 text-navy-900" />
           <span>Next Steps & Platform Integrity</span>
         </div>
         <p className="text-[11px] leading-relaxed">
@@ -109,14 +109,14 @@ export default function ReportSuccess({ reportResult, onReset }) {
       <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
         <Link
           to="/dashboard"
-          className="w-full sm:w-auto px-5 py-2.5 bg-emerald-900 text-white text-xs font-semibold rounded-lg hover:bg-emerald-950 transition-colors shadow-xs"
+          className="w-full sm:w-auto px-5 py-2.5 bg-navy-900 text-white text-xs font-semibold rounded-lg hover:bg-navy-950 border-b-2 border-gold-500 transition-colors shadow-xs"
         >
           Return to Dashboard
         </Link>
         <button
           type="button"
           onClick={onReset}
-          className="w-full sm:w-auto px-5 py-2.5 bg-white border border-stone-300 text-stone-800 text-xs font-semibold rounded-lg hover:bg-stone-50 transition-colors"
+          className="w-full sm:w-auto px-5 py-2.5 bg-white border border-gold-500 text-navy-900 text-xs font-semibold rounded-lg hover:bg-gold-50 transition-colors"
         >
           Report Another Issue
         </button>

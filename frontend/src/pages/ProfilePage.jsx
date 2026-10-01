@@ -22,7 +22,7 @@ export default function ProfilePage() {
       <CitizenLayout>
         {() => (
           <div className="flex flex-col items-center justify-center min-h-[60vh] gap-3">
-            <div className="w-8 h-8 border-4 border-emerald-900 border-t-transparent rounded-full animate-spin"></div>
+            <div className="w-8 h-8 border-4 border-navy-900 border-t-transparent rounded-full animate-spin"></div>
             <p className="text-sm font-medium text-stone-600">
               Loading your profile...
             </p>
@@ -64,16 +64,16 @@ export default function ProfilePage() {
           <div className="bg-white border border-stone-200 rounded-xl p-6 shadow-xs">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="flex items-center gap-4">
-                <div className="w-16 h-16 rounded-full bg-emerald-900 text-white font-extrabold text-xl flex items-center justify-center shadow-xs shrink-0">
+                <div className="w-16 h-16 rounded-full bg-navy-900 text-gold-400 border-2 border-gold-500/40 font-extrabold text-xl flex items-center justify-center shadow-xs shrink-0">
                   {initials}
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <h2 className="text-xl sm:text-2xl font-extrabold text-neutral-900">
+                    <h2 className="text-xl sm:text-2xl font-extrabold text-navy-950">
                       {user?.fullName || 'Citizen User'}
                     </h2>
-                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded text-xs font-semibold bg-emerald-100 text-emerald-900 border border-emerald-200">
-                      <Shield className="w-3 h-3 text-emerald-800" />
+                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded text-xs font-bold bg-gold-50 text-navy-950 border border-gold-300">
+                      <Shield className="w-3 h-3 text-gold-600" />
                       <span>{user?.role || 'Citizen'}</span>
                     </span>
                   </div>
@@ -84,7 +84,7 @@ export default function ProfilePage() {
               </div>
 
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-semibold bg-stone-100 text-stone-700 border border-stone-200 self-start sm:self-center">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-700" />
+                <CheckCircle2 className="w-3.5 h-3.5 text-green-600" />
                 <span>Account Status: Active</span>
               </div>
             </div>
@@ -95,8 +95,8 @@ export default function ProfilePage() {
             {/* Card 1: Contact Information */}
             <div className="bg-white border border-stone-200 rounded-xl p-5 shadow-xs">
               <div className="flex items-center gap-2 pb-3 border-b border-stone-100 mb-4">
-                <User className="w-4 h-4 text-emerald-900" />
-                <h3 className="text-sm font-bold text-neutral-900">
+                <User className="w-4 h-4 text-navy-900" />
+                <h3 className="text-sm font-bold text-navy-950">
                   Contact Information
                 </h3>
               </div>
@@ -143,8 +143,8 @@ export default function ProfilePage() {
             {/* Card 2: Geographical Jurisdiction */}
             <div className="bg-white border border-stone-200 rounded-xl p-5 shadow-xs">
               <div className="flex items-center gap-2 pb-3 border-b border-stone-100 mb-4">
-                <MapPin className="w-4 h-4 text-emerald-900" />
-                <h3 className="text-sm font-bold text-neutral-900">
+                <MapPin className="w-4 h-4 text-navy-900" />
+                <h3 className="text-sm font-bold text-navy-950">
                   Geographical Jurisdiction
                 </h3>
               </div>
@@ -155,7 +155,7 @@ export default function ProfilePage() {
                     Primary County
                   </label>
                   <div className="mt-1 text-sm font-medium text-neutral-900 flex items-center gap-2">
-                    <MapPin className="w-4 h-4 text-emerald-800" />
+                    <MapPin className="w-4 h-4 text-gold-600" />
                     <span>{user?.county || 'Kenya (National)'} County</span>
                   </div>
                   <p className="text-[11px] text-stone-500 mt-0.5">
@@ -190,8 +190,8 @@ export default function ProfilePage() {
             {/* Card 3: Account Security & Timestamps */}
             <div className="bg-white border border-stone-200 rounded-xl p-5 shadow-xs">
               <div className="flex items-center gap-2 pb-3 border-b border-stone-100 mb-4">
-                <Shield className="w-4 h-4 text-emerald-900" />
-                <h3 className="text-sm font-bold text-neutral-900">
+                <Shield className="w-4 h-4 text-navy-900" />
+                <h3 className="text-sm font-bold text-navy-950">
                   Security & Session State
                 </h3>
               </div>
@@ -206,8 +206,8 @@ export default function ProfilePage() {
                       Hashed with bcrypt (12 cost factor rounds)
                     </span>
                   </div>
-                  <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-800">
-                    <Lock className="w-3.5 h-3.5 text-emerald-700" />
+                  <span className="inline-flex items-center gap-1 text-xs font-medium text-green-800">
+                    <Lock className="w-3.5 h-3.5 text-green-700" />
                     <span>Protected</span>
                   </span>
                 </div>
@@ -221,8 +221,8 @@ export default function ProfilePage() {
                       Signed JSON Web Token (24h validity)
                     </span>
                   </div>
-                  <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-800">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-700" />
+                  <span className="inline-flex items-center gap-1 text-xs font-medium text-green-800">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-green-700" />
                     <span>Active Session</span>
                   </span>
                 </div>
@@ -246,8 +246,8 @@ export default function ProfilePage() {
             <div className="bg-white border border-stone-200 rounded-xl p-5 shadow-xs flex flex-col justify-between">
               <div>
                 <div className="flex items-center gap-2 pb-3 border-b border-stone-100 mb-4">
-                  <Info className="w-4 h-4 text-emerald-900" />
-                  <h3 className="text-sm font-bold text-neutral-900">
+                  <Info className="w-4 h-4 text-navy-900" />
+                  <h3 className="text-sm font-bold text-navy-950">
                     Profile Policy & Privacy
                   </h3>
                 </div>
@@ -268,7 +268,7 @@ export default function ProfilePage() {
 
               <div className="mt-4 pt-3 border-t border-stone-100 text-[11px] text-stone-500 flex items-center justify-between">
                 <span>Open Civic Lab • Verified Registry</span>
-                <span className="font-semibold text-emerald-900">M3 Profile View</span>
+                <span className="font-bold text-navy-900">M3 Profile View</span>
               </div>
             </div>
           </div>

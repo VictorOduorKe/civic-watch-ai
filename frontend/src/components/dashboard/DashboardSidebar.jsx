@@ -11,6 +11,7 @@ import {
   X
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import logo from '../../assets/logo.jpg';
 
 /**
  * Sidebar Navigation for Authenticated Citizen Workspace.
@@ -41,7 +42,7 @@ export default function DashboardSidebar({
         onFeaturePreview({
           title: 'My Reports & Tracking',
           milestone: 'Milestone 5',
-          icon: <FileText className="w-5 h-5 text-emerald-900" />,
+          icon: <FileText className="w-5 h-5 text-gold-500" />,
           description:
             'A centralized incident tracking center where you can follow public response timelines, official agency correspondence, and citizen verification statuses.',
           plannedCapabilities: [
@@ -69,7 +70,7 @@ export default function DashboardSidebar({
         onFeaturePreview({
           title: 'Citizen Notification Center',
           milestone: 'Milestone 8',
-          icon: <Bell className="w-5 h-5 text-emerald-900" />,
+          icon: <Bell className="w-5 h-5 text-gold-500" />,
           description:
             'Multi-channel alerts delivering timely notifications regarding your submitted reports, county emergency alerts, and community petition updates.',
           plannedCapabilities: [
@@ -118,18 +119,20 @@ export default function DashboardSidebar({
       >
         {/* Top: Branding & Close Button */}
         <div>
-          <div className="h-16 px-5 border-b border-stone-800 flex items-center justify-between">
+          <div className="h-16 px-4 border-b border-stone-800 flex items-center justify-between">
             <Link
               to="/dashboard"
               onClick={onMobileClose}
-              className="flex items-center gap-2.5 focus:outline-none focus:ring-1 focus:ring-emerald-500 rounded"
+              className="flex items-center gap-2.5 focus:outline-none focus:ring-1 focus:ring-gold-500 rounded"
             >
-              <div className="w-8 h-8 rounded-md bg-emerald-800 text-white flex items-center justify-center font-black text-sm tracking-wider shadow-xs">
-                CW
-              </div>
+              <img
+                src={logo}
+                alt="Open Civic Lab"
+                className="w-8 h-8 rounded-full object-cover border border-gold-400 shadow-xs"
+              />
               <div className="flex flex-col">
                 <span className="text-sm font-extrabold tracking-wide text-white leading-tight">
-                  CIVICWATCH <span className="text-emerald-400">AI</span>
+                  CIVIC<span className="text-gold-500">WATCH</span>
                 </span>
                 <span className="text-[10px] text-stone-400 uppercase tracking-widest font-semibold">
                   Open Civic Lab
@@ -140,7 +143,7 @@ export default function DashboardSidebar({
             <button
               type="button"
               onClick={onMobileClose}
-              className="lg:hidden p-1.5 rounded-md text-stone-400 hover:text-white hover:bg-stone-800 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+              className="lg:hidden p-1.5 rounded-md text-stone-400 hover:text-white hover:bg-stone-800 focus:outline-none focus:ring-1 focus:ring-gold-500"
               aria-label="Close sidebar"
             >
               <X className="w-5 h-5" />
@@ -164,12 +167,12 @@ export default function DashboardSidebar({
                     onClick={onMobileClose}
                     className={`flex items-center justify-between px-3 py-2.5 rounded-md text-xs font-semibold transition-colors ${
                       item.active
-                        ? 'bg-emerald-900 text-white shadow-2xs'
+                        ? 'bg-navy-900 text-white shadow-2xs border-l-2 border-gold-500 font-bold'
                         : 'text-stone-300 hover:bg-stone-800 hover:text-white'
                     }`}
                   >
                     <div className="flex items-center gap-3">
-                      <Icon className={`w-4 h-4 ${item.active ? 'text-white' : 'text-stone-400'}`} />
+                      <Icon className={`w-4 h-4 ${item.active ? 'text-gold-400' : 'text-stone-400'}`} />
                       <span>{item.name}</span>
                     </div>
                   </Link>
@@ -203,9 +206,9 @@ export default function DashboardSidebar({
 
         {/* Bottom: Citizen Profile card & Real Logout */}
         <div className="p-3 border-t border-stone-800">
-          <div className="bg-stone-800/80 rounded-lg p-3 mb-2">
+          <div className="bg-stone-800/80 rounded-lg p-3 mb-2 border border-stone-700/40">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-full bg-emerald-800 text-white font-bold text-xs flex items-center justify-center shrink-0">
+              <div className="w-8 h-8 rounded-full bg-navy-950 text-gold-400 border border-gold-500/40 font-bold text-xs flex items-center justify-center shrink-0">
                 {initials}
               </div>
               <div className="min-w-0 flex-1">
@@ -219,8 +222,8 @@ export default function DashboardSidebar({
               </div>
             </div>
             <div className="mt-2.5 pt-2 border-t border-stone-700/60 flex items-center justify-between text-[11px]">
-              <span className="inline-flex items-center gap-1 text-emerald-400 font-medium">
-                <Shield className="w-3 h-3" />
+              <span className="inline-flex items-center gap-1 text-gold-400 font-medium">
+                <Shield className="w-3 h-3 text-gold-500" />
                 <span>{user?.role || 'Citizen'}</span>
               </span>
               <span className="text-stone-400">ID #{user?.id || 1}</span>

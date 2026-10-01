@@ -84,7 +84,7 @@ export default function ReportLocationFields({
           name="county"
           value={values.county || ''}
           onChange={(e) => onChange('county', e.target.value)}
-          className={`w-full px-3 py-2 text-xs border rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-emerald-800 ${
+          className={`w-full px-3 py-2 text-xs border rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-navy-800 focus:border-gold-500 ${
             errors.county ? 'border-red-500' : 'border-stone-300'
           }`}
           required
@@ -117,7 +117,7 @@ export default function ReportLocationFields({
             value={values.sub_county || ''}
             onChange={(e) => onChange('sub_county', e.target.value)}
             placeholder="e.g. Dagoretti North"
-            className="w-full px-3 py-2 text-xs border border-stone-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-emerald-800"
+            className="w-full px-3 py-2 text-xs border border-stone-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-navy-800 focus:border-gold-500"
           />
         </div>
 
@@ -135,7 +135,7 @@ export default function ReportLocationFields({
             value={values.ward || ''}
             onChange={(e) => onChange('ward', e.target.value)}
             placeholder="e.g. Kilimani"
-            className="w-full px-3 py-2 text-xs border border-stone-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-emerald-800"
+            className="w-full px-3 py-2 text-xs border border-stone-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-navy-800 focus:border-gold-500"
           />
         </div>
       </div>
@@ -155,7 +155,7 @@ export default function ReportLocationFields({
           value={values.location_text || ''}
           onChange={(e) => onChange('location_text', e.target.value)}
           placeholder="e.g. Near Kilimani Primary School along Argwings Kodhek Road"
-          className="w-full px-3 py-2 text-xs border border-stone-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-emerald-800"
+          className="w-full px-3 py-2 text-xs border border-stone-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-navy-800 focus:border-gold-500"
         />
         <p className="mt-1 text-[11px] text-stone-500">
           Provide landmark descriptions to help field verification teams locate the issue.
@@ -183,7 +183,7 @@ export default function ReportLocationFields({
             {gpsLoading ? (
               <div className="w-3.5 h-3.5 border-2 border-stone-700 border-t-transparent rounded-full animate-spin"></div>
             ) : (
-              <Navigation className="w-3.5 h-3.5 text-emerald-800" />
+              <Navigation className="w-3.5 h-3.5 text-navy-800" />
             )}
             <span>{gpsLoading ? 'Detecting...' : 'Use My Current Location'}</span>
           </button>
@@ -193,12 +193,12 @@ export default function ReportLocationFields({
           <div
             className={`p-2.5 rounded-md text-xs mb-3 flex items-start gap-2 ${
               gpsStatus.type === 'success'
-                ? 'bg-emerald-50 text-emerald-900 border border-emerald-200'
+                ? 'bg-green-50 text-green-900 border border-green-200'
                 : 'bg-amber-50 text-amber-900 border border-amber-200'
             }`}
           >
             {gpsStatus.type === 'success' ? (
-              <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
+              <CheckCircle2 className="w-4 h-4 text-green-700 shrink-0 mt-0.5" />
             ) : (
               <AlertCircle className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
             )}
@@ -222,7 +222,7 @@ export default function ReportLocationFields({
               value={values.latitude ?? ''}
               onChange={(e) => onChange('latitude', e.target.value === '' ? '' : Number(e.target.value))}
               placeholder="e.g. -1.2921"
-              className="w-full px-3 py-1.5 text-xs border border-stone-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-emerald-800 font-mono"
+              className="w-full px-3 py-1.5 text-xs border border-stone-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-navy-800 focus:border-gold-500 font-mono"
             />
           </div>
 
@@ -241,7 +241,7 @@ export default function ReportLocationFields({
               value={values.longitude ?? ''}
               onChange={(e) => onChange('longitude', e.target.value === '' ? '' : Number(e.target.value))}
               placeholder="e.g. 36.7854"
-              className="w-full px-3 py-1.5 text-xs border border-stone-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-emerald-800 font-mono"
+              className="w-full px-3 py-1.5 text-xs border border-stone-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-navy-800 focus:border-gold-500 font-mono"
             />
           </div>
         </div>

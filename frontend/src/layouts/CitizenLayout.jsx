@@ -15,7 +15,7 @@ export default function CitizenLayout({ children }) {
     setPreviewFeature({
       title: 'Citizen Notification Center',
       milestone: 'Milestone 8',
-      icon: <Bell className="w-5 h-5 text-emerald-900" />,
+      icon: <Bell className="w-5 h-5 text-gold-500" />,
       description:
         'Live notifications for submitted report status changes, agency responses, and county emergency broadcasts will be activated in Milestone 8. Currently, you have 0 pending notifications.',
       plannedCapabilities: [
@@ -58,7 +58,7 @@ export default function CitizenLayout({ children }) {
           </span>
           <div className="flex items-center gap-4">
             <span>Milestone 3 Authenticated Workspace</span>
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+            <span className="w-1.5 h-1.5 rounded-full bg-green-600"></span>
             <span>Real Database Connection</span>
           </div>
         </footer>

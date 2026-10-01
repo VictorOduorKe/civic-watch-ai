@@ -26,7 +26,7 @@ export default function ComingSoonModal({ isOpen, onClose, feature }) {
         <div className="flex items-start justify-between pb-4 border-b border-stone-200">
           <div className="flex items-center gap-3">
             {feature.icon && (
-              <div className="w-10 h-10 rounded-md bg-stone-100 text-emerald-900 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-md bg-navy-50 text-navy-900 flex items-center justify-center border border-navy-100">
                 {feature.icon}
               </div>
             )}
@@ -35,7 +35,7 @@ export default function ComingSoonModal({ isOpen, onClose, feature }) {
                 <h3 id="modal-title" className="text-lg font-bold text-neutral-900">
                   {feature.title}
                 </h3>
-                <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-emerald-100 text-emerald-900 border border-emerald-200">
+                <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-navy-50 text-navy-900 border border-navy-200">
                   {feature.milestone || 'Upcoming'}
                 </span>
               </div>
@@ -60,8 +60,8 @@ export default function ComingSoonModal({ isOpen, onClose, feature }) {
           </p>
 
           <div className="bg-stone-50 border border-stone-200 rounded-md p-3.5 space-y-2">
-            <div className="flex items-center gap-2 text-xs font-semibold text-emerald-950">
-              <ShieldCheck className="w-4 h-4 text-emerald-800" />
+            <div className="flex items-center gap-2 text-xs font-semibold text-navy-950">
+              <ShieldCheck className="w-4 h-4 text-gold-600" />
               <span>Production Integrity Principle</span>
             </div>
             <p className="text-xs text-stone-600 leading-relaxed">
@@ -77,7 +77,7 @@ export default function ComingSoonModal({ isOpen, onClose, feature }) {
               <ul className="text-xs text-stone-600 space-y-1.5">
                 {feature.plannedCapabilities.map((item, idx) => (
                   <li key={idx} className="flex items-start gap-2">
-                    <ArrowRight className="w-3.5 h-3.5 text-emerald-800 shrink-0 mt-0.5" />
+                    <ArrowRight className="w-3.5 h-3.5 text-gold-600 shrink-0 mt-0.5" />
                     <span>{item}</span>
                   </li>
                 ))}
@@ -95,7 +95,7 @@ export default function ComingSoonModal({ isOpen, onClose, feature }) {
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 bg-emerald-900 text-white text-xs font-semibold rounded hover:bg-emerald-950 transition-colors"
+            className="px-4 py-2 bg-navy-900 text-white text-xs font-semibold rounded hover:bg-navy-950 transition-colors shadow-xs"
           >
             Got it, thanks
           </button>

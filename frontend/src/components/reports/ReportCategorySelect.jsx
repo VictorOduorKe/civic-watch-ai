@@ -40,7 +40,7 @@ export default function ReportCategorySelect({
   if (loading) {
     return (
       <div className="py-8 text-center text-stone-500 text-xs flex items-center justify-center gap-2">
-        <div className="w-4 h-4 border-2 border-emerald-900 border-t-transparent rounded-full animate-spin"></div>
+        <div className="w-4 h-4 border-2 border-navy-900 border-t-transparent rounded-full animate-spin"></div>
         <span>Loading official incident categories...</span>
       </div>
     );
@@ -76,7 +76,7 @@ export default function ReportCategorySelect({
               }}
               className={`p-3.5 rounded-lg border text-left cursor-pointer transition-all flex flex-col justify-between ${
                 isSelected
-                  ? 'bg-emerald-50/80 border-emerald-800 ring-2 ring-emerald-800/20 shadow-xs'
+                  ? 'bg-navy-50/80 border-navy-800 ring-2 ring-gold-400/50 shadow-xs'
                   : 'bg-white border-stone-200 hover:border-stone-300 hover:bg-stone-50/60'
               }`}
             >
@@ -86,7 +86,7 @@ export default function ReportCategorySelect({
                     <div
                       className={`w-7 h-7 rounded-md flex items-center justify-center shrink-0 ${
                         isSelected
-                          ? 'bg-emerald-900 text-white'
+                          ? 'bg-navy-900 text-gold-400'
                           : 'bg-stone-100 text-stone-700'
                       }`}
                     >
@@ -100,12 +100,12 @@ export default function ReportCategorySelect({
                   <div
                     className={`w-4 h-4 rounded-full border flex items-center justify-center ${
                       isSelected
-                        ? 'border-emerald-800 bg-emerald-800'
+                        ? 'border-navy-900 bg-navy-900'
                         : 'border-stone-300 bg-white'
                     }`}
                   >
                     {isSelected && (
-                      <div className="w-1.5 h-1.5 rounded-full bg-white"></div>
+                      <div className="w-1.5 h-1.5 rounded-full bg-gold-400"></div>
                     )}
                   </div>
                 </div>

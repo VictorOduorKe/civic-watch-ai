@@ -32,7 +32,7 @@ export default function LandingPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-stone-50 text-neutral-900 selection:bg-emerald-900 selection:text-white">
+    <div className="min-h-screen flex flex-col bg-stone-50 text-neutral-900 selection:bg-navy-900 selection:text-white">
       {/* Top Navbar */}
       <Navbar onOpenUpcoming={handleOpenUpcoming} />
 

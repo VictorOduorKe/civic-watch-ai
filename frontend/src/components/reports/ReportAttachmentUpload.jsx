@@ -89,10 +89,10 @@ export default function ReportAttachmentUpload({
       {files.length < MAX_FILES && (
         <label
           htmlFor="attachment-file-input"
-          className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-stone-300 rounded-lg hover:border-emerald-700 hover:bg-emerald-50/20 cursor-pointer transition-colors text-center"
+          className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-stone-300 rounded-lg hover:border-navy-700 hover:bg-navy-50/40 cursor-pointer transition-colors text-center"
         >
           <div className="w-10 h-10 rounded-full bg-stone-100 text-stone-600 flex items-center justify-center mb-2">
-            <UploadCloud className="w-5 h-5 text-emerald-900" />
+            <UploadCloud className="w-5 h-5 text-navy-900" />
           </div>
           <p className="text-xs font-semibold text-neutral-900">
             Click to browse or drag and drop files
@@ -125,7 +125,7 @@ export default function ReportAttachmentUpload({
               >
                 <div className="flex items-center gap-2.5 min-w-0 flex-1">
                   <div className="w-7 h-7 rounded bg-white border border-stone-200 text-stone-600 flex items-center justify-center shrink-0">
-                    <Icon className="w-4 h-4 text-emerald-900" />
+                    <Icon className="w-4 h-4 text-navy-900" />
                   </div>
                   <div className="min-w-0 flex-1">
                     <p className="font-medium text-neutral-900 truncate">

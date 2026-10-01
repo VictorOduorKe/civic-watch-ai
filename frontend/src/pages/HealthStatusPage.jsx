@@ -54,7 +54,7 @@ export default function HealthStatusPage() {
           {/* Frontend */}
           <div className="flex items-center justify-between py-2 border-b border-neutral-100">
             <span className="font-semibold text-neutral-800">Frontend:</span>
-            <span className="inline-flex items-center px-2.5 py-0.5 rounded text-sm font-semibold bg-emerald-100 text-emerald-800">
+            <span className="inline-flex items-center px-2.5 py-0.5 rounded text-sm font-semibold bg-green-100 text-green-800">
               Running
             </span>
           </div>
@@ -65,7 +65,7 @@ export default function HealthStatusPage() {
             <span
               className={`inline-flex items-center px-2.5 py-0.5 rounded text-sm font-semibold ${
                 backendStatus === 'Connected'
-                  ? 'bg-emerald-100 text-emerald-800'
+                  ? 'bg-green-100 text-green-800'
                   : backendStatus === 'Checking...'
                   ? 'bg-neutral-100 text-neutral-700'
                   : 'bg-rose-100 text-rose-800'
@@ -81,7 +81,7 @@ export default function HealthStatusPage() {
             <span
               className={`inline-flex items-center px-2.5 py-0.5 rounded text-sm font-semibold ${
                 databaseStatus === 'Connected'
-                  ? 'bg-emerald-100 text-emerald-800'
+                  ? 'bg-green-100 text-green-800'
                   : databaseStatus === 'Checking...'
                   ? 'bg-neutral-100 text-neutral-700'
                   : 'bg-rose-100 text-rose-800'
@@ -101,7 +101,7 @@ export default function HealthStatusPage() {
 
         {/* Actions & Metadata */}
         <footer className="mt-6 pt-4 border-t border-neutral-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-neutral-500">
-          <Link to="/" className="text-emerald-900 font-semibold hover:underline">
+          <Link to="/" className="text-navy-900 font-bold hover:text-gold-600 hover:underline">
             ← Return to Landing Page
           </Link>
           <div className="flex items-center gap-3">
@@ -110,7 +110,7 @@ export default function HealthStatusPage() {
               type="button"
               onClick={checkHealth}
               disabled={loading}
-              className="px-4 py-1.5 bg-neutral-900 text-white font-medium rounded hover:bg-neutral-800 disabled:opacity-50 text-sm focus:outline-none focus:ring-2 focus:ring-neutral-500"
+              className="px-4 py-1.5 bg-navy-900 text-white font-medium rounded hover:bg-navy-950 border-b-2 border-gold-500 disabled:opacity-50 text-sm focus:outline-none focus:ring-2 focus:ring-navy-800"
             >
               {loading ? 'Checking...' : 'Refresh Status'}
             </button>

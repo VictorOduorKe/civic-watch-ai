@@ -14,10 +14,10 @@ export default function CtaSection() {
   }
 
   return (
-    <section className="py-16 sm:py-20 bg-neutral-900 text-white">
+    <section className="py-16 sm:py-20 bg-navy-950 text-white border-t border-navy-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <div className="max-w-2xl mx-auto">
-          <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight mb-4">
+          <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight mb-4 text-white">
             BE PART OF THE CIVIC CONVERSATION
           </h2>
           <p className="text-base sm:text-lg text-stone-300 leading-relaxed mb-8">
@@ -28,7 +28,7 @@ export default function CtaSection() {
             {isAuthenticated ? (
               <Link
                 to="/dashboard"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-emerald-700 hover:bg-emerald-600 text-white font-semibold text-base rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 transition-colors"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-gold-500 hover:bg-gold-600 text-navy-950 font-bold text-base rounded shadow-xs focus:outline-none focus:ring-2 focus:ring-gold-400 transition-colors"
               >
                 <span>Go to My Account</span>
                 <ArrowRight className="w-4 h-4" />
@@ -36,9 +36,9 @@ export default function CtaSection() {
             ) : (
               <Link
                 to="/register"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-emerald-700 hover:bg-emerald-600 text-white font-semibold text-base rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 transition-colors"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-gold-500 hover:bg-gold-600 text-navy-950 font-bold text-base rounded shadow-xs focus:outline-none focus:ring-2 focus:ring-gold-400 transition-colors"
               >
-                <UserPlus className="w-5 h-5" />
+                <UserPlus className="w-5 h-5 text-navy-950" />
                 <span>Create Citizen Account</span>
               </Link>
             )}
@@ -46,9 +46,9 @@ export default function CtaSection() {
             <button
               type="button"
               onClick={scrollToHowItWorks}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-neutral-800 hover:bg-neutral-700 text-stone-200 border border-neutral-700 font-semibold text-base rounded focus:outline-none focus:ring-2 focus:ring-stone-400 transition-colors"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-navy-900 hover:bg-navy-800 text-stone-200 border border-navy-700/60 font-semibold text-base rounded focus:outline-none focus:ring-2 focus:ring-gold-500 transition-colors"
             >
-              <HelpCircle className="w-5 h-5 text-stone-300" />
+              <HelpCircle className="w-5 h-5 text-gold-400" />
               <span>Learn How It Works</span>
             </button>
           </div>

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Shield, Eye, EyeOff, AlertCircle, ArrowLeft, CheckCircle2 } from 'lucide-react';
+import { Eye, EyeOff, AlertCircle, ArrowLeft } from 'lucide-react';
+import logo from '../assets/logo.jpg';
 
 const KENYAN_COUNTIES = [
   'Baringo', 'Bomet', 'Bungoma', 'Busia', 'Elgeyo Marakwet', 'Embu',
@@ -124,16 +125,18 @@ export default function RegisterPage() {
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <Link
             to="/"
-            className="flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-emerald-800 rounded p-1"
+            className="flex items-center gap-2.5 focus:outline-none focus:ring-2 focus:ring-navy-800 rounded p-1"
           >
-            <div className="w-8 h-8 rounded bg-emerald-900 text-white flex items-center justify-center font-bold">
-              <Shield className="w-4 h-4 text-white" />
-            </div>
+            <img
+              src={logo}
+              alt="Open Civic Lab Logo"
+              className="w-8 h-8 rounded-full object-cover border border-gold-400 shadow-sm"
+            />
             <div>
-              <span className="block text-sm font-black tracking-tight text-neutral-900 leading-none">
-                CIVICWATCH
+              <span className="block text-sm font-black tracking-tight text-navy-950 leading-none">
+                CIVIC<span className="text-gold-500">WATCH</span>
               </span>
-              <span className="block text-[10px] font-semibold uppercase tracking-wider text-emerald-900">
+              <span className="block text-[10px] font-bold uppercase tracking-wider text-navy-700">
                 AI Kenya • Open Civic Lab
               </span>
             </div>
@@ -141,7 +144,7 @@ export default function RegisterPage() {
 
           <Link
             to="/"
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-stone-600 hover:text-neutral-900 transition-colors"
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-stone-600 hover:text-navy-900 transition-colors"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             Back to Home
@@ -153,7 +156,10 @@ export default function RegisterPage() {
       <main className="flex-1 flex items-center justify-center p-4 sm:p-6 my-6">
         <div className="w-full max-w-xl bg-white border border-stone-300 rounded-lg p-6 sm:p-8 shadow-sm">
           <div className="mb-6 text-center">
-            <h1 className="text-2xl font-black text-neutral-900 tracking-tight">
+            <div className="inline-flex items-center justify-center p-2 rounded-full bg-navy-50 border border-gold-200 mb-3">
+              <img src={logo} alt="OCL Emblem" className="w-10 h-10 rounded-full object-cover" />
+            </div>
+            <h1 className="text-2xl font-black text-navy-950 tracking-tight">
               Create Citizen Account
             </h1>
             <p className="text-xs sm:text-sm text-stone-600 mt-1">
@@ -177,7 +183,7 @@ export default function RegisterPage() {
             <div>
               <label
                 htmlFor="fullName"
-                className="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1"
+                className="block text-xs font-bold uppercase tracking-wider text-navy-900 mb-1"
               >
                 Full Name <span className="text-rose-600">*</span>
               </label>
@@ -190,7 +196,7 @@ export default function RegisterPage() {
                 value={formData.fullName}
                 onChange={handleChange}
                 placeholder="e.g. Victor Oduor"
-                className={`w-full px-3.5 py-2.5 text-sm bg-white border rounded focus:outline-none focus:ring-2 focus:ring-emerald-800 focus:border-transparent text-neutral-900 ${
+                className={`w-full px-3.5 py-2.5 text-sm bg-white border rounded focus:outline-none focus:ring-2 focus:ring-navy-800 focus:border-gold-500 text-neutral-900 ${
                   fieldErrors.fullName ? 'border-rose-400 bg-rose-50/20' : 'border-stone-300'
                 }`}
               />
@@ -205,7 +211,7 @@ export default function RegisterPage() {
               <div>
                 <label
                   htmlFor="email"
-                  className="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1"
+                  className="block text-xs font-bold uppercase tracking-wider text-navy-900 mb-1"
                 >
                   Email Address <span className="text-rose-600">*</span>
                 </label>
@@ -218,7 +224,7 @@ export default function RegisterPage() {
                   value={formData.email}
                   onChange={handleChange}
                   placeholder="citizen@example.com"
-                  className={`w-full px-3.5 py-2.5 text-sm bg-white border rounded focus:outline-none focus:ring-2 focus:ring-emerald-800 focus:border-transparent text-neutral-900 ${
+                  className={`w-full px-3.5 py-2.5 text-sm bg-white border rounded focus:outline-none focus:ring-2 focus:ring-navy-800 focus:border-gold-500 text-neutral-900 ${
                     fieldErrors.email ? 'border-rose-400 bg-rose-50/20' : 'border-stone-300'
                   }`}
                 />
@@ -231,7 +237,7 @@ export default function RegisterPage() {
               <div>
                 <label
                   htmlFor="phone"
-                  className="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1"
+                  className="block text-xs font-bold uppercase tracking-wider text-navy-900 mb-1"
                 >
                   Phone Number <span className="text-rose-600">*</span>
                 </label>
@@ -244,7 +250,7 @@ export default function RegisterPage() {
                   value={formData.phone}
                   onChange={handleChange}
                   placeholder="0712345678"
-                  className={`w-full px-3.5 py-2.5 text-sm bg-white border rounded focus:outline-none focus:ring-2 focus:ring-emerald-800 focus:border-transparent text-neutral-900 ${
+                  className={`w-full px-3.5 py-2.5 text-sm bg-white border rounded focus:outline-none focus:ring-2 focus:ring-navy-800 focus:border-gold-500 text-neutral-900 ${
                     fieldErrors.phone ? 'border-rose-400 bg-rose-50/20' : 'border-stone-300'
                   }`}
                 />
@@ -260,7 +266,7 @@ export default function RegisterPage() {
               <div>
                 <label
                   htmlFor="county"
-                  className="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1"
+                  className="block text-xs font-bold uppercase tracking-wider text-navy-900 mb-1"
                 >
                   County <span className="text-rose-600">*</span>
                 </label>
@@ -270,7 +276,7 @@ export default function RegisterPage() {
                   required
                   value={formData.county}
                   onChange={handleChange}
-                  className={`w-full px-3.5 py-2.5 text-sm bg-white border rounded focus:outline-none focus:ring-2 focus:ring-emerald-800 focus:border-transparent text-neutral-900 ${
+                  className={`w-full px-3.5 py-2.5 text-sm bg-white border rounded focus:outline-none focus:ring-2 focus:ring-navy-800 focus:border-gold-500 text-neutral-900 ${
                     fieldErrors.county ? 'border-rose-400 bg-rose-50/20' : 'border-stone-300'
                   }`}
                 >
@@ -290,7 +296,7 @@ export default function RegisterPage() {
               <div>
                 <label
                   htmlFor="ward"
-                  className="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1"
+                  className="block text-xs font-bold uppercase tracking-wider text-navy-900 mb-1"
                 >
                   Ward <span className="text-stone-400 font-normal lowercase">(optional)</span>
                 </label>
@@ -301,7 +307,7 @@ export default function RegisterPage() {
                   value={formData.ward}
                   onChange={handleChange}
                   placeholder="e.g. Kilimani"
-                  className="w-full px-3.5 py-2.5 text-sm bg-white border border-stone-300 rounded focus:outline-none focus:ring-2 focus:ring-emerald-800 focus:border-transparent text-neutral-900"
+                  className="w-full px-3.5 py-2.5 text-sm bg-white border border-stone-300 rounded focus:outline-none focus:ring-2 focus:ring-navy-800 focus:border-gold-500 text-neutral-900"
                 />
               </div>
             </div>
@@ -312,7 +318,7 @@ export default function RegisterPage() {
               <div>
                 <label
                   htmlFor="password"
-                  className="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1"
+                  className="block text-xs font-bold uppercase tracking-wider text-navy-900 mb-1"
                 >
                   Password <span className="text-rose-600">*</span>
                 </label>
@@ -326,7 +332,7 @@ export default function RegisterPage() {
                     value={formData.password}
                     onChange={handleChange}
                     placeholder="Min. 8 characters"
-                    className={`w-full px-3.5 py-2.5 text-sm bg-white border rounded focus:outline-none focus:ring-2 focus:ring-emerald-800 focus:border-transparent text-neutral-900 pr-10 ${
+                    className={`w-full px-3.5 py-2.5 text-sm bg-white border rounded focus:outline-none focus:ring-2 focus:ring-navy-800 focus:border-gold-500 text-neutral-900 pr-10 ${
                       fieldErrors.password ? 'border-rose-400 bg-rose-50/20' : 'border-stone-300'
                     }`}
                   />
@@ -334,7 +340,7 @@ export default function RegisterPage() {
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
                     aria-label={showPassword ? 'Hide password' : 'Show password'}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-500 hover:text-stone-800 p-1 focus:outline-none focus:ring-2 focus:ring-emerald-800 rounded"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-500 hover:text-navy-900 p-1 focus:outline-none focus:ring-2 focus:ring-navy-800 rounded"
                   >
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
@@ -348,7 +354,7 @@ export default function RegisterPage() {
               <div>
                 <label
                   htmlFor="confirmPassword"
-                  className="block text-xs font-bold uppercase tracking-wider text-stone-700 mb-1"
+                  className="block text-xs font-bold uppercase tracking-wider text-navy-900 mb-1"
                 >
                   Confirm Password <span className="text-rose-600">*</span>
                 </label>
@@ -362,7 +368,7 @@ export default function RegisterPage() {
                     value={formData.confirmPassword}
                     onChange={handleChange}
                     placeholder="Repeat password"
-                    className={`w-full px-3.5 py-2.5 text-sm bg-white border rounded focus:outline-none focus:ring-2 focus:ring-emerald-800 focus:border-transparent text-neutral-900 pr-10 ${
+                    className={`w-full px-3.5 py-2.5 text-sm bg-white border rounded focus:outline-none focus:ring-2 focus:ring-navy-800 focus:border-gold-500 text-neutral-900 pr-10 ${
                       fieldErrors.confirmPassword ? 'border-rose-400 bg-rose-50/20' : 'border-stone-300'
                     }`}
                   />
@@ -370,7 +376,7 @@ export default function RegisterPage() {
                     type="button"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                     aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-500 hover:text-stone-800 p-1 focus:outline-none focus:ring-2 focus:ring-emerald-800 rounded"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-500 hover:text-navy-900 p-1 focus:outline-none focus:ring-2 focus:ring-navy-800 rounded"
                   >
                     {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
@@ -389,7 +395,7 @@ export default function RegisterPage() {
                   name="termsAccepted"
                   checked={formData.termsAccepted}
                   onChange={handleChange}
-                  className="mt-0.5 w-4 h-4 rounded border-stone-300 text-emerald-900 focus:ring-emerald-800"
+                  className="mt-0.5 w-4 h-4 rounded border-stone-300 text-navy-900 focus:ring-navy-800"
                 />
                 <span>
                   I acknowledge that CivicWatch AI Kenya is an independent civic platform, and I agree to the platform community guidelines and privacy notice. <span className="text-rose-600">*</span>
@@ -405,7 +411,7 @@ export default function RegisterPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3 bg-emerald-900 hover:bg-emerald-950 text-white font-semibold text-sm rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-800 disabled:opacity-50 transition-colors"
+                className="w-full py-3 bg-navy-900 hover:bg-navy-950 text-white font-semibold text-sm rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-navy-800 border-b-2 border-gold-500 disabled:opacity-50 transition-colors"
               >
                 {loading ? 'Creating Citizen Account...' : 'Create Account'}
               </button>
@@ -417,7 +423,7 @@ export default function RegisterPage() {
             Already have a citizen account?{' '}
             <Link
               to="/login"
-              className="font-bold text-emerald-900 hover:text-emerald-950 hover:underline"
+              className="font-bold text-navy-900 hover:text-gold-600 hover:underline"
             >
               Log in here
             </Link>

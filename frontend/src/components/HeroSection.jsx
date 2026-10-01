@@ -1,7 +1,10 @@
 import React from 'react';
-import { ArrowRight, FileText, CheckCircle2, Users, Bell, Search, Compass } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { ArrowRight, FileText, CheckCircle2 } from 'lucide-react';
 
 export default function HeroSection({ onOpenUpcoming }) {
+  const navigate = useNavigate();
+
   function scrollToSection(id) {
     const el = document.getElementById(id);
     if (el) {
@@ -10,11 +13,7 @@ export default function HeroSection({ onOpenUpcoming }) {
   }
 
   function handleReportClick() {
-    onOpenUpcoming({
-      title: 'Incident Reporting Module',
-      milestone: 'Milestone 4',
-      description: 'The citizen incident reporting workflow with geo-location, evidence upload, and tracking will launch in Milestone 4. Full reporting capabilities will become active then.'
-    });
+    navigate('/reports/new');
   }
 
   return (
@@ -22,16 +21,16 @@ export default function HeroSection({ onOpenUpcoming }) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl">
           {/* Tag badge */}
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-stone-100 border border-stone-300 rounded text-xs font-semibold text-stone-800 uppercase tracking-wider mb-6">
-            <span className="w-2 h-2 rounded-full bg-emerald-700"></span>
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-navy-50 border border-navy-200 rounded-full text-xs font-semibold text-navy-900 uppercase tracking-wider mb-6">
+            <span className="w-2 h-2 rounded-full bg-gold-500"></span>
             Independent Civic Technology Initiative • Open Civic Lab
           </div>
 
           {/* Primary Headline */}
           <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-neutral-900 tracking-tight leading-tight mb-6">
-            YOUR VOICE. <br />
-            YOUR COMMUNITY. <br />
-            <span className="text-emerald-900">YOUR KENYA.</span>
+            <span className="text-navy-900">YOUR VOICE.</span> <br />
+            <span>YOUR COMMUNITY.</span> <br />
+            <span className="text-gold-600">YOUR KENYA.</span>
           </h1>
 
           {/* Supporting Core Message */}
@@ -42,27 +41,27 @@ export default function HeroSection({ onOpenUpcoming }) {
           {/* Citizen action bullets */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-10 text-sm text-stone-700">
             <div className="flex items-center gap-2.5">
-              <CheckCircle2 className="w-4 h-4 text-emerald-800 shrink-0" />
+              <CheckCircle2 className="w-4 h-4 text-gold-600 shrink-0" />
               <span>Raise community & public-service concerns</span>
             </div>
             <div className="flex items-center gap-2.5">
-              <CheckCircle2 className="w-4 h-4 text-emerald-800 shrink-0" />
+              <CheckCircle2 className="w-4 h-4 text-gold-600 shrink-0" />
               <span>Follow public-service issues with transparency</span>
             </div>
             <div className="flex items-center gap-2.5">
-              <CheckCircle2 className="w-4 h-4 text-emerald-800 shrink-0" />
+              <CheckCircle2 className="w-4 h-4 text-gold-600 shrink-0" />
               <span>Access reliable civic information & context</span>
             </div>
             <div className="flex items-center gap-2.5">
-              <CheckCircle2 className="w-4 h-4 text-emerald-800 shrink-0" />
+              <CheckCircle2 className="w-4 h-4 text-gold-600 shrink-0" />
               <span>Verify information and public claims</span>
             </div>
             <div className="flex items-center gap-2.5">
-              <CheckCircle2 className="w-4 h-4 text-emerald-800 shrink-0" />
+              <CheckCircle2 className="w-4 h-4 text-gold-600 shrink-0" />
               <span>Participate in surveys, petitions & dialogues</span>
             </div>
             <div className="flex items-center gap-2.5">
-              <CheckCircle2 className="w-4 h-4 text-emerald-800 shrink-0" />
+              <CheckCircle2 className="w-4 h-4 text-gold-600 shrink-0" />
               <span>Receive timely, relevant civic notices</span>
             </div>
           </div>
@@ -72,24 +71,24 @@ export default function HeroSection({ onOpenUpcoming }) {
             <button
               type="button"
               onClick={handleReportClick}
-              className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-emerald-900 hover:bg-emerald-950 text-white font-semibold text-base rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-800 transition-colors"
+              className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-navy-900 hover:bg-navy-950 text-white font-semibold text-base rounded-lg border-b-2 border-gold-500 shadow-xs focus:outline-none focus:ring-2 focus:ring-navy-800 transition-colors"
             >
-              <FileText className="w-5 h-5" />
-              Report an Incident
+              <FileText className="w-5 h-5 text-gold-400" />
+              Report an Issue
             </button>
             <button
               type="button"
-              onClick={() => scrollToSection('features')}
-              className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-white border border-stone-300 hover:bg-stone-100 text-stone-900 font-semibold text-base rounded focus:outline-none focus:ring-2 focus:ring-stone-400 transition-colors"
+              onClick={() => scrollToSection('how-it-works')}
+              className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-white hover:bg-gold-50 text-navy-900 border border-stone-300 font-semibold text-base rounded-lg shadow-xs focus:outline-none focus:ring-2 focus:ring-navy-800 transition-colors"
             >
-              <Compass className="w-5 h-5 text-emerald-900" />
-              Explore CivicWatch
+              Explore Capabilities
+              <ArrowRight className="w-4 h-4 text-gold-600" />
             </button>
           </div>
 
-          {/* Independent Notice */}
-          <p className="text-xs text-stone-500">
-            * CivicWatch AI Kenya is an independent civic technology platform developed for Open Civic Lab (OCL). It is not a government agency.
+          {/* Honest Roadmap Context note */}
+          <p className="text-xs text-stone-500 italic">
+            * Milestone 4 Incident Reporting is active. Community alerts, participation forums, and AI assistance will activate in subsequent milestones.
           </p>
         </div>
       </div>

@@ -1,7 +1,8 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Shield, UserCheck, LogOut, ArrowLeft, CheckCircle2 } from 'lucide-react';
+import { UserCheck, LogOut, ArrowLeft, CheckCircle2 } from 'lucide-react';
+import logo from '../assets/logo.jpg';
 
 export default function AuthSuccessPage() {
   const { user, logout } = useAuth();
@@ -17,15 +18,17 @@ export default function AuthSuccessPage() {
       {/* Header */}
       <header className="bg-white border-b border-stone-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded bg-emerald-900 text-white flex items-center justify-center font-bold">
-              <Shield className="w-4 h-4 text-white" />
-            </div>
+          <div className="flex items-center gap-2.5">
+            <img
+              src={logo}
+              alt="Open Civic Lab Logo"
+              className="w-8 h-8 rounded-full object-cover border border-gold-400 shadow-sm"
+            />
             <div>
-              <span className="block text-sm font-black tracking-tight text-neutral-900 leading-none">
-                CIVICWATCH
+              <span className="block text-sm font-black tracking-tight text-navy-950 leading-none">
+                CIVIC<span className="text-gold-500">WATCH</span>
               </span>
-              <span className="block text-[10px] font-semibold uppercase tracking-wider text-emerald-900">
+              <span className="block text-[10px] font-bold uppercase tracking-wider text-navy-700">
                 AI Kenya • Milestone 2
               </span>
             </div>
@@ -34,7 +37,7 @@ export default function AuthSuccessPage() {
           <button
             type="button"
             onClick={handleLogout}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-stone-700 hover:text-neutral-900 border border-stone-300 rounded hover:bg-stone-50 focus:outline-none focus:ring-2 focus:ring-emerald-800"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-stone-700 hover:text-navy-950 border border-stone-300 rounded hover:bg-stone-50 focus:outline-none focus:ring-2 focus:ring-navy-800"
           >
             <LogOut className="w-3.5 h-3.5" />
             Sign Out
@@ -46,14 +49,14 @@ export default function AuthSuccessPage() {
       <main className="flex-1 max-w-3xl w-full mx-auto px-4 py-12">
         <div className="bg-white border border-stone-300 rounded-lg p-6 sm:p-8 shadow-sm">
           {/* Milestone 2 Contract Notice */}
-          <div className="flex items-center gap-3 p-4 bg-emerald-50 border border-emerald-200 rounded-md mb-8">
-            <CheckCircle2 className="w-6 h-6 text-emerald-800 shrink-0" />
+          <div className="flex items-center gap-3 p-4 bg-green-50 border border-green-200 rounded-md mb-8">
+            <CheckCircle2 className="w-6 h-6 text-green-700 shrink-0" />
             <div>
-              <h1 className="text-base font-bold text-emerald-950">
+              <h1 className="text-base font-bold text-green-950">
                 Authentication Successful
               </h1>
-              <p className="text-xs sm:text-sm text-emerald-900">
-                Your authenticated session is active. The Citizen Dashboard will be implemented in Milestone 3.
+              <p className="text-xs sm:text-sm text-green-900">
+                Your authenticated session is active.
               </p>
             </div>
           </div>
@@ -89,7 +92,7 @@ export default function AuthSuccessPage() {
               <span className="block text-xs font-semibold text-stone-500 uppercase tracking-wider">
                 Assigned Role
               </span>
-              <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold bg-emerald-100 text-emerald-900">
+              <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold bg-gold-50 text-navy-950 border border-gold-300">
                 {user?.role}
               </span>
             </div>

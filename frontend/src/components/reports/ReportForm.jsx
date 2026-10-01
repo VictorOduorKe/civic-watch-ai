@@ -161,7 +161,7 @@ export default function ReportForm({ onSuccess }) {
 
       {/* 2. Responsible Reporting Notice (Section 10) */}
       <div className="bg-stone-50 border border-stone-200 rounded-lg p-3.5 flex items-start gap-2.5">
-        <ShieldCheck className="w-4 h-4 text-emerald-800 shrink-0 mt-0.5" />
+        <ShieldCheck className="w-4 h-4 text-navy-900 shrink-0 mt-0.5" />
         <p className="text-xs text-stone-600 leading-relaxed">
           <strong className="text-neutral-900 font-semibold">Responsible Reporting:</strong> Please provide information as accurately as possible. A submitted report represents a reported community concern and does not by itself establish guilt, criminal responsibility, or legal liability.
         </p>
@@ -227,7 +227,7 @@ export default function ReportForm({ onSuccess }) {
             value={formData.title}
             onChange={(e) => handleFieldChange('title', e.target.value)}
             placeholder="e.g. Major sewer pipe leak causing flooding along Ring Road"
-            className={`w-full px-3 py-2 text-xs border rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-emerald-800 ${
+            className={`w-full px-3 py-2 text-xs border rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-navy-800 focus:border-gold-500 ${
               errors.title ? 'border-red-500' : 'border-stone-300'
             }`}
             required
@@ -255,7 +255,7 @@ export default function ReportForm({ onSuccess }) {
             value={formData.description}
             onChange={(e) => handleFieldChange('description', e.target.value)}
             placeholder="Describe what occurred, how long the issue has persisted, public impact, and any relevant details..."
-            className={`w-full px-3 py-2 text-xs border rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-emerald-800 leading-relaxed ${
+            className={`w-full px-3 py-2 text-xs border rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-navy-800 focus:border-gold-500 leading-relaxed ${
               errors.description ? 'border-red-500' : 'border-stone-300'
             }`}
             required
@@ -284,7 +284,7 @@ export default function ReportForm({ onSuccess }) {
               type="date"
               value={formData.incident_date}
               onChange={(e) => handleFieldChange('incident_date', e.target.value)}
-              className="w-full px-3 py-2 text-xs border border-stone-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-emerald-800"
+              className="w-full px-3 py-2 text-xs border border-stone-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-navy-800 focus:border-gold-500"
             />
           </div>
 
@@ -300,7 +300,7 @@ export default function ReportForm({ onSuccess }) {
               type="time"
               value={formData.incident_time}
               onChange={(e) => handleFieldChange('incident_time', e.target.value)}
-              className="w-full px-3 py-2 text-xs border border-stone-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-emerald-800"
+              className="w-full px-3 py-2 text-xs border border-stone-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-navy-800 focus:border-gold-500"
             />
           </div>
         </div>
@@ -359,7 +359,7 @@ export default function ReportForm({ onSuccess }) {
               type="checkbox"
               checked={formData.is_anonymous}
               onChange={(e) => handleFieldChange('is_anonymous', e.target.checked)}
-              className="mt-0.5 h-4 w-4 rounded border-stone-300 text-emerald-900 focus:ring-emerald-800"
+              className="mt-0.5 h-4 w-4 rounded border-stone-300 text-navy-900 focus:ring-navy-800"
             />
             <div>
               <span className="text-xs font-bold text-neutral-900 block">
@@ -399,7 +399,7 @@ export default function ReportForm({ onSuccess }) {
                 key={option.id}
                 className={`p-3 rounded-lg border cursor-pointer text-left transition-all flex items-start gap-2.5 ${
                   formData.preferred_contact === option.id
-                    ? 'bg-emerald-50/70 border-emerald-800 ring-1 ring-emerald-800/20'
+                    ? 'bg-navy-50/80 border-navy-800 ring-1 ring-gold-400'
                     : 'bg-white border-stone-200 hover:border-stone-300'
                 }`}
               >
@@ -409,7 +409,7 @@ export default function ReportForm({ onSuccess }) {
                   value={option.id}
                   checked={formData.preferred_contact === option.id}
                   onChange={(e) => handleFieldChange('preferred_contact', e.target.value)}
-                  className="mt-0.5 h-3.5 w-3.5 border-stone-300 text-emerald-900 focus:ring-emerald-800"
+                  className="mt-0.5 h-3.5 w-3.5 border-stone-300 text-navy-900 focus:ring-navy-800"
                 />
                 <div>
                   <span className="text-xs font-bold text-neutral-900 block">
@@ -434,7 +434,7 @@ export default function ReportForm({ onSuccess }) {
         <button
           type="submit"
           disabled={submitting}
-          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 bg-emerald-900 text-white text-xs font-bold rounded-lg hover:bg-emerald-950 transition-colors shadow-xs disabled:opacity-60 disabled:cursor-not-allowed"
+          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 bg-navy-900 text-white text-xs font-bold rounded-lg hover:bg-navy-950 border-b-2 border-gold-500 transition-colors shadow-xs disabled:opacity-60 disabled:cursor-not-allowed"
         >
           {submitting ? (
             <>
@@ -443,7 +443,7 @@ export default function ReportForm({ onSuccess }) {
             </>
           ) : (
             <>
-              <Send className="w-4 h-4" />
+              <Send className="w-4 h-4 text-gold-400" />
               <span>Submit Report</span>
             </>
           )}

@@ -10,7 +10,7 @@ export default function RecentActivity({ onReportClick }) {
     <div className="bg-white rounded-lg border border-stone-200 p-5 shadow-xs flex flex-col justify-between">
       <div className="flex items-center justify-between pb-3 border-b border-stone-100 mb-4">
         <div className="flex items-center gap-2">
-          <History className="w-4 h-4 text-emerald-900" />
+          <History className="w-4 h-4 text-navy-900" />
           <h3 className="text-sm font-bold text-neutral-900">
             Recent Civic Activity
           </h3>
@@ -33,7 +33,7 @@ export default function RecentActivity({ onReportClick }) {
 
       <div className="mt-4 pt-3 border-t border-stone-100 flex items-center justify-between text-[11px] text-stone-500">
         <span>Activity tracking integrates in Milestone 4 & 5</span>
-        <span className="font-medium text-emerald-900">0 events recorded</span>
+        <span className="font-medium text-navy-900">0 events recorded</span>
       </div>
     </div>
   );

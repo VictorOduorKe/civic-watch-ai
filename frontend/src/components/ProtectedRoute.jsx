@@ -10,7 +10,7 @@ export default function ProtectedRoute({ children, allowedRoles }) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-stone-50">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-8 h-8 border-4 border-emerald-900 border-t-transparent rounded-full animate-spin"></div>
+          <div className="w-8 h-8 border-4 border-navy-900 border-t-transparent rounded-full animate-spin"></div>
           <p className="text-sm font-medium text-stone-600">Verifying authentication session...</p>
         </div>
       </div>
@@ -31,7 +31,7 @@ export default function ProtectedRoute({ children, allowedRoles }) {
           </p>
           <a
             href="/"
-            className="inline-block px-4 py-2 bg-emerald-900 text-white text-sm font-semibold rounded hover:bg-emerald-950"
+            className="inline-block px-4 py-2 bg-navy-900 text-white text-sm font-semibold rounded hover:bg-navy-950 border-b-2 border-gold-500 shadow-xs"
           >
             Return Home
           </a>

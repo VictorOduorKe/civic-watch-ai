@@ -59,10 +59,10 @@ export default function FeaturesSection({ onOpenUpcoming }) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="max-w-3xl mb-12">
-          <span className="text-xs font-bold uppercase tracking-wider text-emerald-900 bg-emerald-50 px-2.5 py-1 rounded">
+          <span className="text-xs font-bold uppercase tracking-wider text-navy-900 bg-navy-50 border border-navy-200 px-2.5 py-1 rounded">
             Platform Capabilities
           </span>
-          <h2 className="text-2xl sm:text-4xl font-extrabold text-neutral-900 tracking-tight mt-3">
+          <h2 className="text-2xl sm:text-4xl font-extrabold text-navy-950 tracking-tight mt-3">
             Core Civic Capabilities Planned for Kenya
           </h2>
           <p className="text-base sm:text-lg text-stone-600 mt-3 leading-relaxed">
@@ -77,18 +77,18 @@ export default function FeaturesSection({ onOpenUpcoming }) {
             return (
               <div
                 key={feat.title}
-                className="bg-stone-50 border border-stone-200 rounded-lg p-6 flex flex-col justify-between hover:border-stone-400 transition-colors"
+                className="bg-stone-50 border border-stone-200 rounded-lg p-6 flex flex-col justify-between hover:border-gold-300 hover:shadow-xs transition-all"
               >
                 <div>
                   <div className="flex items-center justify-between mb-4">
-                    <div className="p-2.5 bg-white border border-stone-200 rounded-md text-emerald-900">
+                    <div className="p-2.5 bg-white border border-stone-200 rounded-md text-navy-900 shadow-2xs">
                       <Icon className="w-5 h-5" />
                     </div>
                     <span className="text-[11px] font-semibold text-stone-500 bg-stone-200/70 px-2 py-0.5 rounded">
                       {feat.milestone}
                     </span>
                   </div>
-                  <h3 className="text-lg font-bold text-neutral-900 mb-2">
+                  <h3 className="text-lg font-bold text-navy-950 mb-2">
                     {feat.title}
                   </h3>
                   <p className="text-sm text-stone-600 leading-relaxed">
@@ -106,7 +106,7 @@ export default function FeaturesSection({ onOpenUpcoming }) {
                         description: feat.description
                       })
                     }
-                    className="text-xs font-semibold text-emerald-900 hover:text-emerald-950 inline-flex items-center gap-1 focus:outline-none focus:underline"
+                    className="text-xs font-bold text-navy-900 hover:text-gold-600 inline-flex items-center gap-1 focus:outline-none focus:underline"
                   >
                     View roadmap details →
                   </button>

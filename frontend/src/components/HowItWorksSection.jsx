@@ -42,10 +42,10 @@ export default function HowItWorksSection() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="max-w-3xl mb-14">
-          <span className="text-xs font-bold uppercase tracking-wider text-emerald-900 bg-emerald-50 px-2.5 py-1 rounded">
+          <span className="text-xs font-bold uppercase tracking-wider text-navy-900 bg-navy-50 border border-navy-200 px-2.5 py-1 rounded">
             The Process
           </span>
-          <h2 className="text-2xl sm:text-4xl font-extrabold text-neutral-900 tracking-tight mt-3">
+          <h2 className="text-2xl sm:text-4xl font-extrabold text-navy-950 tracking-tight mt-3">
             How CivicWatch Operates
           </h2>
           <p className="text-base sm:text-lg text-stone-600 mt-3 leading-relaxed">
@@ -60,14 +60,14 @@ export default function HowItWorksSection() {
             return (
               <div
                 key={step.number}
-                className="bg-white border border-stone-200 rounded-lg p-6 relative flex flex-col justify-between"
+                className="bg-white border border-stone-200 rounded-lg p-6 relative flex flex-col justify-between hover:border-gold-300 transition-colors"
               >
                 <div>
                   <div className="flex items-center justify-between mb-5">
-                    <span className="text-2xl font-black text-emerald-900 tracking-tight">
+                    <span className="text-2xl font-black text-gold-500 tracking-tight">
                       {step.number}
                     </span>
-                    <div className="p-2 bg-stone-100 rounded-md text-stone-700">
+                    <div className="p-2 bg-navy-50 rounded-md text-navy-900 border border-gold-200/60">
                       <Icon className="w-5 h-5" />
                     </div>
                   </div>
@@ -75,7 +75,7 @@ export default function HowItWorksSection() {
                   <span className="text-xs font-semibold uppercase tracking-wider text-stone-400 block mb-1">
                     {step.subtitle}
                   </span>
-                  <h3 className="text-lg font-bold text-neutral-900 mb-2">
+                  <h3 className="text-lg font-bold text-navy-950 mb-2">
                     {step.title}
                   </h3>
                   <p className="text-sm text-stone-600 leading-relaxed">

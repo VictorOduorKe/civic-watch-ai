@@ -8,14 +8,20 @@ export default function StatCard({ title, count = 0, subtext, icon: Icon, status
     stone: 'bg-stone-100 text-stone-700 border-stone-200',
     amber: 'bg-amber-50 text-amber-900 border-amber-200',
     blue: 'bg-sky-50 text-sky-900 border-sky-200',
-    emerald: 'bg-emerald-50 text-emerald-950 border-emerald-200'
+    green: 'bg-green-50 text-green-900 border-green-200',
+    emerald: 'bg-green-50 text-green-900 border-green-200',
+    gold: 'bg-gold-50 text-gold-900 border-gold-200',
+    navy: 'bg-navy-50 text-navy-900 border-navy-200'
   };
 
   const badgeMap = {
     stone: 'bg-stone-200 text-stone-700',
     amber: 'bg-amber-100 text-amber-800',
     blue: 'bg-sky-100 text-sky-800',
-    emerald: 'bg-emerald-100 text-emerald-800'
+    green: 'bg-green-100 text-green-800',
+    emerald: 'bg-green-100 text-green-800',
+    gold: 'bg-gold-100 text-gold-900',
+    navy: 'bg-navy-100 text-navy-900'
   };
 
   return (

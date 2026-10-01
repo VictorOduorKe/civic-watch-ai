@@ -42,7 +42,7 @@ export default function CivicInfoCard() {
     <div className="bg-white rounded-lg border border-stone-200 p-5 shadow-xs flex flex-col justify-between">
       <div>
         <div className="flex items-center gap-2 pb-3 border-b border-stone-100 mb-4">
-          <Info className="w-4 h-4 text-emerald-900" />
+          <Info className="w-4 h-4 text-navy-900" />
           <h3 className="text-sm font-bold text-neutral-900">
             How CivicWatch AI Empowers You
           </h3>
@@ -80,7 +80,7 @@ export default function CivicInfoCard() {
           href="https://openciviclab.org"
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-1 font-semibold text-emerald-900 hover:text-emerald-950"
+          className="inline-flex items-center gap-1 font-semibold text-navy-900 hover:text-gold-600 transition-colors"
         >
           <span>Learn more</span>
           <ExternalLink className="w-3 h-3" />

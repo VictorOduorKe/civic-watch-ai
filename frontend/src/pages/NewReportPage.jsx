@@ -15,11 +15,11 @@ export default function NewReportPage() {
           {!submittedReport && (
             <div className="bg-white border border-stone-200 rounded-xl p-5 sm:p-6 shadow-xs">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-emerald-900 text-white flex items-center justify-center shrink-0">
-                  <PlusCircle className="w-5 h-5" />
+                <div className="w-10 h-10 rounded-lg bg-navy-900 text-gold-400 border border-gold-500/30 flex items-center justify-center shrink-0 shadow-xs">
+                  <PlusCircle className="w-5 h-5 text-gold-400" />
                 </div>
                 <div>
-                  <h2 className="text-xl sm:text-2xl font-extrabold text-neutral-900 tracking-tight">
+                  <h2 className="text-xl sm:text-2xl font-extrabold text-navy-950 tracking-tight">
                     Report an Issue or Civic Concern
                   </h2>
                   <p className="text-xs sm:text-sm text-stone-600 mt-0.5 leading-relaxed">
