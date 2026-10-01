@@ -5,7 +5,8 @@ import ProtectedRoute from './components/ProtectedRoute';
 import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
-import AuthSuccessPage from './pages/AuthSuccessPage';
+import DashboardPage from './pages/DashboardPage';
+import ProfilePage from './pages/ProfilePage';
 import HealthStatusPage from './pages/HealthStatusPage';
 
 export default function App() {
@@ -20,12 +21,20 @@ export default function App() {
           <Route path="/status" element={<HealthStatusPage />} />
           <Route path="/health" element={<HealthStatusPage />} />
 
-          {/* Protected Destination (Milestone 2 Contract) */}
+          {/* Authenticated Citizen Workspace (Milestone 3) */}
           <Route
             path="/dashboard"
             element={
               <ProtectedRoute>
-                <AuthSuccessPage />
+                <DashboardPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <ProfilePage />
               </ProtectedRoute>
             }
           />

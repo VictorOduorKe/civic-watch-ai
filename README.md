@@ -4,9 +4,10 @@ CivicWatch AI Kenya is an AI-powered civic engagement and public accountability 
 
 ---
 
-## Current Milestone: Milestone 2 (Authentication & User Identity)
+## Current Milestone: Milestone 3 (Citizen Dashboard & Authenticated Citizen Workspace)
 
-This repository contains the completed public presentation layer, database foundation, and full user authentication & identity system for CivicWatch AI Kenya:
+This repository contains the completed public presentation layer, database foundation, real authentication system, and the dedicated authenticated citizen workspace for CivicWatch AI Kenya:
+* **Citizen Dashboard & Workspace (M3)**: Authenticated dashboard at `/dashboard` and profile at `/profile`, responsive sidebar & mobile navigation drawer, real user identity welcome banner, honest zero-count metric cards, quick action workflow previews, recent activity empty states, and educational guidance cards.
 * **Authentication & Identity (M2)**: Registration with Kenyan county selection, secure login, profile inspection, JWT token lifecycle, persistent authentication context (`AuthContext`), password hashing with bcrypt, Zod validation, and protected routing.
 * **Landing Page (M1)**: Public website at `/` with responsive navigation, hero section, planned capabilities, workflow overview, responsible civic-tech principles, Open Civic Lab introduction, and transparent roadmap modals.
 * **M0 Foundation**: React 18 + Vite frontend, Express backend, MySQL connection pool, database migrations, security middleware, and real-time health verification endpoint (`GET /api/health` and `/status`).
@@ -129,14 +130,15 @@ npm run dev:frontend
 
 ---
 
-## Authentication & Verification Endpoints
+## Application & Verification Routes
  
 * **Backend Health API**: `http://localhost:5000/api/health`
-* **Frontend App**: `http://localhost:5173/`
-* **Login Page**: `http://localhost:5173/login`
-* **Registration Page**: `http://localhost:5173/register`
-* **Authenticated Verification / Transition Page**: `http://localhost:5173/dashboard`
-* **Status Page**: `http://localhost:5173/status`
+* **Public Landing Page**: `http://localhost:5173/`
+* **Citizen Login Page**: `http://localhost:5173/login`
+* **Citizen Registration Page**: `http://localhost:5173/register`
+* **Citizen Workspace (M3)**: `http://localhost:5173/dashboard` (Protected)
+* **Citizen Profile (M3)**: `http://localhost:5173/profile` (Protected)
+* **System Status Page**: `http://localhost:5173/status`
 
 ### API Authentication Endpoints
 
@@ -157,4 +159,4 @@ npm run dev:frontend
 
 ## Next Milestone
 
-* **Milestone 3**: Citizen Dashboard & Incident Reporting
+* **Milestone 4**: Incident Reporting (Public Intake, Geo-tagging, Media Uploads & AI Triage)
