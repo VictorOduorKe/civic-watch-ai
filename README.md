@@ -4,10 +4,11 @@ CivicWatch AI Kenya is an AI-powered civic engagement and public accountability 
 
 ---
 
-## Current Milestone: Milestone 1 (Public Landing Page)
+## Current Milestone: Milestone 2 (Authentication & User Identity)
 
-This repository contains the completed public presentation layer and foundation for CivicWatch AI Kenya:
-* **Landing Page**: Public website at `/` with responsive navigation, hero section, planned capabilities, workflow overview, responsible civic-tech principles, Open Civic Lab introduction, and transparent roadmap modals.
+This repository contains the completed public presentation layer, database foundation, and full user authentication & identity system for CivicWatch AI Kenya:
+* **Authentication & Identity (M2)**: Registration with Kenyan county selection, secure login, profile inspection, JWT token lifecycle, persistent authentication context (`AuthContext`), password hashing with bcrypt, Zod validation, and protected routing.
+* **Landing Page (M1)**: Public website at `/` with responsive navigation, hero section, planned capabilities, workflow overview, responsible civic-tech principles, Open Civic Lab introduction, and transparent roadmap modals.
 * **M0 Foundation**: React 18 + Vite frontend, Express backend, MySQL connection pool, database migrations, security middleware, and real-time health verification endpoint (`GET /api/health` and `/status`).
 
 ---
@@ -128,21 +129,21 @@ npm run dev:frontend
 
 ---
 
-## Health Check Verification
-
+## Authentication & Verification Endpoints
+ 
 * **Backend Health API**: `http://localhost:5000/api/health`
-* **Frontend Health Dashboard**: `http://localhost:5173/`
+* **Frontend App**: `http://localhost:5173/`
+* **Login Page**: `http://localhost:5173/login`
+* **Registration Page**: `http://localhost:5173/register`
+* **Authenticated Verification / Transition Page**: `http://localhost:5173/dashboard`
+* **Status Page**: `http://localhost:5173/status`
 
-Expected response:
+### API Authentication Endpoints
 
-```json
-{
-  "success": true,
-  "message": "CivicWatch AI Kenya API is running",
-  "database": "connected",
-  "timestamp": "2026-10-01T10:05:57.035Z"
-}
-```
+* `POST /api/auth/register` — Register a new citizen account
+* `POST /api/auth/login` — Sign in and obtain JWT
+* `GET /api/auth/me` — Retrieve active profile (requires Bearer token or cookie)
+* `POST /api/auth/logout` — Invalidate session cookie
 
 ---
 
@@ -156,4 +157,4 @@ Expected response:
 
 ## Next Milestone
 
-* **Milestone 1**: CivicWatch Landing Page & Visual Identity
+* **Milestone 3**: Citizen Dashboard & Incident Reporting

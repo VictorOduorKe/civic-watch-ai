@@ -8,24 +8,66 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
   timeout: 10000,
+  withCredentials: true,
   headers: {
     'Content-Type': 'application/json'
   }
 });
 
-// Interceptor for standard error handling
+// Request interceptor: Attach JWT token if available in localStorage
+apiClient.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('civicwatch_token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
+// Response interceptor for standardized error formatting
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
-    // Standardize error shape
+    const message =
+      error.response?.data?.message ||
+      error.message ||
+      'An unexpected network error occurred.';
     const formattedError = {
-      message: error.response?.data?.message || error.message || 'Network request failed',
+      message,
       status: error.response?.status || 500,
-      data: error.response?.data || null
+      data: error.response?.data || null,
+      errors: error.response?.data?.errors || null
     };
     return Promise.reject(formattedError);
   }
 );
+
+/**
+ * Authentication API methods.
+ */
+export const authApi = {
+  async register(userData) {
+    const response = await apiClient.post('/auth/register', userData);
+    return response.data;
+  },
+
+  async login(credentials) {
+    const response = await apiClient.post('/auth/login', credentials);
+    return response.data;
+  },
+
+  async logout() {
+    const response = await apiClient.post('/auth/logout');
+    return response.data;
+  },
+
+  async getMe() {
+    const response = await apiClient.get('/auth/me');
+    return response.data;
+  }
+};
 
 /**
  * Health check API service.

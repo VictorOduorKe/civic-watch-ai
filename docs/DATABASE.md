@@ -64,9 +64,9 @@ Migration files are located in `database/migrations/` and must follow a sequenti
 
 ```text
 database/migrations/
-├── 001_init_migrations.sql
-├── 002_create_users_table.sql       # Future Milestone 2
-└── 003_create_reports_table.sql     # Future Milestone 3
+├── 001_init_migrations.sql         # M0: Migration tracking table
+├── 002_create_users_table.sql      # M2: User accounts and authentication
+└── 003_create_reports_table.sql    # Future Milestone 3+
 ```
 
 ### Running Migrations
@@ -91,9 +91,59 @@ The migration runner will:
 4. Execute unapplied files sequentially within atomic database transactions.
 5. Record successful executions in `_migrations`.
 
-### Adding Tables in Future Milestones
+---
 
-1. Create a new file in `database/migrations/` using the next sequential number (e.g., `002_create_users_table.sql`).
-2. Write clean SQL statements using `ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci`.
-3. Run `npm run migrate`.
-4. Test and commit the `.sql` file to version control.
+## Tables Established in Milestone 2
+
+### `users` Table
+
+Stores citizen and administrative user profiles, contact details, authentication credentials, geographical location, and account status.
+
+#### Schema
+
+```sql
+CREATE TABLE IF NOT EXISTS users (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  full_name VARCHAR(255) NOT NULL,
+  email VARCHAR(255) NOT NULL,
+  phone VARCHAR(50) NOT NULL,
+  password_hash VARCHAR(255) NOT NULL,
+  county VARCHAR(100) NOT NULL,
+  ward VARCHAR(100) NULL,
+  role ENUM('Citizen', 'Admin', 'Moderator', 'Analyst') NOT NULL DEFAULT 'Citizen',
+  is_active BOOLEAN NOT NULL DEFAULT TRUE,
+  email_verified BOOLEAN NOT NULL DEFAULT FALSE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  last_login_at TIMESTAMP NULL DEFAULT NULL,
+  UNIQUE KEY uq_users_email (email),
+  INDEX idx_users_role (role),
+  INDEX idx_users_created_at (created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+```
+
+#### Field Descriptions
+
+| Column | Type | Constraints | Description |
+|---|---|---|---|
+| `id` | `INT` | `AUTO_INCREMENT`, `PRIMARY KEY` | Unique internal user ID |
+| `full_name` | `VARCHAR(255)` | `NOT NULL` | Citizen's full legal name |
+| `email` | `VARCHAR(255)` | `NOT NULL`, `UNIQUE` | Normalized lowercase email address (login credential) |
+| `phone` | `VARCHAR(50)` | `NOT NULL` | Contact telephone number |
+| `password_hash` | `VARCHAR(255)` | `NOT NULL` | bcrypt salt & hash (12 cost factor rounds) |
+| `county` | `VARCHAR(100)` | `NOT NULL` | Citizen's primary county (one of 47 Kenyan counties) |
+| `ward` | `VARCHAR(100)` | `NULL` | Optional ward or constituency identifier |
+| `role` | `ENUM` | `NOT NULL`, Default `'Citizen'` | Role hierarchy: `Citizen`, `Admin`, `Moderator`, `Analyst` |
+| `is_active` | `BOOLEAN` | `NOT NULL`, Default `TRUE` | Soft-deactivation flag; deactivated users cannot login |
+| `email_verified`| `BOOLEAN` | `NOT NULL`, Default `FALSE`| Reserved for future email verification milestone |
+| `created_at` | `TIMESTAMP` | Default `CURRENT_TIMESTAMP` | Account creation timestamp |
+| `updated_at` | `TIMESTAMP` | Auto-updates on modification | Last profile update timestamp |
+| `last_login_at`| `TIMESTAMP` | `NULL` | Updated on every successful authentication |
+
+#### Security & Integrity Rules
+
+1. **Email Uniqueness & Case Normalization**: The `uq_users_email` unique key enforces email uniqueness at the database layer. All emails are lowercased and trimmed prior to insertion and queries.
+2. **Password Security**: Passwords are never stored in plaintext. They are salted and hashed using bcrypt with 12 rounds before insertion.
+3. **Role Protection**: The database defaults `role` to `'Citizen'`. Even if an incoming request provides an administrative role, the application service explicitly defaults public registrations to `'Citizen'`.
+4. **Active Account Check**: The authentication service checks `is_active = TRUE` on both login and profile retrieval (`GET /api/auth/me`).
+

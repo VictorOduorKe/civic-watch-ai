@@ -111,3 +111,66 @@ civicwatch-ai-kenya/
    - `cors` is locked to the configured `FRONTEND_URL` (`http://localhost:5173` by default).
    - `express-rate-limit` prevents brute-force floods while keeping thresholds suitable for development.
    - Sensitive fields (passwords, tokens, database credentials) are strictly stripped from logs and error responses.
+
+---
+
+## Authentication & Authorization Architecture (Milestone 2)
+
+Milestone 2 introduces a complete, production-grade identity and authentication layer built with JWT, bcrypt, Zod, and React Context.
+
+```text
+┌─────────────────┐       POST /api/auth/login        ┌─────────────────────────┐
+│                 ├──────────────────────────────────►│ authRoutes (Rate Limit) │
+│  React Client   │                                   └────────────┬────────────┘
+│  (AuthContext)  │◄──────────────────────────────────┐            │
+│                 │   JWT Token + Safe User Profile   │            ▼
+└────────┬────────┘                                   │  validate(loginSchema)
+         │                                            └────────────┬────────────┘
+         │ Axios Interceptor                                       │
+         │ (Authorization: Bearer <token>)                         ▼
+         ▼                                               authController.login
+┌─────────────────────────────────┐                                │
+│        Protected API Request    │                                ▼
+│  (e.g., GET /api/auth/me)       │                      authService.loginUser
+└────────────────┬────────────────┘                                │
+                 │                                                 ▼
+                 ▼                                       Bcrypt verify password
+    authMiddleware.requireAuth                                     │
+                 │                                                 ▼
+                 ├─► Verify JWT signature & expiration   Generate Signed JWT
+                 ├─► Query DB: user exists & is_active?            │
+                 └─► Attach req.user (safe, no password)           ▼
+                                                         Update last_login_at
+```
+
+### Backend Components
+
+1. **Password Hashing (`authService.js`)**:
+   - Uses `bcryptjs` with 12 salt rounds. Plaintext passwords are never persisted or logged.
+2. **JWT Token Generation & Verification**:
+   - Signs tokens with `JWT_SECRET` and configurable expiration (`JWT_EXPIRES_IN=1d` default).
+   - Payload includes: `{ id, email, role, full_name, county }`.
+   - Dual delivery: Sent in JSON response body (for client localStorage / interceptor) and as an `HttpOnly`, `SameSite=Strict` cookie.
+3. **Protection Against Role Tampering**:
+   - The registration service explicitly overrides any role passed in the request body, strictly enforcing `'Citizen'` for public signups.
+4. **Auth Middleware (`requireAuth`, `requireRole`)**:
+   - `requireAuth`: Extracts token from `Authorization: Bearer <token>` or `req.cookies.token`, verifies signature, confirms user still exists and `is_active` in MySQL, and attaches sanitized `req.user` to the Express request.
+   - `requireRole(...roles)`: Verifies that `req.user.role` matches one of the authorized roles before proceeding, returning `403 Forbidden` if unauthorized.
+
+### Frontend Components
+
+1. **Authentication Context (`AuthContext.jsx`)**:
+   - Manages global `user`, `token`, and `loading` states.
+   - Restores session on application load by querying `GET /api/auth/me` with stored token.
+   - Exposes `login()`, `register()`, and `logout()` helpers.
+2. **Axios Request Interceptor (`services/api.js`)**:
+   - Automatically attaches `Authorization: Bearer <token>` header to all outgoing requests if token is present in `localStorage`.
+   - Responds to `401 Unauthorized` by clearing stale credentials.
+3. **Protected Routes (`ProtectedRoute.jsx`)**:
+   - Wraps routes that require authentication (e.g. `/dashboard`).
+   - If user is unauthenticated and loading completes, redirects to `/login` with `from` location state for seamless post-login redirection.
+   - Supports role-based protection (`allowedRoles`).
+4. **Controlled Transition Destination (`AuthSuccessPage.jsx`)**:
+   - Milestone 2 strictly avoids implementing the Citizen Dashboard (Milestone 3).
+   - Displays a clean, authenticated verification page confirming user identity, role, county, and session state with a prominent notice indicating Milestone 3 dashboard readiness.
+

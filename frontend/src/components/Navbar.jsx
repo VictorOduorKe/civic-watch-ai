@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
-import { Menu, X, Shield } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Menu, X, Shield, LogOut, User } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 export default function Navbar({ onOpenUpcoming }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { user, isAuthenticated, logout } = useAuth();
+  const navigate = useNavigate();
 
   function handleNavClick(targetId) {
     setMobileMenuOpen(false);
@@ -10,6 +14,8 @@ export default function Navbar({ onOpenUpcoming }) {
       const el = document.getElementById(targetId);
       if (el) {
         el.scrollIntoView({ behavior: 'smooth' });
+      } else {
+        navigate(`/#${targetId}`);
       }
     } else {
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -18,19 +24,7 @@ export default function Navbar({ onOpenUpcoming }) {
 
   function handleActionClick(actionType) {
     setMobileMenuOpen(false);
-    if (actionType === 'login') {
-      onOpenUpcoming({
-        title: 'Citizen Authentication',
-        milestone: 'Milestone 2',
-        description: 'Secure citizen authentication, JWT session handling, and role-based access will be introduced in Milestone 2.'
-      });
-    } else if (actionType === 'register') {
-      onOpenUpcoming({
-        title: 'Citizen Registration',
-        milestone: 'Milestone 2',
-        description: 'Citizen profile creation and verification flows will be introduced in Milestone 2.'
-      });
-    } else if (actionType === 'reports') {
+    if (actionType === 'reports') {
       onOpenUpcoming({
         title: 'Incident Reporting & Tracking',
         milestone: 'Milestone 4',
@@ -45,15 +39,22 @@ export default function Navbar({ onOpenUpcoming }) {
     }
   }
 
+  async function handleLogout() {
+    setMobileMenuOpen(false);
+    await logout();
+    navigate('/');
+  }
+
+  const firstName = user?.fullName ? user.fullName.split(' ')[0] : 'Citizen';
+
   return (
     <header className="sticky top-0 z-40 bg-white border-b border-stone-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Brand Logo & Title */}
           <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={() => handleNavClick(null)}
+            <Link
+              to="/"
               className="flex items-center gap-2 text-left focus:outline-none focus:ring-2 focus:ring-emerald-800 rounded p-1"
             >
               <div className="w-9 h-9 rounded bg-emerald-900 text-white flex items-center justify-center font-bold">
@@ -67,18 +68,18 @@ export default function Navbar({ onOpenUpcoming }) {
                   AI Kenya • Open Civic Lab
                 </span>
               </div>
-            </button>
+            </Link>
           </div>
 
           {/* Desktop Navigation Links */}
           <nav aria-label="Main Navigation" className="hidden md:flex items-center gap-6">
-            <button
-              type="button"
+            <Link
+              to="/"
               onClick={() => handleNavClick(null)}
               className="text-sm font-medium text-stone-700 hover:text-emerald-900 transition-colors focus:outline-none focus:underline"
             >
               Home
-            </button>
+            </Link>
             <button
               type="button"
               onClick={() => handleNavClick('how-it-works')}
@@ -116,22 +117,45 @@ export default function Navbar({ onOpenUpcoming }) {
             </button>
           </nav>
 
-          {/* Desktop Right Side CTA Actions */}
+          {/* Desktop Right Side Auth Actions */}
           <div className="hidden md:flex items-center gap-3">
-            <button
-              type="button"
-              onClick={() => handleActionClick('login')}
-              className="px-3.5 py-1.5 text-sm font-semibold text-stone-800 hover:text-emerald-900 focus:outline-none focus:ring-2 focus:ring-emerald-800 rounded"
-            >
-              Login
-            </button>
-            <button
-              type="button"
-              onClick={() => handleActionClick('register')}
-              className="px-4 py-2 text-sm font-semibold text-white bg-emerald-900 hover:bg-emerald-950 rounded transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-800"
-            >
-              Get Started
-            </button>
+            {isAuthenticated ? (
+              <div className="flex items-center gap-3">
+                <Link
+                  to="/dashboard"
+                  className="flex items-center gap-2 px-3 py-1.5 bg-stone-100 hover:bg-stone-200 border border-stone-300 rounded text-xs font-semibold text-stone-900 focus:outline-none focus:ring-2 focus:ring-emerald-800"
+                >
+                  <User className="w-3.5 h-3.5 text-emerald-900" />
+                  <span>Welcome, {firstName}</span>
+                  <span className="px-1.5 py-0.2 bg-emerald-900 text-white rounded text-[10px]">
+                    {user?.role}
+                  </span>
+                </Link>
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-stone-700 hover:text-neutral-900 border border-stone-300 rounded hover:bg-stone-50 focus:outline-none focus:ring-2 focus:ring-emerald-800"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <>
+                <Link
+                  to="/login"
+                  className="px-3.5 py-1.5 text-sm font-semibold text-stone-800 hover:text-emerald-900 focus:outline-none focus:ring-2 focus:ring-emerald-800 rounded"
+                >
+                  Login
+                </Link>
+                <Link
+                  to="/register"
+                  className="px-4 py-2 text-sm font-semibold text-white bg-emerald-900 hover:bg-emerald-950 rounded transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-800"
+                >
+                  Get Started
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -152,13 +176,13 @@ export default function Navbar({ onOpenUpcoming }) {
       {/* Mobile Drawer Navigation */}
       {mobileMenuOpen && (
         <nav aria-label="Mobile Navigation" className="md:hidden border-t border-stone-200 bg-white px-4 pt-3 pb-6 space-y-2">
-          <button
-            type="button"
+          <Link
+            to="/"
             onClick={() => handleNavClick(null)}
             className="block w-full text-left px-3 py-2 rounded text-base font-medium text-stone-800 hover:bg-stone-100 hover:text-emerald-900"
           >
             Home
-          </button>
+          </Link>
           <button
             type="button"
             onClick={() => handleNavClick('how-it-works')}
@@ -196,20 +220,41 @@ export default function Navbar({ onOpenUpcoming }) {
           </button>
 
           <div className="pt-4 border-t border-stone-200 flex flex-col gap-2">
-            <button
-              type="button"
-              onClick={() => handleActionClick('login')}
-              className="w-full text-center px-4 py-2 border border-stone-300 rounded text-sm font-semibold text-stone-800 hover:bg-stone-50"
-            >
-              Login
-            </button>
-            <button
-              type="button"
-              onClick={() => handleActionClick('register')}
-              className="w-full text-center px-4 py-2 bg-emerald-900 text-white rounded text-sm font-semibold hover:bg-emerald-950"
-            >
-              Get Started
-            </button>
+            {isAuthenticated ? (
+              <>
+                <Link
+                  to="/dashboard"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="w-full text-center px-4 py-2 border border-stone-300 rounded text-sm font-semibold text-stone-800 hover:bg-stone-50"
+                >
+                  My Account ({firstName})
+                </Link>
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="w-full text-center px-4 py-2 bg-stone-900 text-white rounded text-sm font-semibold hover:bg-stone-800"
+                >
+                  Sign Out
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  to="/login"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="w-full text-center px-4 py-2 border border-stone-300 rounded text-sm font-semibold text-stone-800 hover:bg-stone-50"
+                >
+                  Login
+                </Link>
+                <Link
+                  to="/register"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="w-full text-center px-4 py-2 bg-emerald-900 text-white rounded text-sm font-semibold hover:bg-emerald-950"
+                >
+                  Get Started
+                </Link>
+              </>
+            )}
           </div>
         </nav>
       )}

@@ -1,20 +1,16 @@
 import React from 'react';
-import { ArrowRight, HelpCircle } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { HelpCircle, UserPlus, ArrowRight } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
-export default function CtaSection({ onOpenUpcoming }) {
+export default function CtaSection() {
+  const { isAuthenticated } = useAuth();
+
   function scrollToHowItWorks() {
     const el = document.getElementById('how-it-works');
     if (el) {
       el.scrollIntoView({ behavior: 'smooth' });
     }
-  }
-
-  function handleGetStarted() {
-    onOpenUpcoming({
-      title: 'Citizen Registration',
-      milestone: 'Milestone 2',
-      description: 'Citizen accounts, secure authentication, and profile onboarding will be enabled in Milestone 2. Stay tuned as we build out the next phase.'
-    });
   }
 
   return (
@@ -29,20 +25,31 @@ export default function CtaSection({ onOpenUpcoming }) {
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <button
-              type="button"
-              onClick={handleGetStarted}
-              className="w-full sm:w-auto px-6 py-3.5 bg-emerald-700 hover:bg-emerald-600 text-white font-semibold text-base rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 transition-colors"
-            >
-              Get Started
-            </button>
+            {isAuthenticated ? (
+              <Link
+                to="/dashboard"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-emerald-700 hover:bg-emerald-600 text-white font-semibold text-base rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 transition-colors"
+              >
+                <span>Go to My Account</span>
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            ) : (
+              <Link
+                to="/register"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-emerald-700 hover:bg-emerald-600 text-white font-semibold text-base rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 transition-colors"
+              >
+                <UserPlus className="w-5 h-5" />
+                <span>Create Citizen Account</span>
+              </Link>
+            )}
+
             <button
               type="button"
               onClick={scrollToHowItWorks}
               className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-neutral-800 hover:bg-neutral-700 text-stone-200 border border-neutral-700 font-semibold text-base rounded focus:outline-none focus:ring-2 focus:ring-stone-400 transition-colors"
             >
               <HelpCircle className="w-5 h-5 text-stone-300" />
-              Learn How It Works
+              <span>Learn How It Works</span>
             </button>
           </div>
         </div>
