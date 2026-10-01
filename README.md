@@ -4,10 +4,11 @@ CivicWatch AI Kenya is an AI-powered civic engagement and public accountability 
 
 ---
 
-## Current Milestone: Milestone 3 (Citizen Dashboard & Authenticated Citizen Workspace)
+## Current Milestone: Milestone 4 (Incident Reporting Module)
 
-This repository contains the completed public presentation layer, database foundation, real authentication system, and the dedicated authenticated citizen workspace for CivicWatch AI Kenya:
-* **Citizen Dashboard & Workspace (M3)**: Authenticated dashboard at `/dashboard` and profile at `/profile`, responsive sidebar & mobile navigation drawer, real user identity welcome banner, honest zero-count metric cards, quick action workflow previews, recent activity empty states, and educational guidance cards.
+This repository contains the completed public presentation layer, database foundation, real authentication system, citizen workspace, and authenticated incident reporting workflow for CivicWatch AI Kenya:
+* **Incident Reporting Module (M4)**: Authenticated intake flow at `/reports/new`, dynamic category loading from database (12 categories with icons and descriptions), location metadata (47 Kenyan counties, sub-county, ward, landmark, GPS auto-detection), incident date/time, optional file attachments (up to 5 files, 5MB each, JPG/PNG/WEBP/PDF), anonymous submission privacy toggle, preferred contact selection, emergency 999/112 advisory, atomic database transactions with rollback cleanup, and server-side reference generation (`CWK-YYYY-XXXXXX`).
+* **Citizen Dashboard & Workspace (M3)**: Authenticated dashboard at `/dashboard` and profile at `/profile`, responsive sidebar & mobile navigation drawer, real user identity welcome banner, live report counters from database, quick action workflow triggers, recent activity empty states, and educational guidance cards.
 * **Authentication & Identity (M2)**: Registration with Kenyan county selection, secure login, profile inspection, JWT token lifecycle, persistent authentication context (`AuthContext`), password hashing with bcrypt, Zod validation, and protected routing.
 * **Landing Page (M1)**: Public website at `/` with responsive navigation, hero section, planned capabilities, workflow overview, responsible civic-tech principles, Open Civic Lab introduction, and transparent roadmap modals.
 * **M0 Foundation**: React 18 + Vite frontend, Express backend, MySQL connection pool, database migrations, security middleware, and real-time health verification endpoint (`GET /api/health` and `/status`).
@@ -137,15 +138,21 @@ npm run dev:frontend
 * **Citizen Login Page**: `http://localhost:5173/login`
 * **Citizen Registration Page**: `http://localhost:5173/register`
 * **Citizen Workspace (M3)**: `http://localhost:5173/dashboard` (Protected)
+* **Citizen Incident Report (M4)**: `http://localhost:5173/reports/new` (Protected)
 * **Citizen Profile (M3)**: `http://localhost:5173/profile` (Protected)
 * **System Status Page**: `http://localhost:5173/status`
 
-### API Authentication Endpoints
+### Key API Endpoints
 
-* `POST /api/auth/register` — Register a new citizen account
-* `POST /api/auth/login` — Sign in and obtain JWT
-* `GET /api/auth/me` — Retrieve active profile (requires Bearer token or cookie)
-* `POST /api/auth/logout` — Invalidate session cookie
+* **Authentication**:
+  * `POST /api/auth/register` — Register a new citizen account
+  * `POST /api/auth/login` — Sign in and obtain JWT
+  * `GET /api/auth/me` — Retrieve active profile (requires Bearer token or cookie)
+  * `POST /api/auth/logout` — Invalidate session cookie
+* **Incident Reports (M4)**:
+  * `GET /api/reports/categories` — Retrieve all active incident categories
+  * `POST /api/reports` — Submit new incident report (multipart/form-data)
+  * `GET /api/reports/stats/me` — Retrieve current citizen report count stats
 
 ---
 
@@ -159,4 +166,4 @@ npm run dev:frontend
 
 ## Next Milestone
 
-* **Milestone 4**: Incident Reporting (Public Intake, Geo-tagging, Media Uploads & AI Triage)
+* **Milestone 5**: Incident Tracking & Citizen Report Status (Reference Search, Timeline, Feedback)

@@ -30,6 +30,8 @@ lerna-debug.log*
 # Uploads and temporary files
 uploads/*
 !uploads/.gitkeep
+backend/uploads/*
+!backend/uploads/**/.gitkeep
 tmp/
 temp/
 

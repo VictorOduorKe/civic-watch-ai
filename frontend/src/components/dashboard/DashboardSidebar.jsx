@@ -54,24 +54,10 @@ export default function DashboardSidebar({
     },
     {
       name: 'Report an Issue',
-      path: null,
+      path: '/reports/new',
       icon: PlusCircle,
-      active: false,
-      badge: 'M4',
-      action: () =>
-        onFeaturePreview({
-          title: 'Incident Reporting Engine',
-          milestone: 'Milestone 4',
-          icon: <PlusCircle className="w-5 h-5 text-emerald-900" />,
-          description:
-            'A structured public incident intake flow enabling citizens across all 47 counties to report infrastructure breakdowns, public service delays, environmental hazards, and governance concerns.',
-          plannedCapabilities: [
-            'Geo-tagged Kenyan location picker with ward & constituency resolution',
-            'Photo & video evidence upload with EXIF metadata preservation',
-            'AI-assisted severity classification and department routing',
-            'Anonymous submission mode with privacy preservation'
-          ]
-        })
+      active: location.pathname === '/reports/new',
+      action: null
     },
     {
       name: 'Notifications',

@@ -70,6 +70,30 @@ export const authApi = {
 };
 
 /**
+ * Incident Reporting API methods (Milestone 4).
+ */
+export const reportApi = {
+  async getCategories() {
+    const response = await apiClient.get('/reports/categories');
+    return response.data;
+  },
+
+  async createReport(formData) {
+    const response = await apiClient.post('/reports', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+    return response.data;
+  },
+
+  async getMyStats() {
+    const response = await apiClient.get('/reports/stats/me');
+    return response.data;
+  }
+};
+
+/**
  * Health check API service.
  * Fetches status from GET /api/health
  */

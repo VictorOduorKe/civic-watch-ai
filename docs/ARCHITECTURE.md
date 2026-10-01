@@ -222,4 +222,65 @@ Milestone 3 establishes the primary authenticated workspace for citizens. It reu
    - Refreshing `/dashboard` or `/profile` transparently rehydrates the session from `GET /api/auth/me` without flickering unauthenticated states.
    - Logging out clears client tokens and session cookies, immediately revoking access to all dashboard routes.
 
+---
+
+## Milestone 4 Architecture: Incident Reporting Module
+
+Milestone 4 introduces the authenticated citizen incident reporting workflow (`/reports/new`), enabling citizens across Kenya's 47 counties to submit real-world incidents with optional multimedia attachments, geolocation coordinates, and privacy preferences.
+
+```text
+┌─────────────────────────────────────────────────────────────┐
+│                 /reports/new (CitizenLayout)                │
+│ ┌─────────────────────────────────────────────────────────┐ │
+│ │ Emergency 999/112 Banner & Responsible Reporting Notice │ │
+│ ├─────────────────────────────────────────────────────────┤ │
+│ │ Step 1: Category Selection (12 DB Categories via Cards) │ │
+│ │ Step 2: Incident Details (Title, Description)           │ │
+│ │ Step 3: Location (County, Sub-County, Ward, GPS/Geo)   │ │
+│ │ Step 4: Incident Date & Approximate Time (Optional)     │ │
+│ │ Step 5: Supporting Attachments (Max 5, 5MB, JPG/PNG/PDF)│ │
+│ │ Step 6: Privacy & Contact (Anonymous Mode, Prefs)      │ │
+│ ├─────────────────────────────────────────────────────────┤ │
+│ │ Submission Action -> POST /api/reports (Multipart)      │ │
+│ └─────────────────────────────────────────────────────────┘ │
+│                              │                              │
+│                              ▼                              │
+│ ┌─────────────────────────────────────────────────────────┐ │
+│ │ Success View: CWK-YYYY-XXXXXX Tracking Reference        │ │
+│ └─────────────────────────────────────────────────────────┘ │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Architectural Principles & Pipeline
+
+1. **Dynamic Category Ingestion**:
+   - Incident categories are queried dynamically from `report_categories` via `GET /api/reports/categories`. No category lists are hardcoded on the client.
+   - Categories include rich descriptions and intuitive icons assisting citizens in choosing appropriate classifications.
+
+2. **Atomic Submission & Reference Generation**:
+   - Report submission is routed through `POST /api/reports` with `multipart/form-data`.
+   - The backend service (`reportService.js`) initiates an ACID database transaction:
+     1. Inserts the core report record with initial status `'Submitted'`.
+     2. Generates a formatted reference code: `CWK-${year}-${String(reportId).padStart(6, '0')}` (e.g. `CWK-2026-000001`).
+     3. Updates the report with the unique reference.
+     4. Inserts attachment metadata records in `report_attachments`.
+     5. Commits the transaction.
+   - If any step fails or database errors occur, the transaction rolls back and any newly uploaded files on disk are immediately unlinked to prevent orphaned storage.
+
+3. **Secure File Upload Pipeline (`uploadMiddleware.js`)**:
+   - Handled via `multer` using disk storage in `backend/uploads/reports/`.
+   - Enforces a maximum of 5 files per submission and 5MB per file.
+   - Whitelists strict MIME types: `image/jpeg`, `image/png`, `image/webp`, and `application/pdf`.
+   - Sanitizes filenames against path traversal attacks (`path.basename`) and assigns randomized non-colliding storage names: `${Date.now()}-${randomHex(8)}${ext}`.
+   - Excludes uploaded media from Git via `.gitignore` while maintaining directory structure using `.gitkeep`.
+
+4. **Privacy & Anonymity Enforcement**:
+   - Citizens can toggle "Submit Anonymously".
+   - The user ID is retained in `reports.user_id` for abuse prevention and rate-limiting integrity, but `is_anonymous = true` ensures that when report inspection is implemented in Milestone 5+, citizen identity details are withheld from public and administrative views.
+
+5. **Rate Limiting & Abuse Prevention**:
+   - Report creation endpoint is shielded by a dedicated Express rate limiter: maximum 25 report submissions per 15 minutes per IP.
+   - Input fields are strictly validated via Zod schemas (`reportValidators.js`) prior to processing.
+
+
 

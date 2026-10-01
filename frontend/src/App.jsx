@@ -7,6 +7,7 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import DashboardPage from './pages/DashboardPage';
 import ProfilePage from './pages/ProfilePage';
+import NewReportPage from './pages/NewReportPage';
 import HealthStatusPage from './pages/HealthStatusPage';
 
 export default function App() {
@@ -21,7 +22,7 @@ export default function App() {
           <Route path="/status" element={<HealthStatusPage />} />
           <Route path="/health" element={<HealthStatusPage />} />
 
-          {/* Authenticated Citizen Workspace (Milestone 3) */}
+          {/* Authenticated Citizen Workspace (Milestone 3 & 4) */}
           <Route
             path="/dashboard"
             element={
@@ -35,6 +36,14 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <ProfilePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/reports/new"
+            element={
+              <ProtectedRoute>
+                <NewReportPage />
               </ProtectedRoute>
             }
           />

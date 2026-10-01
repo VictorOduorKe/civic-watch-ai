@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   FileText,
   Clock,
@@ -13,6 +14,7 @@ import {
   ArrowRight
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { reportApi } from '../services/api';
 import CitizenLayout from '../layouts/CitizenLayout';
 import StatCard from '../components/dashboard/StatCard';
 import QuickActionCard from '../components/dashboard/QuickActionCard';
@@ -21,6 +23,30 @@ import CivicInfoCard from '../components/dashboard/CivicInfoCard';
 
 export default function DashboardPage() {
   const { user, loading } = useAuth();
+  const navigate = useNavigate();
+
+  const [stats, setStats] = useState({
+    submitted: 0,
+    underReview: 0,
+    inProgress: 0,
+    resolved: 0
+  });
+
+  useEffect(() => {
+    async function loadStats() {
+      try {
+        const res = await reportApi.getMyStats();
+        if (res.success && res.stats) {
+          setStats(res.stats);
+        }
+      } catch (err) {
+        console.warn('[Dashboard] Could not load user report stats:', err.message);
+      }
+    }
+    if (user) {
+      loadStats();
+    }
+  }, [user]);
 
   if (loading) {
     return (
@@ -69,35 +95,20 @@ export default function DashboardPage() {
                 </p>
               </div>
 
-              {/* Action Button for Next Milestone */}
+              {/* Action Button for Milestone 4 Incident Reporting */}
               <div className="shrink-0">
-                <button
-                  type="button"
-                  onClick={() =>
-                    onFeaturePreview({
-                      title: 'Incident Reporting Engine',
-                      milestone: 'Milestone 4',
-                      icon: <PlusCircle className="w-5 h-5 text-emerald-900" />,
-                      description:
-                        'The incident reporting engine will be implemented in Milestone 4. It will allow you to report infrastructure failures, service delivery issues, and civic concerns with geo-tagged verification.',
-                      plannedCapabilities: [
-                        'Structured categories (Water, Roads, Power, Sanitation, Healthcare)',
-                        'Geo-coordinates and county/ward resolution',
-                        'Media attachments and AI severity triage',
-                        'Anonymous submission protection'
-                      ]
-                    })
-                  }
+                <Link
+                  to="/reports/new"
                   className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-emerald-900 text-white text-xs font-semibold rounded-lg hover:bg-emerald-950 transition-colors shadow-xs"
                 >
                   <PlusCircle className="w-4 h-4" />
-                  <span>Report an Issue (M4 Preview)</span>
-                </button>
+                  <span>Report an Issue (M4)</span>
+                </Link>
               </div>
             </div>
           </div>
 
-          {/* Section: Overview Statistics (Honest 0 counts) */}
+          {/* Section: Overview Statistics (Real database counts) */}
           <section aria-labelledby="stats-heading">
             <div className="flex items-center justify-between mb-3">
               <h3 id="stats-heading" className="text-sm font-bold text-neutral-900 uppercase tracking-wider">
@@ -111,28 +122,28 @@ export default function DashboardPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <StatCard
                 title="Reports Submitted"
-                count={0}
-                subtext="No reports submitted yet"
+                count={stats.submitted}
+                subtext={stats.submitted === 0 ? "No reports submitted yet" : `${stats.submitted} record(s) recorded in MySQL`}
                 icon={FileText}
                 statusColor="stone"
               />
               <StatCard
                 title="Under Review"
-                count={0}
+                count={stats.underReview}
                 subtext="Zero pending review"
                 icon={Clock}
                 statusColor="amber"
               />
               <StatCard
                 title="In Progress"
-                count={0}
+                count={stats.inProgress}
                 subtext="Active investigations"
                 icon={AlertCircle}
                 statusColor="blue"
               />
               <StatCard
                 title="Resolved"
-                count={0}
+                count={stats.resolved}
                 subtext="Community issues resolved"
                 icon={CheckCircle}
                 statusColor="emerald"
@@ -155,23 +166,9 @@ export default function DashboardPage() {
               <QuickActionCard
                 title="Report an Issue"
                 description="Submit community infrastructure or service delivery challenges directly to county oversight."
-                milestone="M4 Preview"
+                milestone="Active (M4)"
                 icon={PlusCircle}
-                onClick={() =>
-                  onFeaturePreview({
-                    title: 'Incident Reporting Intake',
-                    milestone: 'Milestone 4',
-                    icon: <PlusCircle className="w-5 h-5 text-emerald-900" />,
-                    description:
-                      'Milestone 4 introduces the end-to-end incident intake engine. Citizens can document public issues, attach photo evidence, and select precise locations across Kenya.',
-                    plannedCapabilities: [
-                      'Categorized civic intake (Roads, Water, Electricity, Health, Environment)',
-                      'Geo-location tagging with ward & constituency mapping',
-                      'Evidence attachment with integrity metadata',
-                      'Automated dispatch to responsible county agencies'
-                    ]
-                  })
-                }
+                onClick={() => navigate('/reports/new')}
               />
 
               <QuickActionCard
@@ -245,21 +242,7 @@ export default function DashboardPage() {
           {/* Section: Activity & Educational Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <RecentActivity
-              onReportClick={() =>
-                onFeaturePreview({
-                  title: 'Incident Reporting Workflow',
-                  milestone: 'Milestone 4',
-                  icon: <FileText className="w-5 h-5 text-emerald-900" />,
-                  description:
-                    'When Milestone 4 is deployed, every issue you raise will automatically appear in your chronological activity stream, complete with agency responses and verification badges.',
-                  plannedCapabilities: [
-                    'Submission confirmation and tracking ticket generation',
-                    'Status changes from county officers',
-                    'Citizen comments and community corroborations',
-                    'Final resolution sign-off by affected residents'
-                  ]
-                })
-              }
+              onReportClick={() => navigate('/reports/new')}
             />
 
             <CivicInfoCard />
