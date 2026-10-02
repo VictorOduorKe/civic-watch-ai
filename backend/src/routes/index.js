@@ -4,6 +4,7 @@ import authRoutes from './authRoutes.js';
 import reportRoutes from './reportRoutes.js';
 import adminRoutes from './adminRoutes.js';
 import notificationRoutes from './notificationRoutes.js';
+import verificationRoutes from './verificationRoutes.js';
 
 const router = Router();
 
@@ -21,5 +22,8 @@ router.use('/admin', adminRoutes);
 
 // In-app Notification endpoints (Milestone 8)
 router.use('/notifications', notificationRoutes);
+
+// AI Information Verification endpoints (Milestone 9)
+router.use('/verifications', verificationRoutes);
 
 export default router;

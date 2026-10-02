@@ -560,4 +560,62 @@ Milestone 8 introduces the CivicWatch in-app notification infrastructure, allowi
 4. **Future Channel Extensibility**:
    - Architected so external communication channels (Email, SMS, WhatsApp) can be integrated as modular listeners to the notification service in future milestones without altering in-app database persistence.
 
+---
+
+## Section 12 — Milestone 9: AI Information Verification
+
+### Overview
+
+Milestone 9 introduces the AI Information Verification engine as an isolated, reusable service layer within CivicWatch AI Kenya. The module enables authenticated citizens and staff to submit statements, news claims, public announcements, web links, or screenshots for structured evidence-based evaluation powered by Google Gemini.
+
+### Architectural Layering
+
+```text
+       [ React Frontend (/verify, /verify/history, /verify/:id) ]
+                                   │
+                                   ▼ (HttpOnly Cookie Auth + Double-Submit CSRF)
+                   [ Verification Controller ]
+                                   │
+                                   ▼
+                   [ Verification Service ] ──────► [ MySQL (verification_requests) ]
+                                   │
+                                   ▼
+                   [ AI Provider Abstraction ]
+                                   │
+                                   ▼
+                   [ Gemini Provider (SDK) ]
+                                   │
+                                   ▼
+                   [ Google Gemini API (2.5 Flash) ]
+```
+
+### Core Design Principles
+
+1. **Information Assistance, Not Absolute Truth Authority**:
+   - The system never outputs binary "TRUE" or "FALSE" system verdicts.
+   - It communicates uncertainty through 5 controlled evidentiary statuses:
+     - `EVIDENCE_SUPPORTS_CLAIM`
+     - `EVIDENCE_CONFLICTS_WITH_CLAIM`
+     - `INSUFFICIENT_EVIDENCE`
+     - `MISSING_CONTEXT`
+     - `REQUIRES_VERIFICATION`
+2. **Provider Abstraction**:
+   - The `verificationService` interacts exclusively with the abstract `AIProvider` contract.
+   - The concrete `GeminiProvider` encapsulates all Google Gemini SDK calls, prompt schemas, and error mapping. Other AI providers can be swapped in without modifying controllers or database logic.
+3. **Multimodal Input Support**:
+   - Accepts text claims, external source URLs (validated `http/https`), and screenshot images (JPG, PNG, WEBP up to 5MB).
+   - Screenshots are parsed through Gemini's vision capability via base64 inline data.
+4. **Prompt Injection & Safety Guards**:
+   - User inputs are treated strictly as untrusted data to analyze, never as instructions to execute.
+   - System prompts enforce political neutrality, forbid criminal accusations, and prevent revelation of internal configurations or API credentials.
+5. **Privacy & Tenant Ownership**:
+   - Verification submissions are strictly private. Records are accessible only by the submitting user (`WHERE user_id = req.user.id`).
+   - Verifications do not leak into public maps, feeds, or other users' verification histories.
+6. **Upload Security**:
+   - Screenshots are stored in a dedicated directory outside the web root (`uploads/verifications/`).
+   - File extensions and MIME types are strictly verified, and files are renamed to server-generated randomized filenames (`verification_<timestamp>_<randomHex>.<ext>`).
+7. **Rate Limiting & Cost Control**:
+   - Submissions are restricted to 15 requests / hour / authenticated user to mitigate AI resource exhaustion.
+   - Gemini API calls enforce a 25-second timeout and limited transient retries.
+
 

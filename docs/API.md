@@ -1144,4 +1144,169 @@ Marks all unread notifications belonging to the currently authenticated user as 
 }
 ```
 
+---
+
+## 9. AI Information Verification Endpoints (Milestone 9)
+
+Base Path: `/api/verifications`
+Authentication: Required (`requireAuth` via HttpOnly cookie `civicwatch_auth`)
+CSRF Protection: Double-Submit Cookie (`XSRF-TOKEN` / `X-XSRF-TOKEN`) required on state-changing `POST` requests.
+Rate Limits: 15 submissions / hour on `POST /api/verifications`; 100 requests / 15 minutes on `GET`.
+
+### Controlled Verification Statuses
+* `EVIDENCE_SUPPORTS_CLAIM`: Documented, verifiable evidence affirms the core claim.
+* `EVIDENCE_CONFLICTS_WITH_CLAIM`: Documented, verified public records contradict the claim.
+* `INSUFFICIENT_EVIDENCE`: Available public records or supplied materials are inadequate to confirm or dispute the claim.
+* `MISSING_CONTEXT`: Statement contains partial truth but omits vital context, resulting in a misleading impression.
+* `REQUIRES_VERIFICATION`: Developing or localized issue requiring on-the-ground investigation.
+
+---
+
+### `POST /api/verifications`
+
+Submits a text statement, source URL, or uploaded screenshot to the backend AI verification engine (Google Gemini) for evidence-based assessment.
+
+#### Request Headers
+* `Content-Type`: `application/json` (for text/URL) or `multipart/form-data` (for screenshots)
+* `X-XSRF-TOKEN`: CSRF token string
+
+#### Body Fields
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `input_type` | `string` | Yes | One of `TEXT`, `URL`, `IMAGE`, `TEXT_AND_URL`, `TEXT_AND_IMAGE` |
+| `claim_text` | `string` | Conditional | Up to 10,000 characters. Required if input_type is `TEXT`, `TEXT_AND_URL`, or `TEXT_AND_IMAGE`. |
+| `source_url` | `string` | Conditional | Valid `http://` or `https://` link. Required if input_type is `URL`. |
+| `source_title`| `string` | No | Optional article/headline context title (up to 255 chars). |
+| `image` | `file` | Conditional | JPG, PNG, or WEBP screenshot (max 5 MB). Required for `IMAGE` or `TEXT_AND_IMAGE`. |
+
+#### Success Response (`201 Created`)
+```json
+{
+  "success": true,
+  "message": "Information verification completed successfully.",
+  "verification": {
+    "id": 7,
+    "userId": 1,
+    "inputType": "TEXT",
+    "claimText": "KeNHA announced all toll fees on Thika Superhighway are permanently cancelled.",
+    "sourceUrl": null,
+    "sourceTitle": null,
+    "imagePath": null,
+    "hasImage": false,
+    "status": "EVIDENCE_CONFLICTS_WITH_CLAIM",
+    "mainClaim": "The Kenya National Highways Authority announced all toll fees on Thika Superhighway are cancelled.",
+    "summary": "The claim conflicts with available records. The Thika Superhighway is currently toll-free and no cancellation of implemented public toll fees was announced.",
+    "confidence": "HIGH",
+    "supportingInformation": [],
+    "contradictoryInformation": [
+      "The highway has been toll-free since completion in 2012.",
+      "No official Gazette or KeNHA notice confirms cancellation of existing fees."
+    ],
+    "missingContext": [
+      "Tolling proposals were discussed for private-public maintenance partnerships but never implemented."
+    ],
+    "recommendedVerification": [
+      "Check KeNHA official communications and Kenya Gazette notices."
+    ],
+    "aiProvider": "gemini",
+    "aiModel": "gemini-2.5-flash",
+    "promptVersion": "v1",
+    "processingDurationMs": 1420,
+    "createdAt": "2026-10-02T16:38:00.000Z",
+    "completedAt": "2026-10-02T16:38:02.000Z"
+  }
+}
+```
+
+#### Error Responses
+* `400 Bad Request`: Validation failure (empty claim, dangerous URL scheme like `javascript:`, unsupported file type, oversized file).
+* `401 Unauthorized`: Not authenticated.
+* `429 Too Many Requests`: Exceeded 15 submissions per hour.
+* `502 Bad Gateway`: AI provider returned malformed response or failure.
+* `503 Service Unavailable`: `GEMINI_API_KEY` not configured on backend.
+* `504 Gateway Timeout`: AI verification exceeded timeout.
+
+---
+
+### `GET /api/verifications`
+
+Returns paginated verification history for the authenticated user. Enforces strict tenant ownership (`user_id = req.user.id`).
+
+#### Query Parameters
+| Parameter | Type | Required | Default | Description |
+|---|---|---|---|---|
+| `page` | `integer` | No | `1` | Page number |
+| `limit` | `integer` | No | `20` | Max 50 records per page |
+| `status` | `string` | No | `null` | Optional filter by verification status |
+
+#### Success Response (`200 OK`)
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": 7,
+      "userId": 1,
+      "inputType": "TEXT",
+      "claimText": "KeNHA announced all toll fees on Thika Superhighway are permanently cancelled.",
+      "status": "EVIDENCE_CONFLICTS_WITH_CLAIM",
+      "mainClaim": "The Kenya National Highways Authority announced all toll fees on Thika Superhighway are cancelled.",
+      "summary": "...",
+      "confidence": "HIGH",
+      "createdAt": "2026-10-02T16:38:00.000Z"
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "limit": 20,
+    "total": 1,
+    "totalPages": 1
+  }
+}
+```
+
+---
+
+### `GET /api/verifications/:id`
+
+Retrieves detailed assessment for a single verification record. Strict tenant ownership verification: returns `404 Not Found` if the record does not belong to the authenticated user.
+
+#### Path Parameters
+| Parameter | Type | Required | Description |
+|---|---|---|---|
+| `id` | `integer` | Yes | Verification record ID |
+
+#### Success Response (`200 OK`)
+```json
+{
+  "success": true,
+  "verification": {
+    "id": 7,
+    "userId": 1,
+    "inputType": "TEXT",
+    "claimText": "...",
+    "status": "EVIDENCE_CONFLICTS_WITH_CLAIM",
+    "mainClaim": "...",
+    "summary": "...",
+    "confidence": "HIGH",
+    "supportingInformation": ["..."],
+    "contradictoryInformation": ["..."],
+    "missingContext": ["..."],
+    "recommendedVerification": ["..."],
+    "aiProvider": "gemini",
+    "aiModel": "gemini-2.5-flash",
+    "promptVersion": "v1",
+    "processingDurationMs": 1420,
+    "createdAt": "2026-10-02T16:38:00.000Z"
+  }
+}
+```
+
+---
+
+### `GET /api/verifications/:id/image`
+
+Securely serves an attached screenshot image. Strict tenant ownership verification: returns `404 Not Found` if the record belongs to another user or if no screenshot was attached.
+
+
 

@@ -4,9 +4,10 @@ CivicWatch AI Kenya is an AI-powered civic engagement and public accountability 
 
 ---
 
-## Current Milestone: Milestone 8 — Notifications (Completed)
+## Current Milestone: Milestone 9 — AI Information Verification (Completed)
 
-This repository contains the completed public presentation layer, database foundation, hardened authentication system, citizen workspace, authenticated incident reporting workflow, report tracking module, OCL Administrative Dashboard, Administrative Incident Management workspace, and in-app Notification Infrastructure for CivicWatch AI Kenya:
+This repository contains the completed public presentation layer, database foundation, hardened authentication system, citizen workspace, authenticated incident reporting workflow, report tracking module, OCL Administrative Dashboard, Administrative Incident Management workspace, in-app Notification Infrastructure, and the AI Information Verification Engine for CivicWatch AI Kenya:
+* **AI Information Verification (M9)**: Full evidence-based information evaluation service using Google Gemini (`gemini-2.5-flash`) via `@google/genai`. Features multi-input submission (text claim, news URL, or screenshot image upload up to 5MB with randomized filenames and MIME validation), provider abstraction layer, structured JSON schema response validation, 5 controlled evidentiary statuses (`EVIDENCE_SUPPORTS_CLAIM`, `EVIDENCE_CONFLICTS_WITH_CLAIM`, `INSUFFICIENT_EVIDENCE`, `MISSING_CONTEXT`, `REQUIRES_VERIFICATION`), confidence assessment (`LOW`, `MEDIUM`, `HIGH`), structured evidence categorization (supporting points, contradictory points, missing context, recommended verification steps), prompt injection defenses, strict user ownership isolation (`WHERE user_id = req.user.id`), submission rate limiting (15/hr), and dedicated frontend interface at `/verify`, `/verify/history`, and `/verify/:id`.
 * **Notification System & In-App Alerts (M8)**: Full in-app notification engine with real platform event-driven notifications (`REPORT_RECEIVED`, `REPORT_STATUS_CHANGED`, `REPORT_UPDATED`, `REPORT_ASSIGNED`, `SYSTEM_NOTICE`). Dedicated `notifications` database table with foreign keys, index optimization, and `dedupe_key` unique constraint preventing notification flooding. Complete secure API suite (`GET /api/notifications`, `GET /api/notifications/unread-count`, `PATCH /api/notifications/:id/read`, `PATCH /api/notifications/read-all`) protected by HttpOnly cookie authentication, Double-Submit CSRF protection, and strict tenant ownership verification. Header `NotificationBell` with live unread counter badge, interactive `NotificationDropdown` with 5-item preview and click-to-route navigation, and dedicated full-screen `/notifications` (and `/admin/notifications`) inbox with All/Unread filtering, pagination, mark-read, mark-all-as-read, and accessible empty states.
 * **OCL Administrative Incident Management (M7)**: Controlled operational workspace at `/admin/incidents` and `/admin/incidents/:reference` for `Admin`, `Moderator`, and `Analyst` roles (citizens strictly prohibited). Includes: debounced full-text and code search; multi-filter criteria (status, category, county, assignment state, date range); tabular and mobile card views; pagination; complete incident dossier inspection; staff case assignment and reassignment preserving history with `unassigned_at`; operational status mutation with transaction rollback safety and transition validation; private internal staff notes; official citizen-visible case notices (`report_updates`) integrated directly into citizen tracking (M5); formal external agency referrals (KeNHA, EACC, KNCHR, NPS, etc.); whistleblowing anonymity protections; emergency 999/112 protocol warnings; and secure administrative attachment delivery.
 * **OCL Admin Dashboard (M6)**: Role-restricted administrative workspace at `/admin` for `Admin`, `Moderator`, and `Analyst` roles. Citizen accounts receive a 403 Forbidden screen. Features a dedicated AdminLayout with sidebar navigation, sticky header, and milestone roadmap preview modals. Real-time database aggregation dashboard with: date range selector (7d / 30d / 90d / year / all), 4 Recharts visualizations (AreaChart trends, status BarChart, category BarChart, horizontal county BarChart), 4 stat cards (total reports, active, resolved, users), and a user account role breakdown table.
@@ -153,6 +154,9 @@ npm run dev:frontend
 * **Citizen Login Page**: `http://localhost:5173/login`
 * **Citizen Registration Page**: `http://localhost:5173/register`
 * **Citizen Workspace (M3)**: `http://localhost:5173/dashboard` (Protected)
+* **Verify Information Center (M9)**: `http://localhost:5173/verify` (Protected)
+* **Verification History (M9)**: `http://localhost:5173/verify/history` (Protected)
+* **Verification Detail Assessment (M9)**: `http://localhost:5173/verify/:id` (Protected)
 * **Citizen Notification Center (M8)**: `http://localhost:5173/notifications` (Protected)
 * **My Reports Tracking (M5)**: `http://localhost:5173/reports` (Protected)
 * **Report Detail & Timeline (M5)**: `http://localhost:5173/reports/:reference` (Protected)
@@ -172,6 +176,11 @@ npm run dev:frontend
   * `GET /api/auth/me` — Retrieve active profile via HttpOnly cookie
   * `POST /api/auth/logout` — Clear auth and CSRF cookies
   * `GET /api/auth/csrf-token` — Retrieve Double-Submit CSRF cookie
+* **AI Information Verification (M9 — Google Gemini Grounded)**:
+  * `POST /api/verifications` — Submit text claim, web link, or screenshot image for AI evidence-based verification
+  * `GET /api/verifications` — Retrieve paginated verification history for authenticated user (supports `?page=1&limit=20&status=...`)
+  * `GET /api/verifications/:id` — Retrieve detailed structured verification assessment (strict user ownership)
+  * `GET /api/verifications/:id/image` — Securely download uploaded verification screenshot (strict user ownership)
 * **Notifications (M8 — In-App Event Driven)**:
   * `GET /api/notifications` — Retrieve paginated notifications for authenticated user (supports `?page=1&limit=20&unread_only=true|false`)
   * `GET /api/notifications/unread-count` — Retrieve live unread notification counter for badge
@@ -212,7 +221,7 @@ npm run dev:frontend
 
 ## Next Milestone
 
-* **Milestone 9**: AI Information Verification (M9 will introduce the AI verification service as an isolated, reusable service that can later support other CivicWatch features)
+* **Milestone 10**: CivicWatch Map (M10 will introduce the public civic map while preserving the privacy boundaries established by incident reporting, report tracking, incident management, notifications, and AI verification)
 
 ### Admin Test Accounts (Seeded — M6)
 

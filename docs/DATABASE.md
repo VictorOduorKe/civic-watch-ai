@@ -583,4 +583,84 @@ CREATE TABLE IF NOT EXISTS notifications (
 | `dedupe_key` | `VARCHAR(191)` | `NULL`, `UNIQUE` | Unique key preventing duplicate notifications for retried events |
 | `created_at` | `TIMESTAMP` | Default `CURRENT_TIMESTAMP` | Notification creation timestamp |
 
+---
+
+## Migration 013 — Verification Requests Table
+
+File: `database/migrations/013_create_verification_requests_table.sql`
+
+Implements the AI Information Verification persistence table (Milestone 9). Stores user claims, source links, screenshot upload paths, structured AI evidence assessments, confidence ratings, and model execution telemetry.
+
+```sql
+CREATE TABLE IF NOT EXISTS verification_requests (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  input_type ENUM(
+    'TEXT',
+    'URL',
+    'IMAGE',
+    'TEXT_AND_URL',
+    'TEXT_AND_IMAGE'
+  ) NOT NULL,
+  claim_text TEXT NULL,
+  source_url VARCHAR(1000) NULL,
+  source_title VARCHAR(255) NULL,
+  image_path VARCHAR(255) NULL,
+  status ENUM(
+    'REQUIRES_VERIFICATION',
+    'EVIDENCE_SUPPORTS_CLAIM',
+    'EVIDENCE_CONFLICTS_WITH_CLAIM',
+    'INSUFFICIENT_EVIDENCE',
+    'MISSING_CONTEXT'
+  ) NOT NULL DEFAULT 'REQUIRES_VERIFICATION',
+  main_claim VARCHAR(500) NULL,
+  ai_summary TEXT NULL,
+  confidence ENUM('LOW', 'MEDIUM', 'HIGH') NOT NULL DEFAULT 'LOW',
+  supporting_information JSON NULL,
+  contradictory_information JSON NULL,
+  missing_context JSON NULL,
+  recommended_verification JSON NULL,
+  ai_provider VARCHAR(50) NOT NULL DEFAULT 'gemini',
+  ai_model VARCHAR(100) NOT NULL DEFAULT 'gemini-2.5-flash',
+  prompt_version VARCHAR(20) NOT NULL DEFAULT 'v1',
+  processing_duration_ms INT UNSIGNED NULL,
+  error_message VARCHAR(500) NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  completed_at TIMESTAMP NULL DEFAULT NULL,
+  CONSTRAINT fk_verifications_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE RESTRICT,
+  INDEX idx_verifications_user (user_id),
+  INDEX idx_verifications_user_created (user_id, created_at),
+  INDEX idx_verifications_status (status)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+```
+
+#### Field Descriptions
+
+| Column | Type | Constraints | Description |
+|---|---|---|---|
+| `id` | `INT` | `AUTO_INCREMENT`, `PRIMARY KEY` | Verification request record identifier |
+| `user_id` | `INT` | `NOT NULL`, FK to `users(id)` ON DELETE RESTRICT | Authenticated user who submitted the claim. Never trusted from body. |
+| `input_type` | `ENUM` | `NOT NULL` | One of `TEXT`, `URL`, `IMAGE`, `TEXT_AND_URL`, `TEXT_AND_IMAGE` |
+| `claim_text` | `TEXT` | `NULL` | Raw statement, claim, or post text submitted (up to 10,000 characters) |
+| `source_url` | `VARCHAR(1000)` | `NULL` | Optional link to external source (validated http/https) |
+| `source_title` | `VARCHAR(255)` | `NULL` | Optional headline or publication name provided for context |
+| `image_path` | `VARCHAR(255)` | `NULL` | File path to privately stored screenshot on server (JPG/PNG/WEBP, max 5MB) |
+| `status` | `ENUM` | `NOT NULL`, Default `'REQUIRES_VERIFICATION'` | Controlled veracity/evidence assessment status (`REQUIRES_VERIFICATION`, `EVIDENCE_SUPPORTS_CLAIM`, `EVIDENCE_CONFLICTS_WITH_CLAIM`, `INSUFFICIENT_EVIDENCE`, `MISSING_CONTEXT`) |
+| `main_claim` | `VARCHAR(500)` | `NULL` | Distilled core factual claim identified by AI |
+| `ai_summary` | `TEXT` | `NULL` | Narrative evidence-based analysis explanation |
+| `confidence` | `ENUM` | Default `'LOW'` | Qualitative confidence assessment (`LOW`, `MEDIUM`, `HIGH`) |
+| `supporting_information` | `JSON` | `NULL` | Array of corroborated points or supporting facts |
+| `contradictory_information` | `JSON` | `NULL` | Array of disproving facts or conflicting records |
+| `missing_context` | `JSON` | `NULL` | Array of omitted nuances, background facts, or timelines |
+| `recommended_verification` | `JSON` | `NULL` | Array of actionable verification steps for the user |
+| `ai_provider` | `VARCHAR(50)` | Default `'gemini'` | Provider used (e.g. `'gemini'`) |
+| `ai_model` | `VARCHAR(100)` | Default `'gemini-2.5-flash'` | Model name used for analysis |
+| `prompt_version` | `VARCHAR(20)` | Default `'v1'` | System prompt version tag |
+| `processing_duration_ms` | `INT UNSIGNED` | `NULL` | Execution duration in milliseconds |
+| `error_message` | `VARCHAR(500)` | `NULL` | Sanitized error message if analysis failed |
+| `created_at` | `TIMESTAMP` | Default `CURRENT_TIMESTAMP` | Submission timestamp |
+| `updated_at` | `TIMESTAMP` | Auto-updates | Last modification timestamp |
+| `completed_at` | `TIMESTAMP` | `NULL` | AI analysis completion timestamp |
+
 

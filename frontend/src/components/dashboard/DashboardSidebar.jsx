@@ -4,6 +4,7 @@ import {
   LayoutDashboard,
   FileText,
   PlusCircle,
+  ShieldCheck,
   Bell,
   User,
   LogOut,
@@ -44,6 +45,13 @@ export default function DashboardSidebar({
       path: '/reports/new',
       icon: PlusCircle,
       active: location.pathname === '/reports/new',
+      action: null
+    },
+    {
+      name: 'Verify Information',
+      path: '/verify',
+      icon: ShieldCheck,
+      active: location.pathname.startsWith('/verify'),
       action: null
     },
     {

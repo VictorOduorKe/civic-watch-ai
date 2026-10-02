@@ -17,6 +17,9 @@ import NewReportPage from './pages/NewReportPage';
 import MyReportsPage from './pages/MyReportsPage';
 import ReportDetailPage from './pages/ReportDetailPage';
 import NotificationsPage from './pages/NotificationsPage';
+import VerifyInformationPage from './pages/verification/VerifyInformationPage';
+import VerificationHistoryPage from './pages/verification/VerificationHistoryPage';
+import VerificationDetailPage from './pages/verification/VerificationDetailPage';
 import HealthStatusPage from './pages/HealthStatusPage';
 
 export default function App() {
@@ -79,6 +82,32 @@ export default function App() {
               element={
                 <ProtectedRoute>
                   <NotificationsPage />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* AI Information Verification (Milestone 9) */}
+            <Route
+              path="/verify"
+              element={
+                <ProtectedRoute>
+                  <VerifyInformationPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/verify/history"
+              element={
+                <ProtectedRoute>
+                  <VerificationHistoryPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/verify/:id"
+              element={
+                <ProtectedRoute>
+                  <VerificationDetailPage />
                 </ProtectedRoute>
               }
             />

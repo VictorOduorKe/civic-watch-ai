@@ -181,24 +181,10 @@ export default function DashboardPage() {
 
               <QuickActionCard
                 title="Verify Information"
-                description="Use AI fact-checking grounded in official gazettes, laws, and verified civic databases."
-                milestone="M9 Preview"
+                description="Submit claims, statements, or screenshots to receive structured AI evidence assessments."
+                milestone="Active (M9)"
                 icon={ShieldCheck}
-                onClick={() =>
-                  onFeaturePreview({
-                    title: 'AI Civic Verification Engine',
-                    milestone: 'Milestone 9',
-                    icon: <ShieldCheck className="w-5 h-5 text-gold-500" />,
-                    description:
-                      'Milestone 9 connects Gemini AI to Kenyan legal frameworks, County Integrated Development Plans (CIDP), and gazetted notices to verify claims and dispel misinformation.',
-                    plannedCapabilities: [
-                      'Constitution of Kenya 2010 cross-referencing',
-                      'County budget and project verification',
-                      'Automated claim veracity scoring with citations',
-                      'Public myth-busting civic registry'
-                    ]
-                  })
-                }
+                onClick={() => navigate('/verify')}
               />
 
               <QuickActionCard
