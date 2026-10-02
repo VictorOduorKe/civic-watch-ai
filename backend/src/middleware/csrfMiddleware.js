@@ -23,19 +23,21 @@ export function csrfProtection(req, res, next) {
   }
 
   // 2. Validate Origin / Referer for state-changing requests
-  const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
-  let allowedOrigin;
-  try {
-    allowedOrigin = new URL(frontendUrl).origin;
-  } catch {
-    allowedOrigin = 'http://localhost:5173';
-  }
+  const allowedOrigins = (process.env.FRONTEND_URL || 'http://localhost:5173')
+    .split(',')
+    .map(url => {
+      try {
+        return new URL(url.trim()).origin;
+      } catch {
+        return url.trim();
+      }
+    });
 
   const originHeader = req.headers.origin;
   const refererHeader = req.headers.referer;
 
   if (originHeader) {
-    if (originHeader !== allowedOrigin) {
+    if (!allowedOrigins.includes(originHeader)) {
       return res.status(403).json({
         success: false,
         message: 'CSRF validation failed: Invalid request origin.'
@@ -44,7 +46,7 @@ export function csrfProtection(req, res, next) {
   } else if (refererHeader) {
     try {
       const refererOrigin = new URL(refererHeader).origin;
-      if (refererOrigin !== allowedOrigin) {
+      if (!allowedOrigins.includes(refererOrigin)) {
         return res.status(403).json({
           success: false,
           message: 'CSRF validation failed: Invalid referer origin.'

@@ -20,10 +20,11 @@ import {
 
 const router = Router();
 
-// Strict rate limiter for AI verification submissions: 15 per hour
+// Strict rate limiter for AI verification submissions: 15 per hour in production, 150 in dev/test
+const isProd = process.env.NODE_ENV === 'production';
 const verificationSubmissionLimiter = rateLimit({
   windowMs: 60 * 60 * 1000,
-  max: 15,
+  max: isProd ? 15 : 150,
   standardHeaders: true,
   legacyHeaders: false,
   message: {
@@ -32,10 +33,10 @@ const verificationSubmissionLimiter = rateLimit({
   }
 });
 
-// Rate limiter for reading verification records: 100 per 15 minutes
+// Rate limiter for reading verification records: 100 per 15 minutes (500 in dev/test)
 const verificationReadLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 100,
+  max: isProd ? 100 : 500,
   standardHeaders: true,
   legacyHeaders: false,
   message: {

@@ -19,17 +19,37 @@ export function errorHandler(err, req, res, next) {
     });
   }
 
+  // Handle CORS rejections cleanly
+  if (err.message && err.message.includes('CORS origin not allowed')) {
+    return res.status(403).json({
+      success: false,
+      message: 'Access denied: CORS origin not allowed.'
+    });
+  }
+
   // Handle standard HTTP status errors
   const statusCode = err.statusCode || err.status || 500;
-  const message = err.message || 'Internal Server Error';
+  let message = err.message || 'Internal Server Error';
+
+  // Prevent leaking internal SQL syntax or database structure
+  const isSqlError = Boolean(
+    err.code && (err.code.startsWith('ER_') || err.code.startsWith('SQLSTATE') || err.sqlState)
+  );
+
+  if (isSqlError) {
+    console.error(`[Database Error] ${err.code}:`, err.message);
+    message = isDev ? `Database Error: ${err.code}` : 'A database operation could not be completed.';
+  } else if (statusCode >= 500 && !isDev) {
+    message = 'Internal Server Error';
+  }
 
   const response = {
     success: false,
-    message: statusCode >= 500 && !isDev ? 'Internal Server Error' : message
+    message
   };
 
-  // Only include debug details in development, never exposing secrets or full stacks in production
-  if (isDev && statusCode >= 500) {
+  // Only include safe debug details in development, never exposing secrets or stacks in production
+  if (isDev && statusCode >= 500 && !isSqlError) {
     response.debug = {
       name: err.name,
       message: err.message

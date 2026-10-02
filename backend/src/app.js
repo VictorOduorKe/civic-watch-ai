@@ -11,12 +11,44 @@ import { errorHandler, notFoundHandler } from './middleware/errorHandler.js';
 const app = express();
 
 // 1. HTTP Security Headers
-app.use(helmet());
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: 'cross-origin' },
+  contentSecurityPolicy: false,
+  frameguard: { action: 'deny' },
+  referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
+  hsts: process.env.NODE_ENV === 'production' ? {
+    maxAge: 31536000,
+    includeSubDomains: true,
+    preload: true
+  } : false
+}));
+
+// Permissions-Policy header
+app.use((req, res, next) => {
+  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=(self)');
+  next();
+});
 
 // 2. CORS Configuration for Credentialed HttpOnly Cookie Architecture
-const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+const allowedOrigins = (process.env.FRONTEND_URL || 'http://localhost:5173')
+  .split(',')
+  .map(url => {
+    try {
+      return new URL(url.trim()).origin;
+    } catch {
+      return url.trim();
+    }
+  });
+
 app.use(cors({
-  origin: frontendUrl,
+  origin: (origin, callback) => {
+    // Allow non-browser or server-side requests with no origin
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    return callback(new Error('CORS origin not allowed by policy'));
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: [
@@ -32,10 +64,11 @@ app.use(cors({
 // 3. Cookie Parsing Middleware (must precede CSRF and routes)
 app.use(cookieParser);
 
-// 4. Rate Limiting (development-friendly: 200 requests per 15 min)
+// 4. Rate Limiting (development & test friendly: 2000 requests per 15 min, production: 300)
+const isProd = process.env.NODE_ENV === 'production';
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 200,
+  max: isProd ? 300 : 2000,
   standardHeaders: true,
   legacyHeaders: false,
   message: {
