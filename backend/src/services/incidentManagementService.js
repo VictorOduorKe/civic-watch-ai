@@ -1,4 +1,9 @@
 import { pool } from '../config/database.js';
+import {
+  createStatusChangedNotification,
+  createReportUpdatedNotification,
+  createReportAssignedNotification
+} from './notificationService.js';
 
 export const ALLOWED_STATUS_TRANSITIONS = {
   'Submitted': ['Under Review', 'Rejected', 'Dismissed'],
@@ -497,6 +502,7 @@ export async function changeIncidentStatus({
   status: newStatus,
   note = '',
   reopen = false,
+  visible_to_citizen = true,
   publish_citizen_update = false,
   citizen_message = '',
   user
@@ -506,9 +512,9 @@ export async function changeIncidentStatus({
   try {
     await connection.beginTransaction();
 
-    // 1. Fetch current status with lock
+    // 1. Fetch current status with lock and reporter user_id
     const [reports] = await connection.query(
-      'SELECT id, status, report_reference FROM reports WHERE report_reference = ? FOR UPDATE',
+      'SELECT id, status, report_reference, user_id FROM reports WHERE report_reference = ? FOR UPDATE',
       [reference]
     );
 
@@ -559,15 +565,17 @@ export async function changeIncidentStatus({
 
     // 5. Insert report_status_history
     const historyNote = note ? note.trim() : `Status changed to ${newStatus}.`;
-    await connection.query(
+    const isVisibleToCitizen = visible_to_citizen !== false;
+    const [historyResult] = await connection.query(
       `INSERT INTO report_status_history (report_id, status, note, changed_by_user_id, visible_to_citizen)
        VALUES (?, ?, ?, ?, ?)`,
-      [reportId, newStatus, historyNote, user.id, true]
+      [reportId, newStatus, historyNote, user.id, isVisibleToCitizen]
     );
 
     // 6. Optionally publish citizen update if requested
+    let updateResult = null;
     if (publish_citizen_update && citizen_message && citizen_message.trim()) {
-      await connection.query(
+      [updateResult] = await connection.query(
         `INSERT INTO report_updates (report_id, author_user_id, message)
          VALUES (?, ?, ?)`,
         [reportId, user.id, citizen_message.trim()]
@@ -575,6 +583,27 @@ export async function changeIncidentStatus({
     }
 
     await connection.commit();
+
+    // Milestone 8: Trigger citizen notification if status is citizen-visible
+    if (isVisibleToCitizen && report.user_id) {
+      await createStatusChangedNotification({
+        recipientUserId: report.user_id,
+        reportId,
+        reportReference: reference,
+        newStatus,
+        historyId: historyResult?.insertId
+      });
+    }
+
+    // Milestone 8: If companion citizen update was published, notify citizen
+    if (publish_citizen_update && updateResult?.insertId && report.user_id) {
+      await createReportUpdatedNotification({
+        recipientUserId: report.user_id,
+        reportId,
+        reportReference: reference,
+        updateId: updateResult.insertId
+      });
+    }
 
     return {
       success: true,
@@ -676,6 +705,13 @@ export async function assignIncident({
     }
 
     await connection.commit();
+
+    // Milestone 8: Trigger in-app notification for assigned staff member
+    await createReportAssignedNotification({
+      assignedToUserId: targetUser.id,
+      reportId,
+      reportReference: reference
+    });
 
     return {
       success: true,
@@ -807,7 +843,7 @@ export async function addInternalNote({ reference, note, user }) {
  */
 export async function addCitizenUpdate({ reference, message, user }) {
   const [reports] = await pool.query(
-    'SELECT id FROM reports WHERE report_reference = ?',
+    'SELECT id, user_id, report_reference FROM reports WHERE report_reference = ?',
     [reference]
   );
 
@@ -818,12 +854,23 @@ export async function addCitizenUpdate({ reference, message, user }) {
   }
 
   const reportId = reports[0].id;
+  const citizenUserId = reports[0].user_id;
 
   const [result] = await pool.query(
     `INSERT INTO report_updates (report_id, author_user_id, message)
      VALUES (?, ?, ?)`,
     [reportId, user.id, message.trim()]
   );
+
+  // Milestone 8: Trigger in-app notification for the citizen reporter
+  if (citizenUserId) {
+    await createReportUpdatedNotification({
+      recipientUserId: citizenUserId,
+      reportId,
+      reportReference: reference,
+      updateId: result.insertId
+    });
+  }
 
   return {
     id: result.insertId,

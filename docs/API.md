@@ -1025,3 +1025,123 @@ Updates referral status (`Pending`, `Sent`, `Accepted`, `Declined`, `Completed`,
 
 Securely downloads an incident attachment after verifying administrative authorization.
 
+---
+
+## 8. In-App Notification Endpoints (Milestone 8)
+
+All notification endpoints require authentication via secure HttpOnly cookie (`cw_auth_token`). Ownership is strictly enforced server-side; clients can never specify a recipient user ID.
+
+---
+
+### `GET /api/notifications`
+
+Retrieves a paginated list of notifications for the authenticated user, ordered newest first (`created_at DESC, id DESC`).
+
+#### Query Parameters
+
+| Parameter | Type | Required | Default | Constraints | Description |
+|---|---|---|---|---|---|
+| `page` | `integer` | No | `1` | Min: 1 | Requested page number |
+| `limit` | `integer` | No | `20` | Min: 1, Max: 50 | Notifications per page |
+| `unread` | `boolean` | No | `undefined` | `true`, `false` | When `true`, filters only unread notifications |
+
+#### Success Response (`200 OK`)
+
+```json
+{
+  "success": true,
+  "notifications": [
+    {
+      "id": 12,
+      "type": "REPORT_STATUS_CHANGED",
+      "title": "Report Status Updated",
+      "message": "Your report CWK-2026-000001 is now under review.",
+      "entityType": "report",
+      "entityId": 25,
+      "entityReference": "CWK-2026-000001",
+      "isRead": false,
+      "readAt": null,
+      "createdAt": "2026-10-02T15:30:00.000Z"
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "limit": 20,
+    "total": 1,
+    "totalPages": 1
+  },
+  "unreadCount": 1
+}
+```
+
+---
+
+### `GET /api/notifications/unread-count`
+
+Returns the total count of unread notifications for the currently authenticated user.
+
+#### Success Response (`200 OK`)
+
+```json
+{
+  "success": true,
+  "unreadCount": 4
+}
+```
+
+---
+
+### `PATCH /api/notifications/:id/read`
+
+Marks a single notification as read. The authenticated user must own the notification (`recipient_user_id === req.user.id`). This operation is idempotent.
+
+#### Path Parameters
+
+| Parameter | Type | Required | Description |
+|---|---|---|---|
+| `id` | `integer` | Yes | Notification identifier |
+
+#### Success Response (`200 OK`)
+
+```json
+{
+  "success": true,
+  "notification": {
+    "id": 12,
+    "type": "REPORT_STATUS_CHANGED",
+    "title": "Report Status Updated",
+    "message": "Your report CWK-2026-000001 is now under review.",
+    "entityType": "report",
+    "entityId": 25,
+    "entityReference": "CWK-2026-000001",
+    "isRead": true,
+    "readAt": "2026-10-02T15:45:00.000Z",
+    "createdAt": "2026-10-02T15:30:00.000Z"
+  },
+  "unreadCount": 3
+}
+```
+
+#### Error Responses
+
+- `401 Unauthorized`: Not logged in.
+- `403 Forbidden`: Attempted to access or mark another user's notification.
+- `404 Not Found`: Notification does not exist.
+
+---
+
+### `PATCH /api/notifications/read-all`
+
+Marks all unread notifications belonging to the currently authenticated user as read.
+
+#### Success Response (`200 OK`)
+
+```json
+{
+  "success": true,
+  "message": "All notifications marked as read",
+  "unreadCount": 0
+}
+```
+
+

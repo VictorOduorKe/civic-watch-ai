@@ -118,6 +118,7 @@ export const changeIncidentStatusSchema = z.object({
       .optional()
       .or(z.literal('')),
     reopen: z.boolean().optional().default(false),
+    visible_to_citizen: z.boolean().optional().default(true),
     publish_citizen_update: z.boolean().optional().default(false),
     citizen_message: z
       .string()

@@ -1,5 +1,6 @@
 import fs from 'fs';
 import { pool } from '../config/database.js';
+import { createReportReceivedNotification } from './notificationService.js';
 
 /**
  * Retrieve all active report categories.
@@ -119,6 +120,13 @@ export async function createReport({ userId, reportData, files = [] }) {
     }
 
     await conn.commit();
+
+    // Milestone 8: Trigger in-app notification for the citizen reporter
+    await createReportReceivedNotification({
+      recipientUserId: userId,
+      reportId,
+      reportReference: reference
+    });
 
     return {
       reference,

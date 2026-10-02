@@ -76,6 +76,7 @@ export async function updateStatus(req, res, next) {
       status: req.body.status,
       note: req.body.note,
       reopen: req.body.reopen,
+      visible_to_citizen: req.body.visible_to_citizen,
       publish_citizen_update: req.body.publish_citizen_update,
       citizen_message: req.body.citizen_message,
       user: req.user

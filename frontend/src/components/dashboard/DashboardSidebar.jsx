@@ -48,24 +48,11 @@ export default function DashboardSidebar({
     },
     {
       name: 'Notifications',
-      path: null,
+      path: '/notifications',
       icon: Bell,
-      active: false,
-      badge: 'M8',
-      action: () =>
-        onFeaturePreview({
-          title: 'Citizen Notification Center',
-          milestone: 'Milestone 8',
-          icon: <Bell className="w-5 h-5 text-gold-500" />,
-          description:
-            'Multi-channel alerts delivering timely notifications regarding your submitted reports, county emergency alerts, and community petition updates.',
-          plannedCapabilities: [
-            'In-app notification feed with unread counters',
-            'Email and SMS delivery preferences',
-            'County-level civic emergency broadcasts',
-            'Status change alerts for subscribed community issues'
-          ]
-        })
+      active: location.pathname === '/notifications',
+      badge: null,
+      action: null
     },
     {
       name: 'Profile',

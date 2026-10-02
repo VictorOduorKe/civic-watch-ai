@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, Bell, User, LogOut, ChevronDown, CheckCircle2 } from 'lucide-react';
+import { Menu, User, LogOut, ChevronDown, CheckCircle2 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import NotificationBell from '../notifications/NotificationBell';
 
 /**
  * Top Header for Authenticated Citizen Workspace.
@@ -52,16 +53,8 @@ export default function DashboardHeader({ onMobileMenuToggle, onNotificationClic
 
         {/* Right: Notifications, User Avatar & Logout */}
         <div className="flex items-center gap-3 sm:gap-4">
-          {/* Notification Button */}
-          <button
-            type="button"
-            onClick={onNotificationClick}
-            className="relative p-2 text-stone-500 hover:text-navy-900 hover:bg-stone-100 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-navy-800"
-            aria-label="View notifications"
-          >
-            <Bell className="w-5 h-5" />
-            <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-gold-500"></span>
-          </button>
+          {/* Real In-App Notification Bell & Dropdown (Milestone 8) */}
+          <NotificationBell />
 
           {/* User Profile Pill / Dropdown */}
           <div className="relative">

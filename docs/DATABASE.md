@@ -526,3 +526,61 @@ CREATE TABLE IF NOT EXISTS report_referrals (
 | `created_at` | `TIMESTAMP` | Default `CURRENT_TIMESTAMP` | Referral creation timestamp |
 | `updated_at` | `TIMESTAMP` | Default `CURRENT_TIMESTAMP` ON UPDATE | Last update timestamp |
 
+---
+
+## Migration 012 — Notifications Table
+
+File: `database/migrations/012_create_notifications_table.sql`
+
+Implements the in-app notification persistence table for real platform events (Milestone 8). Supports deduplication, indexed unread filtering, and strict user ownership.
+
+```sql
+CREATE TABLE IF NOT EXISTS notifications (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  recipient_user_id INT NOT NULL,
+  type ENUM(
+    'REPORT_RECEIVED',
+    'REPORT_STATUS_CHANGED',
+    'REPORT_ASSIGNED',
+    'REPORT_UPDATED',
+    'SYSTEM_NOTIFICATION',
+    'ALERT_PUBLISHED',
+    'CONSULTATION_OPENED',
+    'SURVEY_CLOSING'
+  ) NOT NULL,
+  title VARCHAR(255) NOT NULL,
+  message TEXT NOT NULL,
+  entity_type VARCHAR(50) NULL,
+  entity_id INT NULL,
+  entity_reference VARCHAR(100) NULL,
+  is_read BOOLEAN NOT NULL DEFAULT FALSE,
+  read_at TIMESTAMP NULL DEFAULT NULL,
+  dedupe_key VARCHAR(191) NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_notifications_recipient FOREIGN KEY (recipient_user_id) REFERENCES users(id) ON DELETE RESTRICT,
+  UNIQUE KEY uq_notifications_dedupe (dedupe_key),
+  INDEX idx_notifications_recipient (recipient_user_id),
+  INDEX idx_notifications_recipient_unread (recipient_user_id, is_read),
+  INDEX idx_notifications_recipient_created (recipient_user_id, created_at),
+  INDEX idx_notifications_entity (entity_type, entity_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+```
+
+#### Field Descriptions
+
+| Column | Type | Constraints | Description |
+|---|---|---|---|
+| `id` | `INT` | `AUTO_INCREMENT`, `PRIMARY KEY` | Notification identifier |
+| `recipient_user_id` | `INT` | `NOT NULL`, FK to `users(id)` ON DELETE RESTRICT | The recipient authenticated user. Never trusted from client requests. |
+| `type` | `ENUM` | `NOT NULL` | Controlled notification type (`REPORT_RECEIVED`, `REPORT_STATUS_CHANGED`, `REPORT_ASSIGNED`, `REPORT_UPDATED`, `SYSTEM_NOTIFICATION`, etc.) |
+| `title` | `VARCHAR(255)` | `NOT NULL` | Short human-readable title |
+| `message` | `TEXT` | `NOT NULL` | Concise factual notification message |
+| `entity_type` | `VARCHAR(50)` | `NULL` | Associated entity (e.g. `'report'`) |
+| `entity_id` | `INT` | `NULL` | Primary key of associated entity |
+| `entity_reference` | `VARCHAR(100)` | `NULL` | Human-readable identifier (e.g. `CWK-2026-000001`) |
+| `is_read` | `BOOLEAN` | Default `FALSE` | Read / unread status flag |
+| `read_at` | `TIMESTAMP` | `NULL`, Default `NULL` | Timestamp when marked as read |
+| `dedupe_key` | `VARCHAR(191)` | `NULL`, `UNIQUE` | Unique key preventing duplicate notifications for retried events |
+| `created_at` | `TIMESTAMP` | Default `CURRENT_TIMESTAMP` | Notification creation timestamp |
+
+

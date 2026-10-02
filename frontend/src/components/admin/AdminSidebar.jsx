@@ -157,23 +157,11 @@ export default function AdminSidebar({
         },
         {
           name: 'Notifications',
-          path: null,
+          path: '/admin/notifications',
           icon: Bell,
-          active: false,
-          badge: 'M8',
-          action: () =>
-            onFeaturePreview({
-              title: 'Administrative Notification Center',
-              milestone: 'Milestone 8',
-              icon: <Bell className="w-5 h-5 text-gold-500" />,
-              description:
-                'Real-time automated incident escalation alerts and agency response notifications will be implemented in Milestone 8.',
-              plannedCapabilities: [
-                'Triage queue escalation notifications',
-                'Daily digest emails for county oversight teams',
-                'Multi-channel delivery logs'
-              ]
-            })
+          active: location.pathname.startsWith('/admin/notifications'),
+          badge: null,
+          action: null
         }
       ]
     },

@@ -1,7 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Menu, Bell, ExternalLink, Shield } from 'lucide-react';
+import { Menu, ExternalLink, Shield } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import NotificationBell from '../notifications/NotificationBell';
 
 export default function AdminHeader({ onMobileToggle, onFeaturePreview }) {
   const { user } = useAuth();
@@ -50,30 +51,8 @@ export default function AdminHeader({ onMobileToggle, onFeaturePreview }) {
 
         {/* Right: Quick actions & profile summary */}
         <div className="flex items-center gap-2 sm:gap-4">
-          {/* Notifications preview trigger */}
-          <button
-            type="button"
-            onClick={() =>
-              onFeaturePreview &&
-              onFeaturePreview({
-                title: 'Administrative Notification Center',
-                milestone: 'Milestone 8',
-                description:
-                  'Automated email, SMS, and in-app system alerts for incoming high-priority reports and status escalations will be launched in Milestone 8.',
-                plannedCapabilities: [
-                  'Escalation alerts for urgent safety hazards',
-                  'SMS dispatch to field inspection officers',
-                  'Daily automated summary digests for county analysts'
-                ]
-              })
-            }
-            className="relative p-2 text-stone-500 hover:text-navy-900 hover:bg-stone-100 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-gold-500"
-            title="System Notifications"
-            aria-label="System Notifications"
-          >
-            <Bell className="w-5 h-5" />
-            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-gold-500 rounded-full" />
-          </button>
+          {/* Real In-App Notification Bell & Dropdown (Milestone 8) */}
+          <NotificationBell />
 
           {/* Switch to Citizen View */}
           <Link

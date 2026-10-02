@@ -472,3 +472,92 @@ Milestone 7 transforms the OCL Administrative Workspace from an aggregate overvi
    - Citizen APIs (`/api/reports/my/:reference`) explicitly join `report_updates` but strictly avoid joining `report_internal_notes` or `report_referrals`.
    - Anonymous submissions (`is_anonymous = true`) conceal reporter contact information across both the API and UI to safeguard civic whistleblowers.
 
+---
+
+## Section 11 — Milestone 8: In-App Notification System
+
+### Overview
+
+Milestone 8 introduces the CivicWatch in-app notification infrastructure, allowing citizens and administrators to receive factual updates generated exclusively by real platform events. It integrates with existing authentication, report creation (M4), tracking (M5), admin workspace (M6), and incident management (M7).
+
+### Notification Event Pipeline
+
+```text
+               ┌────────────────────────────────────────────────────────┐
+               │                  Real System Events                    │
+               └─────────┬──────────────────┬──────────────────┬────────┘
+                         │                  │                  │
+               [ Report Created ]  [ Status Changed ]  [ Case Assigned ]
+                         │                  │                  │
+                         └──────────┬───────┴──────────────────┘
+                                    │
+                         ┌──────────▼──────────┐
+                         │ Notification Service│
+                         │ (notificationService)
+                         └──────────┬──────────┘
+                                    │
+                                    ├── Deduplication Check (dedupe_key)
+                                    ├── Privacy Boundary Verification
+                                    │
+                         ┌──────────▼──────────┐
+                         │  MySQL Persistence  │
+                         │    notifications    │
+                         └──────────┬──────────┘
+                                    │
+                         ┌──────────▼──────────┐
+                         │  Notification API   │
+                         │  /api/notifications │
+                         │ (Strict User Scope) │
+                         └──────────┬──────────┘
+                                    │
+                         ┌──────────▼──────────┐
+                         │ Frontend UI Center  │
+                         │ - NotificationBell  │
+                         │ - Dropdown & Badges │
+                         │ - /notifications    │
+                         └─────────────────────┘
+```
+
+### Event Integrations
+
+1. **Report Submission (`REPORT_RECEIVED`)**:
+   - Triggered upon successful transaction commit in `reportService.createReport`.
+   - Generates: `"Your report CWK-YYYY-XXXXXX has been received."`
+   - Scoped strictly to the reporting citizen user ID.
+   - Dedupe key: `report-received:<reportId>:<recipientUserId>`
+
+2. **Status Change (`REPORT_STATUS_CHANGED`)**:
+   - Triggered upon successful transaction commit in `incidentManagementService.changeIncidentStatus`.
+   - **Privacy Boundary**: If `visible_to_citizen = false`, notification creation is suppressed.
+   - Factual message: `"Your report CWK-YYYY-XXXXXX is now <status>."`
+   - Dedupe key: `status-change:<reportId>:<historyId>`
+
+3. **Official Citizen Notice (`REPORT_UPDATED`)**:
+   - Triggered when authorized staff publish a citizen update via `incidentManagementService.addCitizenUpdate`.
+   - Generates: `"There is a new update on your report CWK-YYYY-XXXXXX."`
+   - Internal administrative notes **never** trigger citizen notifications.
+   - Dedupe key: `report-update:<reportId>:<updateId>`
+
+4. **Incident Assignment (`REPORT_ASSIGNED`)**:
+   - Triggered when an incident is assigned in `incidentManagementService.assignIncident`.
+   - Scoped strictly to the assigned staff member (`assigned_to_user_id`).
+   - The reporting citizen does not receive internal staff assignment notices.
+   - Dedupe key: `assignment:<reportId>:<assignedToUserId>`
+
+### Security & Privacy Controls
+
+1. **Strict Server-Side Recipient Derivation**:
+   - Client requests never supply `recipient_user_id`. The backend exclusively queries `WHERE recipient_user_id = req.user.id`.
+   - Attempting to mark another user's notification as read returns `403 Forbidden`.
+
+2. **Deduplication Engine**:
+   - The `dedupe_key` database column is constrained by a `UNIQUE` index.
+   - Concurrent retries or re-executions of the same event return the existing record without generating duplicate notices or skewing unread badge counts.
+
+3. **Safe Navigation Routing**:
+   - Notifications do not store arbitrary destination URLs. The frontend inspects `entity_type` and `entity_reference` to navigate strictly within authorized application routes.
+
+4. **Future Channel Extensibility**:
+   - Architected so external communication channels (Email, SMS, WhatsApp) can be integrated as modular listeners to the notification service in future milestones without altering in-app database persistence.
+
+
