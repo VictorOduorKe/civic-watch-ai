@@ -5,6 +5,8 @@ import reportRoutes from './reportRoutes.js';
 import adminRoutes from './adminRoutes.js';
 import notificationRoutes from './notificationRoutes.js';
 import verificationRoutes from './verificationRoutes.js';
+import alertRoutes from './alertRoutes.js';
+import milestoneRoutes from './milestoneRoutes.js';
 
 const router = Router();
 
@@ -25,5 +27,11 @@ router.use('/notifications', notificationRoutes);
 
 // AI Information Verification endpoints (Milestone 9)
 router.use('/verifications', verificationRoutes);
+
+// Civic Alerts & Advisories endpoints (Milestone 11)
+router.use('/alerts', alertRoutes);
+
+// Milestone Roadmap & Human Approval Gate endpoints (ROADMAP 1)
+router.use('/milestones', milestoneRoutes);
 
 export default router;

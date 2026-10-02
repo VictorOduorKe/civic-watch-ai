@@ -5,6 +5,8 @@ import { validateRequest } from '../middleware/validate.js';
 import { adminDashboardSummarySchema } from '../validators/adminDashboardValidators.js';
 import { getDashboardSummary } from '../controllers/adminDashboardController.js';
 import adminIncidentRoutes from './adminIncidentRoutes.js';
+import adminAlertRoutes from './adminAlertRoutes.js';
+import adminMilestoneRoutes from './adminMilestoneRoutes.js';
 
 const router = Router();
 
@@ -34,5 +36,11 @@ router.get(
 
 // Incident management routes (Milestone 7)
 router.use('/incidents', adminIncidentRoutes);
+
+// Civic Alerts & Advisories management routes (Milestone 11)
+router.use('/alerts', adminAlertRoutes);
+
+// Milestone Roadmap & Human Approval Gate management routes (ROADMAP 1)
+router.use('/milestones', adminMilestoneRoutes);
 
 export default router;
