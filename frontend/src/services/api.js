@@ -386,6 +386,40 @@ export const adminAnalyticsApi = {
 };
 
 /**
+ * M13 — Citizen Notifications & Subscriptions API
+ */
+export const subscriptionApi = {
+  async getPreferences() {
+    const response = await apiClient.get('/notifications/preferences');
+    return response.data;
+  },
+  async updatePreferences(data) {
+    const response = await apiClient.put('/notifications/preferences', data);
+    return response.data;
+  },
+  async getSubscriptions() {
+    const response = await apiClient.get('/alert-subscriptions');
+    return response.data;
+  },
+  async createSubscription(data) {
+    const response = await apiClient.post('/alert-subscriptions', data);
+    return response.data;
+  },
+  async updateSubscription(id, data) {
+    const response = await apiClient.put(`/alert-subscriptions/${id}`, data);
+    return response.data;
+  },
+  async deleteSubscription(id) {
+    const response = await apiClient.delete(`/alert-subscriptions/${id}`);
+    return response.data;
+  },
+  async unsubscribe(data) {
+    const response = await apiClient.post('/alert-subscriptions/unsubscribe', data);
+    return response.data;
+  }
+};
+
+/**
  * Health check API service.
  * Fetches status from GET /api/health
  */

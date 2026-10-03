@@ -52,6 +52,8 @@ export default function NotificationItem({
         return <UserCheck className="w-4 h-4 text-navy-800" aria-hidden="true" />;
       case 'REPORT_UPDATED':
         return <MessageSquareText className="w-4 h-4 text-blue-700" aria-hidden="true" />;
+      case 'ALERT_PUBLISHED':
+        return <Bell className="w-4 h-4 text-amber-600" aria-hidden="true" />;
       case 'SYSTEM_NOTIFICATION':
       default:
         return <Info className="w-4 h-4 text-stone-600" aria-hidden="true" />;
@@ -68,6 +70,8 @@ export default function NotificationItem({
         return 'Assignment';
       case 'REPORT_UPDATED':
         return 'Update';
+      case 'ALERT_PUBLISHED':
+        return 'Civic Alert';
       case 'SYSTEM_NOTIFICATION':
         return 'Notice';
       default:
@@ -90,7 +94,14 @@ export default function NotificationItem({
     }
 
     // 2. Safe navigation using entity reference
-    if (notification.entityType === 'report' && notification.entityReference) {
+    if (notification.entityType === 'alert' || notification.type === 'ALERT_PUBLISHED') {
+      const alertId = notification.entityId || notification.entityReference?.replace('ALT-', '');
+      if (alertId) {
+        navigate(`/alerts/${alertId}`);
+      } else {
+        navigate('/alerts');
+      }
+    } else if (notification.entityType === 'report' && notification.entityReference) {
       const isAdminUser = ['Admin', 'Moderator', 'Analyst'].includes(user?.role);
       if (notification.type === 'REPORT_ASSIGNED' || (isAdminUser && window.location.pathname.startsWith('/admin'))) {
         navigate(`/admin/incidents/${notification.entityReference}`);

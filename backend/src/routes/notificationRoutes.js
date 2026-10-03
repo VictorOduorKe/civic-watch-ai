@@ -54,4 +54,21 @@ router.patch('/read-all', mutationLimiter, markAllAsRead);
 // 4. PATCH /api/notifications/:id/read - Mark single notification as read
 router.patch('/:id/read', mutationLimiter, validateRequest(notificationIdParamSchema), markAsRead);
 
+import {
+  getUserPreferencesController,
+  updateUserPreferencesController
+} from '../controllers/subscriptionController.js';
+import { updatePreferencesSchema } from '../validators/subscriptionValidators.js';
+
+// 5. GET /api/notifications/preferences - Get notification preferences
+router.get('/preferences', queryLimiter, getUserPreferencesController);
+
+// 6. PUT /api/notifications/preferences - Update notification preferences
+router.put(
+  '/preferences',
+  mutationLimiter,
+  validateRequest(updatePreferencesSchema),
+  updateUserPreferencesController
+);
+
 export default router;

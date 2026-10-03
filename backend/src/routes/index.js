@@ -8,6 +8,7 @@ import verificationRoutes from './verificationRoutes.js';
 import alertRoutes from './alertRoutes.js';
 import milestoneRoutes from './milestoneRoutes.js';
 import analyticsRoutes from './analyticsRoutes.js';
+import subscriptionRoutes from './subscriptionRoutes.js';
 
 const router = Router();
 
@@ -25,6 +26,10 @@ router.use('/admin', adminRoutes);
 
 // In-app Notification endpoints (Milestone 8)
 router.use('/notifications', notificationRoutes);
+
+// Citizen Notifications & Subscriptions endpoints (Milestone 13)
+router.use('/alert-subscriptions', subscriptionRoutes);
+router.use('/notification-preferences', subscriptionRoutes);
 
 // AI Information Verification endpoints (Milestone 9)
 router.use('/verifications', verificationRoutes);

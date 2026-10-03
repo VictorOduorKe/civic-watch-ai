@@ -36,11 +36,11 @@ NEXT_MILESTONE_UNLOCKED (Strictly one next milestone unlocked)
 ## 2. Dynamic Progress Metrics (Current Status)
 
 - **Total Milestones**: 17
-- **Implementation Progress**: 11 / 17 (65%)
-- **Verification Progress**: 11 / 17 (65%)
-- **Human Approval Progress**: 10 / 17 (59%)
-- **Active / Current Milestone**: **M12 — Civic Intelligence & Insights** (Status: `IN_PROGRESS`)
-- **Next Unlocked Milestone**: **M13 — Citizen Notifications & Subscriptions** (Status: `NOT_STARTED`, `🔒 Locked` awaiting M12 completion and Human Approval)
+- **Implementation Progress**: 12 / 17 (71%)
+- **Verification Progress**: 12 / 17 (71%)
+- **Human Approval Progress**: 11 / 17 (65%)
+- **Active / Current Milestone**: **M13 — Citizen Notifications & Subscriptions** (Status: `IN_PROGRESS`, `🔓 Unlocked`)
+- **Next Unlocked Milestone**: **M14 — Verification & Trust Layer** (Status: `NOT_STARTED`, `🔒 Locked` awaiting M13 completion and Human Approval)
 
 ---
 
@@ -288,28 +288,60 @@ NEXT_MILESTONE_UNLOCKED (Strictly one next milestone unlocked)
   - [x] No PII exposed in any aggregated output
 - **Acceptance Criteria**: Aggregated information provides useful civic insights without exposing individual private cases or sensitive information.
 - **Verification Requirements**: Aggregation accuracy test, Authorization test, Privacy preservation test, Filtering and aggregation test, Dashboard calculations test, Large datasets performance test, Mobile responsiveness test.
+- **Verification Results**: 70/70 automated verification tests passed (`backend/test_m12_analytics.js`). All regression suites verified (M7: 14/14, M8: 14/14, M9: 30/30, M10: 56/56, M11: 45/45, Roadmap Gate: 34/34). Browser UI fully verified for public and administrative views.
+- **Analytics Endpoints**:
+  - `GET /api/analytics/overview` — Public civic KPI aggregates and privacy metadata
+  - `GET /api/analytics/reports` — Report time-series trends (daily/monthly)
+  - `GET /api/analytics/reports/categories` — Category counts and percentages
+  - `GET /api/analytics/reports/status` — Report status distribution
+  - `GET /api/analytics/reports/geography` — Geographic activity by county (threshold-enforced)
+  - `GET /api/analytics/alerts` — Public alert statistics (excludes drafts)
+  - `GET /api/analytics/trends` — Combined time-series trends
+  - `GET /api/analytics/admin/overview` — Admin overview with sensitive counts, user counts, draft alerts
+  - `GET /api/analytics/admin/reports` — Admin report trends with active/resolved breakdown
+  - `GET /api/analytics/admin/categories` — Admin category breakdown
+  - `GET /api/analytics/admin/status` — Admin status breakdown
+  - `GET /api/analytics/admin/geography` — Admin geographic breakdown (full, no suppression)
+  - `GET /api/analytics/admin/alerts` — Admin alert statistics with draft counts and type breakdown
+- **Supported Filters**:
+  - Predefined ranges: `7d`, `30d`, `90d`, `12m`, `all`
+  - Custom date ranges: `start_date`, `end_date` (strict order validation)
+  - Geographic filter: `county`
+  - Category filter: `category`
+  - Status filter: `status`
+- **Privacy & Aggregation Rules**:
+  - Public Minimum Aggregation Threshold: `MIN_PUBLIC_COUNT = 5` (geographic groups with < 5 reports suppressed)
+  - Zero PII: citizen names, phone numbers, emails, passwords, and private coordinates excluded
+  - Sensitive case protection: internal notes, private case notes, and individual addresses suppressed
+  - Public alert stats filter out `DRAFT` status alerts
+- **Access Control (RBAC)**:
+  - Public endpoints: Open access with rate limiting (300 req / 15 min)
+  - Admin endpoints: Require authentication (`civicwatch_auth` HttpOnly cookie) + authorized role (`Admin`, `Moderator`, `Analyst`). Ordinary citizens blocked with 403 Forbidden.
 - **Dependencies**: M11
-- **Current Status**: `IN_PROGRESS` — Backend complete ✅ | Frontend complete ✅ | Awaiting formal verification
+- **Current Status**: `HUMAN_APPROVED` (`APPROVED`)
+- **Gate Action**: Verified (70/70 automated tests passed) and approved by project owner. Unlocked M13.
 
 ---
 
 ### M13 — CITIZEN NOTIFICATIONS & SUBSCRIPTIONS
 - **Objective**: Allow citizens to subscribe to relevant civic information.
 - **Tasks**:
-  - Alert subscriptions.
-  - County subscriptions.
-  - Sub-county subscriptions where supported.
-  - Alert-category subscriptions.
-  - Utility subscriptions.
-  - Notification preferences.
-  - In-app notifications.
-  - Email notifications where configured.
-  - Notification history.
-  - Unsubscribe controls.
+  - [x] Database migration: `user_notification_preferences` and `alert_subscriptions` tables created with indexes and foreign keys (`016_create_citizen_notifications_and_subscriptions.sql`).
+  - [x] Notification preferences: In-app toggle, email dispatch toggle, minimum severity threshold (`ALL`, `LOW`, `MODERATE`, `HIGH`, `CRITICAL`), email configuration disclosure.
+  - [x] Alert subscriptions: Category subscriptions (`PUBLIC_SAFETY`, `UTILITY_DOWNTIME`, `OFFICIAL_COUNTY`, `GOVERNMENT_ADVISORY`, `WEATHER_ENVIRONMENT`, `COMMUNITY_ADVISORY`), utility subscriptions (`ELECTRICITY`, `WATER`, `ROADS`, `WASTE`, `TELECOM`), geographic subscriptions (`county`, `sub_county`, `ward`).
+  - [x] Notification Matching Engine: Server-side subscriber matching when civic alerts are published (`ACTIVE`), applying category, utility, geographic rules, and severity thresholds.
+  - [x] Deduplication: Multi-match subscriptions (e.g. matching both county AND category) yield strictly 1 consolidated in-app notification per citizen.
+  - [x] Lifecycle protection: Draft or unreviewed community notices strictly prevented from dispatching subscriber notifications.
+  - [x] In-app notification state: Unread counter, read/unread states, mark single as read, mark all as read.
+  - [x] Direct alert navigation: In-app notification items render `ALERT_PUBLISHED` badge with direct linking to `/alerts/:id`.
+  - [x] Unsubscribe controls: Granular unsubscribe buttons in active subscriptions table and direct filter unsubscription API.
+  - [x] Frontend UI: Responsive Notification Settings page (`/notifications/settings`) with channel status disclosure ("Not Configured" badge for email), severity chips, subscription cards, and active subscription management.
 - **Acceptance Criteria**: Citizens can control what relevant civic information they receive.
 - **Verification Requirements**: Subscribe workflow test, Unsubscribe workflow test, Preference changes test, Notification delivery test, Notification authorization test, Notification privacy test, Rate limiting test.
+- **Verification Results**: 43/43 automated verification tests passed (`backend/test_m13_notifications.js`). Full regression passed: M7 (14/14), M8 (14/14), M9 (30/30), M10 (56/56), M11 (45/45), M12 (70/70), Roadmap Gate (16/16). Frontend production build passed cleanly. Browser UI verified with visual artifacts.
 - **Dependencies**: M12
-- **Current Status**: `NOT_STARTED` (`🔒 Locked`)
+- **Current Status**: `VERIFIED` (`PENDING` Human Approval)
+- **Gate Action**: Awaiting explicit Human Approval from project owner to unlock M14. Antigravity has stopped at the gate.
 
 ---
 

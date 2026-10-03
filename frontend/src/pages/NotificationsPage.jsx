@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import {
   Bell,
   CheckCheck,
@@ -6,7 +7,8 @@ import {
   ChevronLeft,
   ChevronRight,
   AlertCircle,
-  Inbox
+  Inbox,
+  Sliders
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useNotifications } from '../context/NotificationContext';
@@ -150,6 +152,15 @@ export default function NotificationsPage() {
                 <span>Mark all as read</span>
               </button>
             )}
+
+            <Link
+              to="/notifications/settings"
+              className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-[#1B4F72] bg-[#1B4F72]/10 hover:bg-[#1B4F72]/20 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-[#1B4F72]"
+              title="Notification Settings and Subscriptions"
+            >
+              <Sliders className="w-4 h-4" />
+              <span className="hidden sm:inline">Preferences</span>
+            </Link>
           </div>
         </div>
 

@@ -27,6 +27,7 @@ import HealthStatusPage from './pages/HealthStatusPage';
 import RoadmapPage from './pages/roadmap/RoadmapPage';
 import InsightsPage from './pages/InsightsPage';
 import AdminAnalyticsPage from './pages/admin/AdminAnalyticsPage';
+import NotificationSettingsPage from './pages/NotificationSettingsPage';
 
 export default function App() {
   return (
@@ -82,12 +83,28 @@ export default function App() {
                 </ProtectedRoute>
               }
             />
-            {/* In-App Notifications (Milestone 8) */}
+            {/* In-App Notifications & Citizen Subscriptions (Milestone 8 & 13) */}
             <Route
               path="/notifications"
               element={
                 <ProtectedRoute>
                   <NotificationsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/notifications/settings"
+              element={
+                <ProtectedRoute>
+                  <NotificationSettingsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/settings/notifications"
+              element={
+                <ProtectedRoute>
+                  <NotificationSettingsPage />
                 </ProtectedRoute>
               }
             />

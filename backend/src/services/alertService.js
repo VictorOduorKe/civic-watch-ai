@@ -33,33 +33,12 @@ export async function expireOverdueAlerts() {
 }
 
 /**
- * Broadcast notifications for high-priority or official published alerts
+ * Broadcast notifications for high-priority or official published alerts (Milestone 13 Matching Engine)
  */
 async function broadcastAlertNotification(alert) {
   try {
-    let query = 'SELECT id FROM users WHERE is_active = TRUE';
-    const params = [];
-
-    if (alert.county && alert.county !== 'National') {
-      query += ' AND (county = ? OR role IN (\'Admin\', \'Moderator\'))';
-      params.push(alert.county);
-    }
-
-    query += ' LIMIT 500';
-    const [recipients] = await pool.query(query, params);
-
-    for (const recipient of recipients) {
-      await safeCreateNotification({
-        recipientUserId: recipient.id,
-        type: 'ALERT_PUBLISHED',
-        title: `[${alert.severity}] ${alert.title}`,
-        message: alert.summary || alert.title,
-        entityType: 'alert',
-        entityId: alert.id,
-        entityReference: `ALT-${alert.id}`,
-        dedupeKey: `alert-published:${alert.id}:${recipient.id}`
-      });
-    }
+    const { dispatchAlertNotifications } = await import('./subscriptionService.js');
+    await dispatchAlertNotifications(alert);
   } catch (err) {
     console.error('[AlertService] Failed to broadcast alert notifications:', err.message);
   }
