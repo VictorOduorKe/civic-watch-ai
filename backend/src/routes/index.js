@@ -7,6 +7,7 @@ import notificationRoutes from './notificationRoutes.js';
 import verificationRoutes from './verificationRoutes.js';
 import alertRoutes from './alertRoutes.js';
 import milestoneRoutes from './milestoneRoutes.js';
+import analyticsRoutes from './analyticsRoutes.js';
 
 const router = Router();
 
@@ -33,5 +34,8 @@ router.use('/alerts', alertRoutes);
 
 // Milestone Roadmap & Human Approval Gate endpoints (ROADMAP 1)
 router.use('/milestones', milestoneRoutes);
+
+// Civic Intelligence & Insights analytics endpoints (Milestone 12)
+router.use('/analytics', analyticsRoutes);
 
 export default router;

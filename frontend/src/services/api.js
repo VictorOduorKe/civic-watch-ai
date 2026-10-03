@@ -225,6 +225,167 @@ export const adminIncidentApi = {
 };
 
 /**
+ * Public & Citizen Civic Alerts & Advisories API (Milestone 11)
+ */
+export const alertApi = {
+  async getPublicAlerts(params = {}) {
+    const response = await apiClient.get('/alerts', { params });
+    return response.data;
+  },
+  async getPublicAlertById(id) {
+    const response = await apiClient.get(`/alerts/${id}`);
+    return response.data;
+  },
+  async submitCommunityAdvisory(data) {
+    const response = await apiClient.post('/alerts/community', data);
+    return response.data;
+  }
+};
+
+/**
+ * Administrative Civic Alerts & Advisories API (Milestone 11)
+ */
+export const adminAlertApi = {
+  async getAlertSummary() {
+    const response = await apiClient.get('/admin/alerts/summary');
+    return response.data;
+  },
+  async getAdminAlerts(params = {}) {
+    const response = await apiClient.get('/admin/alerts', { params });
+    return response.data;
+  },
+  async getAdminAlertById(id) {
+    const response = await apiClient.get(`/admin/alerts/${id}`);
+    return response.data;
+  },
+  async createAlert(data) {
+    const response = await apiClient.post('/admin/alerts', data);
+    return response.data;
+  },
+  async updateAlert(id, data) {
+    const response = await apiClient.put(`/admin/alerts/${id}`, data);
+    return response.data;
+  },
+  async verifyAlert(id, data) {
+    const response = await apiClient.post(`/admin/alerts/${id}/verify`, data);
+    return response.data;
+  },
+  async publishAlert(id, data = {}) {
+    const response = await apiClient.post(`/admin/alerts/${id}/publish`, data);
+    return response.data;
+  },
+  async archiveAlert(id, data = {}) {
+    const response = await apiClient.post(`/admin/alerts/${id}/archive`, data);
+    return response.data;
+  }
+};
+
+/**
+ * Milestone Roadmap & Human Approval Gate API methods.
+ */
+export const milestoneApi = {
+  async getRoadmap() {
+    const response = await apiClient.get('/milestones');
+    return response.data;
+  },
+  async getMilestoneDetails(id) {
+    const response = await apiClient.get(`/milestones/${id}`);
+    return response.data;
+  }
+};
+
+export const adminMilestoneApi = {
+  async getRoadmap() {
+    const response = await apiClient.get('/admin/milestones');
+    return response.data;
+  },
+  async getMilestoneDetails(id) {
+    const response = await apiClient.get(`/admin/milestones/${id}`);
+    return response.data;
+  },
+  async approveMilestone(id, data = {}) {
+    const response = await apiClient.post(`/admin/milestones/${id}/approve`, data);
+    return response.data;
+  },
+  async rejectMilestone(id, data) {
+    const response = await apiClient.post(`/admin/milestones/${id}/reject`, data);
+    return response.data;
+  },
+  async reportRegression(id, data) {
+    const response = await apiClient.post(`/admin/milestones/${id}/regression`, data);
+    return response.data;
+  },
+  async updateMilestoneDefinition(id, data) {
+    const response = await apiClient.put(`/admin/milestones/${id}`, data);
+    return response.data;
+  }
+};
+
+/**
+ * M12 — Civic Intelligence & Insights: Public Analytics API
+ */
+export const analyticsApi = {
+  async getOverview(params = {}) {
+    const response = await apiClient.get('/analytics/overview', { params });
+    return response.data;
+  },
+  async getReportTrends(params = {}) {
+    const response = await apiClient.get('/analytics/reports', { params });
+    return response.data;
+  },
+  async getCategoryStats(params = {}) {
+    const response = await apiClient.get('/analytics/reports/categories', { params });
+    return response.data;
+  },
+  async getStatusStats(params = {}) {
+    const response = await apiClient.get('/analytics/reports/status', { params });
+    return response.data;
+  },
+  async getGeographyStats(params = {}) {
+    const response = await apiClient.get('/analytics/reports/geography', { params });
+    return response.data;
+  },
+  async getAlertStats(params = {}) {
+    const response = await apiClient.get('/analytics/alerts', { params });
+    return response.data;
+  },
+  async getTrends(params = {}) {
+    const response = await apiClient.get('/analytics/trends', { params });
+    return response.data;
+  }
+};
+
+/**
+ * M12 — Civic Intelligence & Insights: Admin Analytics API
+ */
+export const adminAnalyticsApi = {
+  async getAdminOverview(params = {}) {
+    const response = await apiClient.get('/analytics/admin/overview', { params });
+    return response.data;
+  },
+  async getAdminReportTrends(params = {}) {
+    const response = await apiClient.get('/analytics/admin/reports', { params });
+    return response.data;
+  },
+  async getAdminCategoryStats(params = {}) {
+    const response = await apiClient.get('/analytics/admin/categories', { params });
+    return response.data;
+  },
+  async getAdminStatusStats(params = {}) {
+    const response = await apiClient.get('/analytics/admin/status', { params });
+    return response.data;
+  },
+  async getAdminGeographyStats(params = {}) {
+    const response = await apiClient.get('/analytics/admin/geography', { params });
+    return response.data;
+  },
+  async getAdminAlertStats(params = {}) {
+    const response = await apiClient.get('/analytics/admin/alerts', { params });
+    return response.data;
+  }
+};
+
+/**
  * Health check API service.
  * Fetches status from GET /api/health
  */
@@ -245,3 +406,4 @@ export async function getHealthStatus() {
 }
 
 export default apiClient;
+

@@ -105,13 +105,24 @@ export default function Navbar({ onOpenUpcoming }) {
             >
               Report an Issue
             </button>
-            <button
-              type="button"
-              onClick={() => handleActionClick('alerts')}
+            <Link
+              to="/alerts"
               className="text-sm font-medium text-stone-700 hover:text-navy-900 transition-colors focus:outline-none focus:underline"
             >
               Alerts
-            </button>
+            </Link>
+            <Link
+              to="/insights"
+              className="text-sm font-medium text-stone-700 hover:text-navy-900 transition-colors focus:outline-none focus:underline"
+            >
+              Insights
+            </Link>
+            <Link
+              to="/roadmap"
+              className="text-sm font-medium text-emerald-700 hover:text-emerald-900 font-semibold transition-colors focus:outline-none focus:underline flex items-center gap-1"
+            >
+              Roadmap
+            </Link>
             <button
               type="button"
               onClick={() => handleNavClick('about')}
@@ -220,13 +231,27 @@ export default function Navbar({ onOpenUpcoming }) {
           >
             Report an Issue
           </button>
-          <button
-            type="button"
-            onClick={() => handleActionClick('alerts')}
+          <Link
+            to="/alerts"
+            onClick={() => setMobileMenuOpen(false)}
             className="block w-full text-left px-3 py-2 rounded-lg text-base font-medium text-stone-800 hover:bg-navy-50 hover:text-navy-900"
           >
-            Alerts
-          </button>
+            Alerts & Advisories
+          </Link>
+          <Link
+            to="/insights"
+            onClick={() => setMobileMenuOpen(false)}
+            className="block w-full text-left px-3 py-2 rounded-lg text-base font-medium text-stone-800 hover:bg-navy-50 hover:text-navy-900"
+          >
+            Civic Insights
+          </Link>
+          <Link
+            to="/roadmap"
+            onClick={() => setMobileMenuOpen(false)}
+            className="block w-full text-left px-3 py-2 rounded-lg text-base font-semibold text-emerald-800 hover:bg-emerald-50 hover:text-emerald-900"
+          >
+            Milestone Roadmap
+          </Link>
           <button
             type="button"
             onClick={() => handleNavClick('about')}

@@ -15,7 +15,8 @@ import {
   Shield,
   X,
   ExternalLink,
-  ChevronRight
+  ChevronRight,
+  Milestone
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import logo from '../../assets/logo.jpg';
@@ -38,6 +39,14 @@ export default function AdminSidebar({
           icon: LayoutDashboard,
           active: location.pathname === '/admin',
           badge: null,
+          action: null
+        },
+        {
+          name: 'Roadmap & Gates',
+          path: '/admin/roadmap',
+          icon: Milestone,
+          active: location.pathname.startsWith('/admin/roadmap'),
+          badge: 'M1-M17',
           action: null
         }
       ]
@@ -81,23 +90,11 @@ export default function AdminSidebar({
       items: [
         {
           name: 'Verification',
-          path: null,
+          path: '/verify',
           icon: ShieldCheck,
-          active: false,
-          badge: 'M9',
-          action: () =>
-            onFeaturePreview({
-              title: 'AI Civic Fact-Checking',
-              milestone: 'Milestone 9',
-              icon: <ShieldCheck className="w-5 h-5 text-gold-500" />,
-              description:
-                'Gemini AI fact-checking engine cross-referencing national statutes, Kenya Gazettes, and county budgets will be introduced in Milestone 9.',
-              plannedCapabilities: [
-                'Statute and gazette database integration',
-                'Automated veracity assessment of civic claims',
-                'Public myth-busting alerts'
-              ]
-            })
+          active: location.pathname.startsWith('/verify'),
+          badge: null,
+          action: null
         },
         {
           name: 'Analytics',
@@ -117,37 +114,33 @@ export default function AdminSidebar({
       items: [
         {
           name: 'Alerts',
-          path: null,
+          path: '/admin/alerts',
           icon: Radio,
-          active: false,
-          badge: 'M11',
-          action: () =>
-            onFeaturePreview({
-              title: 'Civic Alerts & Advisories',
-              milestone: 'Milestone 11',
-              icon: <Radio className="w-5 h-5 text-gold-500" />,
-              description:
-                'Official county alerts, utility downtime broadcasts, and community advisories will launch in Milestone 11.',
-              plannedCapabilities: [
-                'County emergency broadcasts',
-                'Geo-targeted flood & utility advisories',
-                'Multi-channel SMS delivery'
-              ]
-            })
+          active: location.pathname.startsWith('/admin/alerts'),
+          badge: null,
+          action: null
+        },
+        {
+          name: 'Analytics',
+          path: '/admin/analytics',
+          icon: BarChart3,
+          active: location.pathname.startsWith('/admin/analytics'),
+          badge: 'M12',
+          action: null
         },
         {
           name: 'Participation',
           path: null,
           icon: Vote,
           active: false,
-          badge: 'M12',
+          badge: 'M15',
           action: () =>
             onFeaturePreview({
               title: 'Civic Participation & Petitions',
-              milestone: 'Milestone 12',
+              milestone: 'Milestone 15',
               icon: <Vote className="w-5 h-5 text-gold-500" />,
               description:
-                'Public participation hearings, citizen petitions, and county budget consultation forums belong to Milestone 12.',
+                'Public participation hearings, citizen petitions, and county budget consultation forums belong to Milestone 15.',
               plannedCapabilities: [
                 'Online petition management with verified signature quorum',
                 'County budget hearing schedules',

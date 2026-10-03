@@ -20,7 +20,13 @@ import NotificationsPage from './pages/NotificationsPage';
 import VerifyInformationPage from './pages/verification/VerifyInformationPage';
 import VerificationHistoryPage from './pages/verification/VerificationHistoryPage';
 import VerificationDetailPage from './pages/verification/VerificationDetailPage';
+import AlertsFeedPage from './pages/alerts/AlertsFeedPage';
+import AlertDetailPage from './pages/alerts/AlertDetailPage';
+import AdminAlertsPage from './pages/admin/AdminAlertsPage';
 import HealthStatusPage from './pages/HealthStatusPage';
+import RoadmapPage from './pages/roadmap/RoadmapPage';
+import InsightsPage from './pages/InsightsPage';
+import AdminAnalyticsPage from './pages/admin/AdminAnalyticsPage';
 
 export default function App() {
   return (
@@ -112,7 +118,18 @@ export default function App() {
               }
             />
 
-            {/* OCL Admin Workspace (Milestone 6, 7, 8) — restricted to Admin, Moderator, Analyst */}
+            {/* Civic Alerts & Advisories (Milestone 11) — Public & Citizen Accessible */}
+            <Route path="/alerts" element={<AlertsFeedPage />} />
+            <Route path="/alerts/:id" element={<AlertDetailPage />} />
+
+            {/* Platform Roadmap & Human Approval Gate (ROADMAP 1) */}
+            <Route path="/roadmap" element={<RoadmapPage />} />
+            <Route path="/milestones" element={<RoadmapPage />} />
+
+            {/* Civic Intelligence & Insights (Milestone 12) — Public */}
+            <Route path="/insights" element={<InsightsPage />} />
+
+            {/* OCL Admin Workspace (Milestone 6, 7, 8, 11, ROADMAP 1) — restricted to Admin, Moderator, Analyst */}
             <Route
               path="/admin"
               element={
@@ -124,7 +141,10 @@ export default function App() {
               <Route index element={<AdminDashboardPage />} />
               <Route path="incidents" element={<IncidentListPage />} />
               <Route path="incidents/:reference" element={<IncidentDetailPage />} />
+              <Route path="alerts" element={<AdminAlertsPage />} />
+              <Route path="analytics" element={<AdminAnalyticsPage />} />
               <Route path="notifications" element={<NotificationsPage />} />
+              <Route path="roadmap" element={<RoadmapPage isAdminWorkspace={true} />} />
             </Route>
 
             {/* Fallback */}

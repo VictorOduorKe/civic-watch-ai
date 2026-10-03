@@ -5,11 +5,13 @@ import {
   FileText,
   PlusCircle,
   ShieldCheck,
+  Radio,
   Bell,
   User,
   LogOut,
   Shield,
-  X
+  X,
+  Milestone
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import logo from '../../assets/logo.jpg';
@@ -52,6 +54,20 @@ export default function DashboardSidebar({
       path: '/verify',
       icon: ShieldCheck,
       active: location.pathname.startsWith('/verify'),
+      action: null
+    },
+    {
+      name: 'Alerts & Advisories',
+      path: '/alerts',
+      icon: Radio,
+      active: location.pathname.startsWith('/alerts'),
+      action: null
+    },
+    {
+      name: 'Platform Roadmap',
+      path: '/roadmap',
+      icon: Milestone,
+      active: location.pathname.startsWith('/roadmap') || location.pathname.startsWith('/milestones'),
       action: null
     },
     {

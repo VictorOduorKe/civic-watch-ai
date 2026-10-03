@@ -618,4 +618,51 @@ Milestone 9 introduces the AI Information Verification engine as an isolated, re
    - Submissions are restricted to 15 requests / hour / authenticated user to mitigate AI resource exhaustion.
    - Gemini API calls enforce a 25-second timeout and limited transient retries.
 
+---
+
+## 11. Milestone 10: Production Security, QA & Hardening
+
+Milestone 10 performs comprehensive security, reliability, usability, and production-readiness verification across all application layers (M1–M9) without disrupting existing functionality.
+
+### Core Security Architecture Matrix
+
+| Domain | Hardened Implementation | Verification Mechanism |
+| :--- | :--- | :--- |
+| **Authentication** | HttpOnly, SameSite=Lax, Secure (prod) cookie `civicwatch_auth`. JWT is never exposed in response JSON, `localStorage`, or `sessionStorage`. | Automated test verifies 0 tokens in storage, profile retrieved via cookie, generic error on failure, and full cookie clearance on logout. |
+| **CSRF Protection** | Two-layer Double-Submit CSRF cookie (`XSRF-TOKEN`) with required `X-XSRF-TOKEN` request header and strict Origin / Referer validation. | Rejection of state-changing requests missing CSRF token, token mismatch, or spoofed origin. |
+| **RBAC Enforcement** | Server-side role verification (`requireRole`) across all endpoints. Granular separation between Citizen, Analyst (read-only), and Admin/Moderator (mutation authorized). | Automated tests verify 403 Forbidden on privilege escalation attempts. |
+| **Data Privacy & Whistleblowing** | Reports submitted with `is_anonymous = true` completely redact submitter identity (`name`, `email`, `phone`) across all admin APIs. | Verified in `test_m10_security.js` with submitter label "Submitted anonymously". |
+| **Cross-Tenant IDOR** | All user queries enforce `WHERE user_id = req.user.id` or complete ownership joins across reports, attachments, notifications, and AI verifications. | Cross-user query attempts return 404 Not Found (zero resource existence leakage). |
+| **SQL Injection** | Exclusively parameterized MySQL queries (`?`) using `mysql2/promise` connection pool. Schema whitelist for sort/order columns. | Payloads such as `' OR 1=1 --` rejected cleanly by Zod validation or safely parameterized. |
+| **XSS & Output Sanitization** | React default text-node escaping (0 `dangerouslySetInnerHTML`), Zod input sanitization, and plain-text output rendering for all user and AI text. | Stored XSS vectors rendered inert as pure string text. |
+| **Security Headers** | Helmet configuration enforcing `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, HSTS in production, and custom `Permissions-Policy`. | Inspected and verified on all responses including `/api/health`. |
+| **CORS Restriction** | Origin whitelisting driven by `FRONTEND_URL` environment variable. Multi-origin support with automatic normalization. | Requests from unlisted origins rejected with 403 Forbidden. |
+| **File Upload Security** | Files stored outside web root (`uploads/reports/`, `uploads/verifications/`). Randomized naming (`<timestamp>-<hex>.<ext>`), strict MIME and extension verification, path traversal sanitization, and authenticated delivery. | Executable extensions (.sh, .exe, etc.) rejected with 400 Unsupported File Type. |
+| **Error Handling & Logs** | Centralized `errorHandler` masks internal database errors, suppresses stack traces and SQL queries in production, and sanitizes log output to omit credentials or tokens. | Verified database errors return generic safe messages without internal syntax exposure. |
+
+---
+
+## 12. Milestone 11: Civic Alerts & Advisories Architecture
+
+Milestone 11 establishes a centralized Civic Alerts & Advisories communication architecture distinguishing verified official notices from community advisories.
+
+### Architectural Principles
+
+1. **Controlled Classification & Official Distinction**:
+   - `alert_type` is strictly governed by an enum: `OFFICIAL_COUNTY_ALERT`, `GOVERNMENT_ADVISORY`, `UTILITY_DOWNTIME`, `PUBLIC_SAFETY`, `WEATHER_ENVIRONMENTAL`, `COMMUNITY_ADVISORY`.
+   - `is_official` boolean and `source_type` are server-controlled. Community advisory submissions can NEVER set `is_official = TRUE` or pose as an official government agency.
+2. **Lifecycle & Expiration Engine**:
+   - Status transitions: `DRAFT` ➔ `PENDING_REVIEW` ➔ `ACTIVE` / `SCHEDULED` ➔ `EXPIRED` / `CANCELLED` / `ARCHIVED`.
+   - Dynamic and lazy expiration engine (`expireOverdueAlerts`) updates alerts whose `end_time` has elapsed to `EXPIRED`, retaining historical audit trails without data deletion.
+3. **Auditing & Modification Integrity**:
+   - Every mutation (create, edit, verify, reject, publish, schedule, archive) is immutably logged into `civic_alert_audits` with user ID, action tag, change summary, and timestamp.
+4. **Utility Downtime Pipeline**:
+   - Tracks infrastructure disruptions (`ELECTRICITY`, `WATER`, `ROAD_INFRASTRUCTURE`, `WASTE_SANITATION`, `INTERNET_TELECOM`) with explicit downtime status (`PLANNED`, `ONGOING`, `RESTORED`, `CANCELLED`), provider attribution, and restoration timelines.
+5. **Notification Integration**:
+   - Publishing high/critical alerts automatically broadcasts in-app notifications (`ALERT_PUBLISHED`) to citizens in the affected county or nationwide.
+6. **Safety & Demonstration Guardrails (Rule 35)**:
+   - Development demo data is explicitly flagged with `is_demo = TRUE` and rendered with a prominent banner: `"DEMO ALERT — NOT AN OFFICIAL NOTICE"`.
+
+
+
 

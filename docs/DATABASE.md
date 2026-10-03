@@ -663,4 +663,103 @@ CREATE TABLE IF NOT EXISTS verification_requests (
 | `updated_at` | `TIMESTAMP` | Auto-updates | Last modification timestamp |
 | `completed_at` | `TIMESTAMP` | `NULL` | AI analysis completion timestamp |
 
+---
+
+## 13. Milestone 11: Civic Alerts & Advisories Tables
+
+Applied via `database/migrations/014_create_civic_alerts_and_advisories.sql`.
+
+### 13.1 `civic_alerts` Table
+
+```sql
+CREATE TABLE IF NOT EXISTS civic_alerts (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  title VARCHAR(255) NOT NULL,
+  summary VARCHAR(500) NOT NULL,
+  description TEXT NOT NULL,
+  alert_type ENUM(
+    'OFFICIAL_COUNTY_ALERT',
+    'GOVERNMENT_ADVISORY',
+    'UTILITY_DOWNTIME',
+    'PUBLIC_SAFETY',
+    'WEATHER_ENVIRONMENTAL',
+    'COMMUNITY_ADVISORY'
+  ) NOT NULL,
+  severity ENUM('INFO', 'LOW', 'MODERATE', 'HIGH', 'CRITICAL') NOT NULL DEFAULT 'INFO',
+  status ENUM(
+    'DRAFT',
+    'PENDING_REVIEW',
+    'ACTIVE',
+    'SCHEDULED',
+    'EXPIRED',
+    'CANCELLED',
+    'ARCHIVED'
+  ) NOT NULL DEFAULT 'DRAFT',
+  verification_status ENUM('PENDING', 'VERIFIED', 'REJECTED', 'EXPIRED') NOT NULL DEFAULT 'PENDING',
+  is_official BOOLEAN NOT NULL DEFAULT FALSE,
+  source_type ENUM(
+    'COUNTY_GOVERNMENT',
+    'NATIONAL_AGENCY',
+    'UTILITY_PROVIDER',
+    'EMERGENCY_SERVICES',
+    'CIVIC_ORGANIZATION',
+    'COMMUNITY'
+  ) NOT NULL DEFAULT 'COMMUNITY',
+  source_name VARCHAR(255) NOT NULL,
+  source_reference VARCHAR(500) NULL,
+  county VARCHAR(100) NULL,
+  sub_county VARCHAR(100) NULL,
+  ward VARCHAR(100) NULL,
+  location_text VARCHAR(255) NULL,
+  utility_service ENUM(
+    'ELECTRICITY',
+    'WATER',
+    'ROAD_INFRASTRUCTURE',
+    'WASTE_SANITATION',
+    'INTERNET_TELECOM',
+    'OTHER'
+  ) NULL,
+  downtime_status ENUM('PLANNED', 'ONGOING', 'RESTORED', 'CANCELLED') NULL,
+  expected_restoration TIMESTAMP NULL,
+  actual_restoration TIMESTAMP NULL,
+  recommended_action TEXT NULL,
+  start_time TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+  end_time TIMESTAMP NULL,
+  published_at TIMESTAMP NULL,
+  created_by INT NOT NULL,
+  verified_by INT NULL,
+  verified_at TIMESTAMP NULL,
+  is_public BOOLEAN NOT NULL DEFAULT TRUE,
+  is_demo BOOLEAN NOT NULL DEFAULT TRUE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  CONSTRAINT fk_civic_alerts_creator FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE RESTRICT,
+  CONSTRAINT fk_civic_alerts_verifier FOREIGN KEY (verified_by) REFERENCES users(id) ON DELETE SET NULL,
+  INDEX idx_civic_alerts_status (status),
+  INDEX idx_civic_alerts_type (alert_type),
+  INDEX idx_civic_alerts_severity (severity),
+  INDEX idx_civic_alerts_county (county),
+  INDEX idx_civic_alerts_published (published_at),
+  INDEX idx_civic_alerts_active_window (status, start_time, end_time)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+```
+
+### 13.2 `civic_alert_audits` Table
+
+```sql
+CREATE TABLE IF NOT EXISTS civic_alert_audits (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  alert_id INT NOT NULL,
+  user_id INT NOT NULL,
+  action VARCHAR(50) NOT NULL,
+  change_summary VARCHAR(500) NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_alert_audits_alert FOREIGN KEY (alert_id) REFERENCES civic_alerts(id) ON DELETE CASCADE,
+  CONSTRAINT fk_alert_audits_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE RESTRICT,
+  INDEX idx_alert_audits_alert (alert_id),
+  INDEX idx_alert_audits_created (created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+```
+
+
 

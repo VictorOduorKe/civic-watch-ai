@@ -25,8 +25,8 @@ export default function AdminLayout() {
         onFeaturePreview={handleOpenPreview}
       />
 
-      {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0">
+      {/* Main Content Area offset by fixed sidebar width on desktop (lg:pl-64) */}
+      <div className="lg:pl-64 flex-1 flex flex-col min-w-0 min-h-screen transition-[padding] duration-200">
         {/* Sticky Admin Header */}
         <AdminHeader
           onMobileToggle={() => setMobileOpen((prev) => !prev)}
@@ -34,7 +34,7 @@ export default function AdminLayout() {
         />
 
         {/* Workspace Body */}
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto">
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto w-full max-w-7xl mx-auto">
           <Outlet context={{ onFeaturePreview: handleOpenPreview }} />
         </main>
       </div>

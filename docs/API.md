@@ -1308,5 +1308,121 @@ Retrieves detailed assessment for a single verification record. Strict tenant ow
 
 Securely serves an attached screenshot image. Strict tenant ownership verification: returns `404 Not Found` if the record belongs to another user or if no screenshot was attached.
 
+---
+
+## 10. Civic Alerts & Advisories Endpoints (Milestone 11)
+
+### `GET /api/alerts`
+
+Public list of active and recent alerts and advisories. Sorted by severity priority (`CRITICAL` / `HIGH` first) and publication timestamp.
+
+#### Query Parameters
+| Parameter | Type | Required | Description |
+|---|---|---|---|
+| `page` | `integer` | No | Page number (default: 1) |
+| `limit` | `integer` | No | Results per page (default: 20, max: 50) |
+| `category` | `string` | No | Filter category: `ALL`, `OFFICIAL`, `UTILITIES`, `SAFETY`, `WEATHER`, `COMMUNITY` |
+| `alert_type` | `enum` | No | Controlled alert type enum |
+| `severity` | `enum` | No | `INFO`, `LOW`, `MODERATE`, `HIGH`, `CRITICAL` |
+| `county` | `string` | No | Target county (e.g. `Nairobi`, `Mombasa`) |
+| `sub_county` | `string` | No | Target sub-county |
+| `utility_service` | `enum` | No | Service filter for utility downtime |
+| `search` | `string` | No | Keyword search matching title, summary, location, or provider |
+| `status` | `string` | No | `ACTIVE` (default), `EXPIRED`, `ALL` |
+
+#### Success Response (`200 OK`)
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": 1,
+      "title": "[DEMO] Scheduled 48-Hour Water Interruption in Westlands & Parklands",
+      "summary": "Planned shutdown of Sasumua transmission pipeline for emergency valve replacement.",
+      "alert_type": "UTILITY_DOWNTIME",
+      "severity": "HIGH",
+      "status": "ACTIVE",
+      "verification_status": "VERIFIED",
+      "is_official": true,
+      "source_type": "UTILITY_PROVIDER",
+      "source_name": "Nairobi City Water & Sewerage Company (NCWSC)",
+      "county": "Nairobi",
+      "utility_service": "WATER",
+      "downtime_status": "PLANNED",
+      "expected_restoration": "2026-10-04T17:50:44.000Z",
+      "published_at": "2026-10-02T17:50:44.000Z",
+      "is_demo": true
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "limit": 20,
+    "total": 4,
+    "totalPages": 1
+  }
+}
+```
+
+---
+
+### `GET /api/alerts/:id`
+
+Public retrieval of complete alert dossier. Returns `404 Not Found` if the alert is non-public or draft.
+
+#### Success Response (`200 OK`)
+```json
+{
+  "success": true,
+  "data": {
+    "id": 1,
+    "title": "[DEMO] Scheduled 48-Hour Water Interruption in Westlands & Parklands",
+    "summary": "...",
+    "description": "...",
+    "alert_type": "UTILITY_DOWNTIME",
+    "severity": "HIGH",
+    "status": "ACTIVE",
+    "verification_status": "VERIFIED",
+    "is_official": true,
+    "source_type": "UTILITY_PROVIDER",
+    "source_name": "Nairobi City Water & Sewerage Company (NCWSC)",
+    "source_reference": "https://nairobiwater.co.ke/notices/sasumua-rehab-2026",
+    "county": "Nairobi",
+    "sub_county": "Westlands",
+    "utility_service": "WATER",
+    "downtime_status": "PLANNED",
+    "expected_restoration": "2026-10-04T17:50:44.000Z",
+    "recommended_action": "Residents are advised to store adequate water prior to the shutdown.",
+    "is_demo": true
+  }
+}
+```
+
+---
+
+### `POST /api/alerts/community`
+
+Citizen submission of a community civic advisory. Requires authentication (`Citizen`, `Moderator`, `Admin`).
+
+#### Security Constraints
+- `is_official` is strictly forced to `FALSE`.
+- `source_type` is strictly forced to `'COMMUNITY'`.
+- `severity` is clamped to `'LOW'`, `'INFO'`, or `'MODERATE'` (community submissions cannot declare themselves `CRITICAL` or `HIGH`).
+- Status is initialized to `PENDING_REVIEW` and hidden from public feed until staff verification.
+
+---
+
+### Administrative Endpoints (`/api/admin/alerts`)
+
+Requires authentication and administrative role:
+- **`GET /api/admin/alerts/summary`**: KPI counts across statuses (`draft`, `pending`, `active`, `scheduled`, `expired`, `rejected`, `official`, `community`). Accessible by `Admin`, `Moderator`, `Analyst`.
+- **`GET /api/admin/alerts`**: Paginated administrative listing with deep filtering. Accessible by `Admin`, `Moderator`, `Analyst`.
+- **`GET /api/admin/alerts/:id`**: Alert record with complete immutable audit trail from `civic_alert_audits`. Accessible by `Admin`, `Moderator`, `Analyst`.
+- **`POST /api/admin/alerts`**: Create alert (`DRAFT`, `ACTIVE`, `SCHEDULED`). Requires `Admin` or `Moderator`.
+- **`PUT /api/admin/alerts/:id`**: Edit alert with mandatory change summary. Requires `Admin` or `Moderator`.
+- **`POST /api/admin/alerts/:id/verify`**: Approve or reject pending community advisory. Requires `Admin` or `Moderator`.
+- **`POST /api/admin/alerts/:id/publish`**: Immediate publication or scheduled publication. Requires `Admin` or `Moderator`.
+- **`POST /api/admin/alerts/:id/archive`**: Archive alert. Requires `Admin` or `Moderator`.
+
+
 
 
