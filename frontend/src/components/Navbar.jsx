@@ -118,6 +118,18 @@ export default function Navbar({ onOpenUpcoming }) {
               Insights
             </Link>
             <Link
+              to="/sources"
+              className="text-sm font-medium text-stone-700 hover:text-navy-900 transition-colors focus:outline-none focus:underline"
+            >
+              Sources
+            </Link>
+            <Link
+              to="/participate/petitions"
+              className="text-sm font-medium text-stone-700 hover:text-navy-900 transition-colors focus:outline-none focus:underline"
+            >
+              Participate
+            </Link>
+            <Link
               to="/roadmap"
               className="text-sm font-medium text-emerald-700 hover:text-emerald-900 font-semibold transition-colors focus:outline-none focus:underline flex items-center gap-1"
             >
@@ -244,6 +256,20 @@ export default function Navbar({ onOpenUpcoming }) {
             className="block w-full text-left px-3 py-2 rounded-lg text-base font-medium text-stone-800 hover:bg-navy-50 hover:text-navy-900"
           >
             Civic Insights
+          </Link>
+          <Link
+            to="/sources"
+            onClick={() => setMobileMenuOpen(false)}
+            className="block w-full text-left px-3 py-2 rounded-lg text-base font-medium text-stone-800 hover:bg-navy-50 hover:text-navy-900"
+          >
+            Civic Sources
+          </Link>
+          <Link
+            to="/participate/petitions"
+            onClick={() => setMobileMenuOpen(false)}
+            className="block w-full text-left px-3 py-2 rounded-lg text-base font-medium text-stone-800 hover:bg-navy-50 hover:text-navy-900"
+          >
+            Civic Participation
           </Link>
           <Link
             to="/roadmap"

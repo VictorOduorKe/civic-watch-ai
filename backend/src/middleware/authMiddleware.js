@@ -57,11 +57,15 @@ export async function requireAuth(req, res, next) {
   }
 }
 
+import auditService from '../services/auditService.js';
+import securityMonitoringService from '../services/securityMonitoringService.js';
+
 /**
  * Role-based authorization middleware.
  * @param {...string} allowedRoles - List of permitted roles (e.g. 'Admin', 'Moderator')
  */
 export function requireRole(...allowedRoles) {
+  const roles = allowedRoles.flat();
   return (req, res, next) => {
     if (!req.user) {
       return res.status(401).json({
@@ -70,7 +74,32 @@ export function requireRole(...allowedRoles) {
       });
     }
 
-    if (!allowedRoles.includes(req.user.role)) {
+    if (!roles.includes(req.user.role)) {
+      // Record unauthorized attempt asynchronously
+      auditService.recordAuditEvent({
+        actorId: req.user.id,
+        actorEmail: req.user.email,
+        actorRole: req.user.role,
+        action: 'UNAUTHORIZED_ACCESS_ATTEMPT',
+        resourceType: 'API_ENDPOINT',
+        resourceId: req.originalUrl,
+        outcome: 'DENIED',
+        severity: 'WARNING',
+        ipAddress: req.ip,
+        userAgent: req.get('user-agent'),
+        metadata: {
+          attemptedUrl: req.originalUrl,
+          requiredRoles: roles,
+          userRole: req.user.role
+        }
+      }).catch(() => {});
+
+      securityMonitoringService.evaluateUnauthorizedBurst({
+        ipAddress: req.ip,
+        userId: req.user.id,
+        resourceType: req.originalUrl
+      }).catch(() => {});
+
       return res.status(403).json({
         success: false,
         message: 'Forbidden. You do not have permission to access this resource.'

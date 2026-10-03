@@ -53,12 +53,12 @@ function getCookieValue(setCookieHeaders, cookieName) {
   return null;
 }
 
-async function loginCitizen() {
+async function loginUser(email, password) {
   const csrfRes = await apiRequest('/auth/csrf-token');
   const xsrfCookie = getCookieValue(csrfRes.headers['set-cookie'], 'XSRF-TOKEN') || csrfRes.data?.csrfToken;
   const loginRes = await apiRequest('/auth/login', {
     method: 'POST',
-    body: { email: 'victor@example.com', password: 'Password123!' },
+    body: { email, password },
     cookies: [`XSRF-TOKEN=${xsrfCookie}`],
     headers: {
       'x-xsrf-token': xsrfCookie,
@@ -107,7 +107,9 @@ class CDPClient {
 }
 
 async function main() {
-  const { authCookie, xsrfCookie } = await loginCitizen();
+  const admin = await loginUser('admin@civicwatch.ke', 'Password123!');
+  const citizen = await loginUser('victor@example.com', 'Password123!');
+
   const chromeProcess = spawn('/usr/bin/chromium', [
     '--headless=new',
     '--no-sandbox',
@@ -129,33 +131,90 @@ async function main() {
     await client.send('Network.enable');
     await client.send('Runtime.enable');
 
+    // 1. Screenshot Public Sources Directory
+    await client.send('Network.clearBrowserCookies');
     await client.send('Network.setCookie', {
       name: 'civicwatch_auth',
-      value: authCookie,
+      value: citizen.authCookie,
       domain: 'localhost',
       path: '/',
       httpOnly: true
     });
     await client.send('Network.setCookie', {
       name: 'XSRF-TOKEN',
-      value: xsrfCookie,
+      value: citizen.xsrfCookie,
       domain: 'localhost',
       path: '/'
     });
 
-    await client.send('Page.navigate', { url: 'http://localhost:5173/notifications/settings' });
-    await new Promise(r => setTimeout(r, 3500));
+    await client.send('Page.navigate', { url: 'http://localhost:5173/sources' });
+    await new Promise(r => setTimeout(r, 3000));
+    const sourcesScreenshot = await client.send('Page.captureScreenshot', { format: 'png' });
+    const sourcesPath = path.join(ARTIFACT_DIR, 'm14_public_sources_directory.png');
+    fs.writeFileSync(sourcesPath, Buffer.from(sourcesScreenshot.data, 'base64'));
+    console.log(`  ✓ Saved public sources directory screenshot to: ${sourcesPath}`);
 
-    // Scroll to subscriptions section
-    await client.send('Runtime.evaluate', {
-      expression: 'window.scrollTo(0, 500);'
+    // 2. Screenshot Admin Verification & Trust Dashboard
+    await client.send('Network.clearBrowserCookies');
+    await client.send('Network.setCookie', {
+      name: 'civicwatch_auth',
+      value: admin.authCookie,
+      domain: 'localhost',
+      path: '/',
+      httpOnly: true
     });
-    await new Promise(r => setTimeout(r, 1000));
+    await client.send('Network.setCookie', {
+      name: 'XSRF-TOKEN',
+      value: admin.xsrfCookie,
+      domain: 'localhost',
+      path: '/'
+    });
 
-    const settingsScreenshot = await client.send('Page.captureScreenshot', { format: 'png' });
-    const settingsPath = path.join(ARTIFACT_DIR, 'm13_notification_subscriptions_section.png');
-    fs.writeFileSync(settingsPath, Buffer.from(settingsScreenshot.data, 'base64'));
-    console.log(`  ✓ Saved subscriptions section screenshot to: ${settingsPath}`);
+    await client.send('Page.navigate', { url: 'http://localhost:5173/admin/verification' });
+    await new Promise(r => setTimeout(r, 3000));
+    const adminScreenshot = await client.send('Page.captureScreenshot', { format: 'png' });
+    const adminPath = path.join(ARTIFACT_DIR, 'm14_admin_verification_dashboard.png');
+    fs.writeFileSync(adminPath, Buffer.from(adminScreenshot.data, 'base64'));
+    console.log(`  ✓ Saved admin verification dashboard screenshot to: ${adminPath}`);
+
+    // 3. Screenshot Alert Detail with Provenance Modal
+    await client.send('Page.navigate', { url: 'http://localhost:5173/alerts/1' });
+    await new Promise(r => setTimeout(r, 3000));
+
+    // Click Trust & Provenance button to open modal
+    await client.send('Runtime.evaluate', {
+      expression: `
+        const btn = Array.from(document.querySelectorAll('button')).find(b => b.textContent.includes('Trust & Provenance') || b.textContent.includes('Trust & Provenance'));
+        if (btn) btn.click();
+      `
+    });
+    await new Promise(r => setTimeout(r, 1500));
+
+    const modalScreenshot = await client.send('Page.captureScreenshot', { format: 'png' });
+    const modalPath = path.join(ARTIFACT_DIR, 'm14_alert_provenance_modal.png');
+    fs.writeFileSync(modalPath, Buffer.from(modalScreenshot.data, 'base64'));
+    console.log(`  ✓ Saved alert provenance modal screenshot to: ${modalPath}`);
+
+    // 4. Screenshot Admin User & Role Management Directory
+    await client.send('Page.navigate', { url: 'http://localhost:5173/admin/users' });
+    await new Promise(r => setTimeout(r, 3000));
+    const usersScreenshot = await client.send('Page.captureScreenshot', { format: 'png' });
+    const usersPath = path.join(ARTIFACT_DIR, 'm14_admin_users_directory.png');
+    fs.writeFileSync(usersPath, Buffer.from(usersScreenshot.data, 'base64'));
+    console.log(`  ✓ Saved admin users directory screenshot to: ${usersPath}`);
+
+    // 5. Open and screenshot User Dossier Modal
+    await client.send('Runtime.evaluate', {
+      expression: `
+        const eyeBtn = document.querySelector('button[title="View User Dossier & History"]');
+        if (eyeBtn) eyeBtn.click();
+      `
+    });
+    await new Promise(r => setTimeout(r, 1500));
+    const dossierScreenshot = await client.send('Page.captureScreenshot', { format: 'png' });
+    const dossierPath = path.join(ARTIFACT_DIR, 'm14_admin_user_dossier_modal.png');
+    fs.writeFileSync(dossierPath, Buffer.from(dossierScreenshot.data, 'base64'));
+    console.log(`  ✓ Saved user dossier modal screenshot to: ${dossierPath}`);
 
     client.close();
   } finally {

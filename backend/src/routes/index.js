@@ -9,6 +9,8 @@ import alertRoutes from './alertRoutes.js';
 import milestoneRoutes from './milestoneRoutes.js';
 import analyticsRoutes from './analyticsRoutes.js';
 import subscriptionRoutes from './subscriptionRoutes.js';
+import trustRoutes from './trustRoutes.js';
+import participationRoutes from './participationRoutes.js';
 
 const router = Router();
 
@@ -42,5 +44,11 @@ router.use('/milestones', milestoneRoutes);
 
 // Civic Intelligence & Insights analytics endpoints (Milestone 12)
 router.use('/analytics', analyticsRoutes);
+
+// Verification & Trust Layer endpoints (Milestone 14)
+router.use('/trust', trustRoutes);
+
+// Civic Participation & Petitions endpoints (Milestone 15)
+router.use('/participation', participationRoutes);
 
 export default router;

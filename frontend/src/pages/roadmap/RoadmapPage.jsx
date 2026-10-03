@@ -32,7 +32,7 @@ export default function RoadmapPage({ isAdminWorkspace = false }) {
   const location = useLocation();
 
   const isAdmin = user?.role === 'Admin' || user?.role === 'super_admin';
-  const showAdminControls = isAdminWorkspace || (isAdmin && location.pathname.startsWith('/admin'));
+  const showAdminControls = isAdminWorkspace || isAdmin;
 
   const [roadmapData, setRoadmapData] = useState(null);
   const [loading, setLoading] = useState(true);

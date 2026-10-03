@@ -11,6 +11,7 @@ import {
   Bell,
   FileSpreadsheet,
   Settings,
+  ShieldAlert,
   LogOut,
   Shield,
   X,
@@ -64,24 +65,11 @@ export default function AdminSidebar({
         },
         {
           name: 'Users',
-          path: null,
+          path: '/admin/users',
           icon: Users,
-          active: false,
-          badge: 'M14',
-          action: () =>
-            onFeaturePreview({
-              title: 'User & Role Management',
-              milestone: 'Milestone 14',
-              icon: <Users className="w-5 h-5 text-gold-500" />,
-              description:
-                'Administrative user lifecycle management, role promotion, county liaison onboarding, and account suspension controls belong to Milestone 14.',
-              plannedCapabilities: [
-                'Role-based access management (Citizen, Moderator, Analyst, Admin)',
-                'Staff onboarding and county liaison provisioning',
-                'Account suspension and activation controls',
-                'Identity verification and audit history'
-              ]
-            })
+          active: location.pathname.startsWith('/admin/users'),
+          badge: null,
+          action: null
         }
       ]
     },
@@ -89,23 +77,20 @@ export default function AdminSidebar({
       group: 'Intelligence',
       items: [
         {
-          name: 'Verification',
-          path: '/verify',
+          name: 'Verification & Trust',
+          path: '/admin/verification',
           icon: ShieldCheck,
-          active: location.pathname.startsWith('/verify'),
-          badge: null,
+          active: location.pathname.startsWith('/admin/verification'),
+          badge: 'M14',
           action: null
         },
         {
-          name: 'Analytics',
-          path: '/admin',
+          name: 'Analytics & Insights',
+          path: '/admin/analytics',
           icon: BarChart3,
-          active: false,
-          badge: null,
-          action: () => {
-            const el = document.getElementById('analytics-section');
-            if (el) el.scrollIntoView({ behavior: 'smooth' });
-          }
+          active: location.pathname.startsWith('/admin/analytics'),
+          badge: 'M12',
+          action: null
         }
       ]
     },
@@ -130,23 +115,11 @@ export default function AdminSidebar({
         },
         {
           name: 'Participation',
-          path: null,
+          path: '/admin/participation',
           icon: Vote,
-          active: false,
+          active: location.pathname.startsWith('/admin/participation'),
           badge: 'M15',
-          action: () =>
-            onFeaturePreview({
-              title: 'Civic Participation & Petitions',
-              milestone: 'Milestone 15',
-              icon: <Vote className="w-5 h-5 text-gold-500" />,
-              description:
-                'Public participation hearings, citizen petitions, and county budget consultation forums belong to Milestone 15.',
-              plannedCapabilities: [
-                'Online petition management with verified signature quorum',
-                'County budget hearing schedules',
-                'Citizen legislative feedback'
-              ]
-            })
+          action: null
         },
         {
           name: 'Notifications',
@@ -163,43 +136,29 @@ export default function AdminSidebar({
       items: [
         {
           name: 'Audit Logs',
-          path: null,
+          path: '/admin/audit',
           icon: FileSpreadsheet,
-          active: false,
+          active: location.pathname.startsWith('/admin/audit'),
           badge: 'M16',
-          action: () =>
-            onFeaturePreview({
-              title: 'System Audit Logging',
-              milestone: 'Milestone 16',
-              icon: <FileSpreadsheet className="w-5 h-5 text-gold-500" />,
-              description:
-                'Comprehensive tamper-evident security audit trails tracking administrative record changes and logins will launch in Milestone 16.',
-              plannedCapabilities: [
-                'Immutable action audit trail',
-                'Exportable compliance reports',
-                'Security intrusion monitoring'
-              ]
-            })
+          action: null
         },
         {
-          name: 'Settings',
-          path: null,
-          icon: Settings,
-          active: false,
+          name: 'Security Monitoring',
+          path: '/admin/security-monitoring',
+          icon: ShieldAlert,
+          active: location.pathname.startsWith('/admin/security-monitoring'),
           badge: 'M16',
-          action: () =>
-            onFeaturePreview({
-              title: 'Platform Governance Settings',
-              milestone: 'Milestone 16',
-              icon: <Settings className="w-5 h-5 text-gold-500" />,
-              description:
-                'Global platform configurations, category definitions, and integration settings belong to Milestone 16.',
-              plannedCapabilities: [
-                'Category schema management',
-                'API key & webhook management',
-                'Security policy configurations'
-              ]
-            })
+          action: null
+        },
+        {
+          name: 'Platform Settings',
+          path: '/admin/governance',
+          icon: Settings,
+          active:
+            location.pathname.startsWith('/admin/governance') ||
+            location.pathname.startsWith('/admin/settings'),
+          badge: 'M16',
+          action: null
         }
       ]
     }

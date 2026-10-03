@@ -29,6 +29,8 @@ import {
   ALERT_TYPE_LABELS,
   UTILITY_SERVICE_LABELS
 } from '../../constants/alertConstants';
+import TrustBadge from '../../components/trust/TrustBadge';
+import ProvenanceModal from '../../components/trust/ProvenanceModal';
 import logo from '../../assets/logo.jpg';
 
 export default function AlertDetailPage() {
@@ -40,6 +42,7 @@ export default function AlertDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [copied, setCopied] = useState(false);
+  const [showProvenanceModal, setShowProvenanceModal] = useState(false);
 
   useEffect(() => {
     async function loadAlert() {
@@ -129,12 +132,26 @@ export default function AlertDetailPage() {
                     sourceType={alert.source_type}
                     sourceName={alert.source_name}
                   />
+                  <TrustBadge
+                    status={alert.verification_status}
+                    isOfficial={alert.is_official}
+                    onClick={() => setShowProvenanceModal(true)}
+                  />
                   {isUtility && alert.downtime_status && (
                     <DowntimeStatusBadge status={alert.downtime_status} />
                   )}
                 </div>
 
                 <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowProvenanceModal(true)}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-stone-200 text-stone-600 hover:text-navy-900 hover:bg-stone-50 text-xs font-semibold transition-colors"
+                    title="View trust provenance, verification history and supporting references"
+                  >
+                    <ShieldCheck className="w-3.5 h-3.5 text-navy-800" />
+                    <span>Trust &amp; Provenance</span>
+                  </button>
                   <button
                     type="button"
                     onClick={handleShare}
@@ -324,6 +341,16 @@ export default function AlertDetailPage() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Provenance & Trust History Modal */}
+      {alert && (
+        <ProvenanceModal
+          isOpen={showProvenanceModal}
+          onClose={() => setShowProvenanceModal(false)}
+          entityType="ALERT"
+          entityId={alert.id}
+        />
       )}
     </div>
   );

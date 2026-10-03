@@ -7,6 +7,13 @@ import { getDashboardSummary } from '../controllers/adminDashboardController.js'
 import adminIncidentRoutes from './adminIncidentRoutes.js';
 import adminAlertRoutes from './adminAlertRoutes.js';
 import adminMilestoneRoutes from './adminMilestoneRoutes.js';
+import userManagementRoutes from './userManagementRoutes.js';
+import adminAuditRoutes from './adminAuditRoutes.js';
+import adminSecurityMonitoringRoutes from './adminSecurityMonitoringRoutes.js';
+import adminCategoryRoutes from './adminCategoryRoutes.js';
+import adminApiKeyRoutes from './adminApiKeyRoutes.js';
+import adminWebhookRoutes from './adminWebhookRoutes.js';
+import adminSecurityPolicyRoutes from './adminSecurityPolicyRoutes.js';
 
 const router = Router();
 
@@ -42,5 +49,26 @@ router.use('/alerts', adminAlertRoutes);
 
 // Milestone Roadmap & Human Approval Gate management routes (ROADMAP 1)
 router.use('/milestones', adminMilestoneRoutes);
+
+// User & Role Management routes (Milestone 14-1)
+router.use('/users', userManagementRoutes);
+
+// System Audit Logging & Compliance routes (Milestone 16)
+router.use('/audit', adminAuditRoutes);
+
+// Security Intrusion Monitoring routes (Milestone 16)
+router.use('/security-events', adminSecurityMonitoringRoutes);
+
+// Category Schema Management routes (Milestone 16)
+router.use('/categories', adminCategoryRoutes);
+
+// API Key Management routes (Milestone 16)
+router.use('/api-keys', adminApiKeyRoutes);
+
+// Webhook Management routes (Milestone 16)
+router.use('/webhooks', adminWebhookRoutes);
+
+// Security Policy Configurations routes (Milestone 16)
+router.use('/security-policies', adminSecurityPolicyRoutes);
 
 export default router;

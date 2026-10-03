@@ -460,23 +460,29 @@ INSERT INTO milestone_roadmap (
     'NOT_STARTED', 'PENDING', TRUE, FALSE
 ),
 (
-    'M14', 14, 'VERIFICATION & TRUST LAYER',
-    'Strengthen CivicWatch\'s ability to distinguish reliable information from unverified community information.',
+    'M14', 14, 'VERIFICATION, TRUST & USER/ROLE MANAGEMENT',
+    'Strengthen CivicWatch\'s ability to distinguish reliable information from unverified community submissions, while providing comprehensive administrative user lifecycle, role management, staff onboarding, county liaison provisioning, and session security.',
     JSON_ARRAY(
-        'Source verification.',
-        'Organization verification.',
-        'Content provenance.',
-        'Verification status.',
-        'Source references.',
-        'Moderation workflow.',
-        'Correction workflow.',
-        'Alert verification.',
-        'Community-content distinction.',
-        'Audit history.',
-        'Verified-source management.'
+        'Source verification and trusted entity directory.',
+        'Categorical trust status model (UNVERIFIED, UNDER_REVIEW, VERIFIED, DISPUTED, CORRECTED, WITHDRAWN).',
+        'Content provenance and evidence reference management.',
+        'Append-only verification audit history.',
+        'Workflow decoupling from operational case resolution.',
+        'Whistleblower protection and PII redaction in public dossiers.',
+        'Public sources directory and administrative verification queue.',
+        'Role-based access management (Citizen, Moderator, Analyst, Admin).',
+        'Administrative user lifecycle management.',
+        'Staff onboarding and cryptographically secure invitations.',
+        'County liaison provisioning with geographic jurisdiction.',
+        'Role promotion and demotion safeguards.',
+        'Account suspension with mandatory justification and immediate session invalidation.',
+        'Account reactivation controls preserving suspension audit history.',
+        'Identity verification review workflows and historical logs.',
+        'Protection against privilege escalation and self-promotion.',
+        'Last-active administrator protection safeguards.'
     ),
     JSON_ARRAY(
-        'Users can clearly understand whether information is official/verified, community submitted, pending verification, rejected, or expired.'
+        'Users can clearly evaluate information provenance and trust levels, while platform administrators have full lifecycle governance over user accounts, roles, staff invitations, county liaisons, and identity verification with mandatory audit trails and last-admin safeguards.'
     ),
     JSON_ARRAY(
         'Fake source attempt test',
@@ -484,70 +490,60 @@ INSERT INTO milestone_roadmap (
         'Source modification test',
         'Verification history test',
         'Community vs official labeling test',
-        'Audit trail test'
+        'Audit trail test',
+        'Last-admin demotion test',
+        'Last-admin suspension test',
+        'Session revocation test',
+        'Role change test',
+        'Staff invite test',
+        'County liaison test',
+        'Identity verification test'
     ),
     'M13',
     'NOT_STARTED', 'PENDING', TRUE, FALSE
 ),
 (
-    'M15', 15, 'AI CIVIC ASSISTANT',
-    'Expand CivicWatch\'s AI functionality into a useful civic information assistant.',
+    'M15', 15, 'CIVIC PARTICIPATION & PETITIONS',
+    'Public participation hearings, citizen petitions, and county budget consultation forums belong to Milestone 15.',
     JSON_ARRAY(
-        'Civic information discovery.',
-        'Natural-language civic questions.',
-        'Report guidance.',
-        'Alert discovery.',
-        'Information classification where appropriate.',
-        'Case-routing assistance where appropriate.',
-        'Source attribution.',
-        'AI response safety.',
-        'AI failure handling.',
-        'Rate limiting.',
-        'Prompt/input protection.',
-        'Sensitive-information handling.'
+        'Online petition management with verified signature quorum.',
+        'County budget hearing schedules.',
+        'Citizen legislative feedback.'
     ),
     JSON_ARRAY(
-        'The AI assistant provides useful civic information while clearly distinguishing AI-generated responses from verified source information. AI must not fabricate official announcements.'
+        'Public participation hearings, citizen petitions, and county budget consultation forums are accessible with verified signature quorums and legislative feedback.'
     ),
     JSON_ARRAY(
-        'Normal questions test',
-        'Unknown information handling test',
-        'Source attribution test',
-        'Prompt injection attempts test',
-        'Sensitive information protection test',
-        'AI service failure fallback test',
-        'Rate limits test',
-        'Incorrect AI output handling test'
+        'Online petition management test',
+        'Verified signature quorum test',
+        'County budget hearing schedules test',
+        'Citizen legislative feedback test'
     ),
     'M14',
     'NOT_STARTED', 'PENDING', TRUE, FALSE
 ),
 (
-    'M16', 16, 'MONITORING, ANALYTICS & IMPACT',
-    'Provide operational visibility into the platform and measure civic engagement.',
+    'M16', 16, 'SYSTEM AUDIT LOGGING & PLATFORM GOVERNANCE SETTINGS',
+    'System audit logging and global platform governance controls belong to Milestone 16. M16 combines comprehensive security audit trails with centralized platform configuration and governance.',
     JSON_ARRAY(
-        'Application monitoring.',
-        'Error monitoring.',
-        'System health.',
-        'API performance.',
-        'Usage analytics.',
-        'Civic engagement metrics.',
-        'Report statistics.',
-        'Alert engagement.',
-        'Notification statistics.',
-        'Administrative analytics.',
-        'Privacy-preserving analytics.'
+        'Immutable action audit trail',
+        'Exportable compliance reports',
+        'Security intrusion monitoring',
+        'Category schema management',
+        'API key & webhook management',
+        'Security policy configurations'
     ),
     JSON_ARRAY(
-        'Administrators can understand platform health and legitimate usage patterns without exposing unnecessary personal information.'
+        'Comprehensive, tamper-evident security audit trails track administrative record changes, logins, and platform events with exportable compliance reports.',
+        'Centralized platform governance allows authorized administrators to manage category schemas, integration API keys, webhooks, and global security policies.'
     ),
     JSON_ARRAY(
-        'Metrics accuracy test',
-        'Privacy protection test',
-        'Access control test',
-        'Performance benchmarks test',
-        'Error tracking test',
-        'Dashboard calculations test'
+        'Immutable action audit trail test',
+        'Exportable compliance reports test',
+        'Security intrusion monitoring test',
+        'Category schema management test',
+        'API key & webhook management test',
+        'Security policy configurations test'
     ),
     'M15',
     'NOT_STARTED', 'PENDING', TRUE, FALSE

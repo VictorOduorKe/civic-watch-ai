@@ -752,11 +752,11 @@ Do not claim SMS/push functionality unless the required infrastructure actually 
 
 ---
 
-M14 — VERIFICATION & TRUST LAYER
+M14 — VERIFICATION, TRUST & USER/ROLE MANAGEMENT
 
 Objective
 
-Strengthen CivicWatch's ability to distinguish reliable information from unverified community information.
+Strengthen CivicWatch's ability to distinguish reliable information from unverified community submissions, while providing comprehensive administrative user lifecycle, role management, staff onboarding, county liaison provisioning, and session security.
 
 Tasks
 
@@ -771,6 +771,19 @@ Tasks
 - Community-content distinction.
 - Audit history.
 - Verified-source management.
+- Role-based access management (Citizen, Moderator, Analyst, Admin).
+- Administrative user lifecycle management.
+- Staff onboarding and invitations.
+- County liaison provisioning with geographic jurisdiction.
+- Role promotion and demotion.
+- Account suspension and activation controls.
+- Identity verification workflows.
+- Verification history.
+- Administrative audit history.
+- County-scoped access where applicable.
+- Server-side authorization.
+- Protection against privilege escalation and self-promotion.
+- Protection against removing or disabling the last active administrator.
 
 Acceptance Criteria
 
@@ -782,6 +795,8 @@ Users can clearly understand whether information is:
 - Rejected.
 - Expired.
 
+And platform administrators have full lifecycle governance over user accounts, roles, staff invitations, county liaisons, and identity verification with mandatory audit trails and last-admin safeguards.
+
 Verification
 
 Test:
@@ -792,85 +807,77 @@ Test:
 - Verification history.
 - Community vs official labeling.
 - Audit trail.
+- Last-admin demotion test.
+- Last-admin suspension test.
+- Session revocation test.
+- Role change test.
+- Staff invite test.
+- County liaison test.
+- Identity verification test.
 
 ---
 
-M15 — AI CIVIC ASSISTANT
+M15 — CIVIC PARTICIPATION & PETITIONS
 
 Objective
 
-Expand CivicWatch's AI functionality into a useful civic information assistant.
+Public participation hearings, citizen petitions, and county budget consultation forums belong to Milestone 15.
 
-Tasks
+Scheduled Capabilities
 
-- Civic information discovery.
-- Natural-language civic questions.
-- Report guidance.
-- Alert discovery.
-- Information classification where appropriate.
-- Case-routing assistance where appropriate.
-- Source attribution.
-- AI response safety.
-- AI failure handling.
-- Rate limiting.
-- Prompt/input protection.
-- Sensitive-information handling.
+- Online petition management with verified signature quorum
+- County budget hearing schedules
+- Citizen legislative feedback
 
 Acceptance Criteria
 
-The AI assistant provides useful civic information while clearly distinguishing AI-generated responses from verified source information.
-
-AI must not fabricate official announcements.
+Public participation hearings, citizen petitions, and county budget consultation forums are accessible with verified signature quorums and legislative feedback.
 
 Verification
 
 Test:
 
-- Normal questions.
-- Unknown information.
-- Source attribution.
-- Prompt injection attempts.
-- Sensitive information.
-- AI service failure.
-- Rate limits.
-- Incorrect AI output handling.
+- Online petition management test.
+- Verified signature quorum test.
+- County budget hearing schedules test.
+- Citizen legislative feedback test.
 
 ---
 
-M16 — MONITORING, ANALYTICS & IMPACT
+M16 — SYSTEM AUDIT LOGGING & PLATFORM GOVERNANCE SETTINGS
 
 Objective
 
-Provide operational visibility into the platform and measure civic engagement.
+System audit logging and global platform governance controls belong to Milestone 16.
+
+M16 combines comprehensive security audit trails with centralized platform configuration and governance.
 
 Tasks
 
-- Application monitoring.
-- Error monitoring.
-- System health.
-- API performance.
-- Usage analytics.
-- Civic engagement metrics.
-- Report statistics.
-- Alert engagement.
-- Notification statistics.
-- Administrative analytics.
-- Privacy-preserving analytics.
+System Audit Logging
+- Immutable action audit trail
+- Exportable compliance reports
+- Security intrusion monitoring
+
+Platform Governance Settings
+- Category schema management
+- API key & webhook management
+- Security policy configurations
 
 Acceptance Criteria
 
-Administrators can understand platform health and legitimate usage patterns without exposing unnecessary personal information.
+Comprehensive, tamper-evident security audit trails track administrative record changes, logins, and platform events with exportable compliance reports. Centralized platform governance allows authorized administrators to manage category schemas, integration API keys, webhooks, and global security policies.
 
 Verification
 
 Test:
 
-- Metrics accuracy.
-- Privacy.
-- Access control.
-- Performance.
-- Error tracking.
-- Dashboard calculations.
+- Immutable action audit trail test.
+- Exportable compliance reports test.
+- Security intrusion monitoring test.
+- Category schema management test.
+- API key & webhook management test.
+- Security policy configurations test.
 
 ---
 

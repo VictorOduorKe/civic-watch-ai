@@ -42,6 +42,9 @@ export async function register(req, res, next) {
   }
 }
 
+import auditService from '../services/auditService.js';
+import securityMonitoringService from '../services/securityMonitoringService.js';
+
 /**
  * POST /api/auth/login
  * Verifies credentials, sets HttpOnly auth cookie, and issues CSRF token.
@@ -60,12 +63,48 @@ export async function login(req, res, next) {
     const csrfToken = generateCsrfToken();
     setCsrfCookie(res, csrfToken);
 
+    // Audit successful login
+    await auditService.recordAuditEvent({
+      actorId: user.id,
+      actorEmail: user.email,
+      actorRole: user.role,
+      action: 'USER_LOGIN',
+      resourceType: 'SESSION',
+      resourceId: String(user.id),
+      outcome: 'SUCCESS',
+      severity: 'INFO',
+      ipAddress: req.ip,
+      userAgent: req.get('user-agent')
+    }).catch(err => console.error('[AuthAudit] Failed to log login:', err.message));
+
     return res.status(200).json({
       success: true,
       message: 'Login successful.',
       user
     });
   } catch (error) {
+    // Audit failed login attempt
+    const attemptedEmail = req.body?.email || 'unknown';
+    await auditService.recordAuditEvent({
+      actorId: null,
+      actorEmail: attemptedEmail,
+      actorRole: 'ANONYMOUS',
+      action: 'USER_LOGIN',
+      resourceType: 'SESSION',
+      outcome: 'FAILURE',
+      severity: 'WARNING',
+      ipAddress: req.ip,
+      userAgent: req.get('user-agent'),
+      metadata: { reason: error.message }
+    }).catch(() => {});
+
+    // Evaluate for failed login intrusion detection
+    securityMonitoringService.evaluateFailedLogin({
+      email: attemptedEmail,
+      ipAddress: req.ip,
+      userAgent: req.get('user-agent')
+    }).catch(() => {});
+
     next(error);
   }
 }
@@ -76,6 +115,21 @@ export async function login(req, res, next) {
  */
 export async function logout(req, res, next) {
   try {
+    if (req.user) {
+      await auditService.recordAuditEvent({
+        actorId: req.user.id,
+        actorEmail: req.user.email,
+        actorRole: req.user.role,
+        action: 'USER_LOGOUT',
+        resourceType: 'SESSION',
+        resourceId: String(req.user.id),
+        outcome: 'SUCCESS',
+        severity: 'INFO',
+        ipAddress: req.ip,
+        userAgent: req.get('user-agent')
+      }).catch(() => {});
+    }
+
     clearAuthCookie(res);
     clearCsrfCookie(res);
 

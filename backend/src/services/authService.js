@@ -137,7 +137,8 @@ export async function loginUser({ email, password }) {
  */
 export async function getUserById(id) {
   const [rows] = await pool.query(
-    `SELECT id, full_name, email, phone, county, ward, role, is_active, email_verified, created_at, last_login_at
+    `SELECT id, full_name, email, phone, county, ward, role, is_active, email_verified, 
+            identity_status, is_county_liaison, liaison_county, created_at, last_login_at
      FROM users WHERE id = ? LIMIT 1`,
     [id]
   );
@@ -161,6 +162,12 @@ export async function getUserById(id) {
     role: user.role,
     isActive: Boolean(user.is_active),
     emailVerified: Boolean(user.email_verified),
+    identity_status: user.identity_status,
+    identityStatus: user.identity_status,
+    is_county_liaison: Boolean(user.is_county_liaison),
+    isCountyLiaison: Boolean(user.is_county_liaison),
+    liaison_county: user.liaison_county,
+    liaisonCounty: user.liaison_county,
     createdAt: user.created_at,
     lastLoginAt: user.last_login_at
   };

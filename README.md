@@ -4,9 +4,14 @@ CivicWatch AI Kenya is an AI-powered civic engagement and public accountability 
 
 ---
 
-## Current Milestone: Milestone 11 — Civic Alerts & Advisories (Completed)
+## Current Milestone: Milestone 14 — Verification, Trust & User/Role Management (Verified — Pending Human Approval)
 
-This repository contains the completed public presentation layer, database foundation, hardened authentication system, citizen workspace, authenticated incident reporting workflow, report tracking module, OCL Administrative Dashboard, Administrative Incident Management workspace, in-app Notification Infrastructure, AI Information Verification Engine, Production Security Hardening, and Civic Alerts & Advisories system for CivicWatch AI Kenya:
+This repository contains the completed public presentation layer, database foundation, hardened authentication system, citizen workspace, authenticated incident reporting workflow, report tracking module, OCL Administrative Dashboard, Administrative Incident Management workspace, in-app Notification Infrastructure, AI Information Verification Engine, Production Security Hardening, Civic Alerts & Advisories system, Civic Insights & Analytics Engine, Notification Subscriptions & Digest Engine, and Verification, Trust & User/Role Management system for CivicWatch AI Kenya:
+* **Verification, Trust & User/Role Management (M14)**:
+  * **Verification & Trust Layer**: Canonical civic sources registry (`sources`), multi-entity verification records (`verification_records`), supporting evidentiary references (`verification_references`), categorical trust status model (`UNVERIFIED`, `UNDER_REVIEW`, `VERIFIED`, `DISPUTED`, `CORRECTED`, `WITHDRAWN`), append-only provenance audit trail, strict whistleblower PII sanitization, public `/sources` directory with live search and category filtering, admin `/admin/verification` review queue, and alert provenance modals.
+  * **User & Role Management**: Hierarchical role-based access control (Citizen, Moderator, Analyst, Admin), administrative user lifecycle governance (`/admin/users`), last-active-admin lockout protection, self-promotion safeguards, administrative account suspension with immediate token/session invalidation, account reactivation, county liaison provisioning with jurisdiction scope, administrative identity verification review workflow, token-based staff invitations (Admin, Moderator, Analyst), and global audit trail (`user_management_audits`).
+* **Notification Subscriptions & Digest Engine (M13)**: Granular topic-based notification subscription management, county-scoped geographic delivery, quiet hours preferences, daily/weekly email digest simulation engine with preview modal, and preference management at `/profile` and `/admin/notifications`.
+* **Civic Insights & Analytics Engine (M12)**: County-level civic intelligence aggregation, resolution rate analysis, response time calculation, category breakdown, trending issues detection, citizen insights dashboard at `/insights`, and admin analytics dashboard at `/admin/analytics`.
 * **Civic Alerts & Advisories (M11)**: Centralized civic alert broadcast system strictly distinguishing verified official notices from community advisories. Features: controlled alert classifications (`OFFICIAL_COUNTY_ALERT`, `GOVERNMENT_ADVISORY`, `UTILITY_DOWNTIME`, `PUBLIC_SAFETY`, `WEATHER_ENVIRONMENTAL`, `COMMUNITY_ADVISORY`); severity levels (`CRITICAL`, `HIGH`, `MODERATE`, `LOW`, `INFO`) with priority-sorted feeds; geographic targeting (National, 47 Kenyan counties, sub-county, ward); dedicated utility downtime tracking (Electricity, Water, Roads, Sanitation, Telecom) with outage statuses (`PLANNED`, `ONGOING`, `RESTORED`, `CANCELLED`), provider attribution, and restoration timelines; citizen community advisory submission workflow with automatic moderation holds and severity clamping; full administrative management workspace at `/admin/alerts` with KPI counters, draft authoring, scheduling, editing, verification, rejection, and archiving; complete immutable audit trail in `civic_alert_audits`; in-app notification broadcasting (`ALERT_PUBLISHED`) to targeted counties; public and citizen-facing alert feeds at `/alerts` and detailed dossiers at `/alerts/:id`; and Rule 35 safety guardrails marking all testing/development data with `"DEMO ALERT — NOT AN OFFICIAL NOTICE"`.
 * **Final Security, QA & Production Hardening (M10)**: Comprehensive full-project audit, end-to-end security verification (55 automated tests passing with 0 failures), strict HttpOnly cookie authentication architecture with zero localStorage tokens, server-side RBAC enforcement (Citizen, Analyst, Moderator, Admin), cross-tenant isolation and IDOR elimination across all report, attachment, verification, and notification pathways, anonymous civic whistleblower privacy protection with server-side identity masking, SQL injection immunity via parameterized MySQL queries and strict Zod schemas, XSS mitigation with React text-node escaping and Zod payload validation, Double-Submit CSRF protection with Origin verification across state-changing endpoints, abuse prevention with configurable express-rate-limiters (auth, reports, admin, verifications, notifications), secure file uploads outside web root with randomized filenames and MIME validation, hardened production HTTP security headers (Helmet CSP, HSTS, DENY frameguard, nosniff, strict-origin-when-cross-origin, Permissions-Policy), strict CORS origin restriction, production error masking preventing SQL/path exposure, clean frontend Vite production bundle build, and zero committed secrets.
 * **AI Information Verification (M9)**: Full evidence-based information evaluation service using Google Gemini (`gemini-2.5-flash`) via `@google/genai`. Features multi-input submission (text claim, news URL, or screenshot image upload up to 5MB with randomized filenames and MIME validation), provider abstraction layer, structured JSON schema response validation, 5 controlled evidentiary statuses (`EVIDENCE_SUPPORTS_CLAIM`, `EVIDENCE_CONFLICTS_WITH_CLAIM`, `INSUFFICIENT_EVIDENCE`, `MISSING_CONTEXT`, `REQUIRES_VERIFICATION`), confidence assessment (`LOW`, `MEDIUM`, `HIGH`), structured evidence categorization (supporting points, contradictory points, missing context, recommended verification steps), prompt injection defenses, strict user ownership isolation (`WHERE user_id = req.user.id`), submission rate limiting (15/hr in prod), and dedicated frontend interface at `/verify`, `/verify/history`, and `/verify/:id`.
@@ -156,6 +161,9 @@ npm run dev:frontend
 * **Citizen Login Page**: `http://localhost:5173/login`
 * **Citizen Registration Page**: `http://localhost:5173/register`
 * **Citizen Workspace (M3)**: `http://localhost:5173/dashboard` (Protected)
+* **Public Sources Directory (M14)**: `http://localhost:5173/sources` (Public)
+* **Public Civic Alerts Feed (M11)**: `http://localhost:5173/alerts` (Public)
+* **Civic Insights & Analytics (M12)**: `http://localhost:5173/insights` (Public / Citizen)
 * **Verify Information Center (M9)**: `http://localhost:5173/verify` (Protected)
 * **Verification History (M9)**: `http://localhost:5173/verify/history` (Protected)
 * **Verification Detail Assessment (M9)**: `http://localhost:5173/verify/:id` (Protected)
@@ -163,11 +171,15 @@ npm run dev:frontend
 * **My Reports Tracking (M5)**: `http://localhost:5173/reports` (Protected)
 * **Report Detail & Timeline (M5)**: `http://localhost:5173/reports/:reference` (Protected)
 * **Citizen Incident Report (M4)**: `http://localhost:5173/reports/new` (Protected)
-* **Citizen Profile (M3)**: `http://localhost:5173/profile` (Protected)
+* **Citizen Profile & Subscriptions (M3 & M13)**: `http://localhost:5173/profile` (Protected)
 * **OCL Admin Dashboard (M6)**: `http://localhost:5173/admin` (Admin / Moderator / Analyst only)
-* **OCL Admin Notification Center (M8)**: `http://localhost:5173/admin/notifications` (Admin / Moderator / Analyst only)
-* **OCL Incident Management List (M7)**: `http://localhost:5173/admin/incidents` (Admin / Moderator / Analyst only)
-* **OCL Incident Management Dossier (M7)**: `http://localhost:5173/admin/incidents/:reference` (Admin / Moderator / Analyst only)
+* **OCL Admin Verification & Trust (M14)**: `http://localhost:5173/admin/verification` (Admin / Moderator / Analyst only)
+* **OCL Admin User & Role Management (M14)**: `http://localhost:5173/admin/users` (Admin / Moderator / Analyst only)
+* **OCL Admin Analytics Engine (M12)**: `http://localhost:5173/admin/analytics` (Admin / Moderator / Analyst only)
+* **OCL Admin Civic Alerts Management (M11)**: `http://localhost:5173/admin/alerts` (Admin / Moderator / Analyst only)
+* **OCL Admin Incident Management (M7)**: `http://localhost:5173/admin/incidents` (Admin / Moderator / Analyst only)
+* **OCL Admin Notification Center (M8 & M13)**: `http://localhost:5173/admin/notifications` (Admin / Moderator / Analyst only)
+* **OCL Admin Milestones & Roadmap (Gate)**: `http://localhost:5173/admin/milestones` (Admin only)
 * **System Status Page**: `http://localhost:5173/status`
 
 ### Key API Endpoints
@@ -223,7 +235,10 @@ npm run dev:frontend
 
 ## Next Milestone
 
-* **Milestone 10**: CivicWatch Map (M10 will introduce the public civic map while preserving the privacy boundaries established by incident reporting, report tracking, incident management, notifications, and AI verification)
+* **Milestone 15 — Civic Participation & Petitions** (🔒 Locked — Awaiting M14 Human Approval)
+  * Online petition management with verified signature quorum
+  * County budget hearing schedules
+  * Citizen legislative feedback
 
 ### Admin Test Accounts (Seeded — M6)
 

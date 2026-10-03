@@ -28,6 +28,17 @@ import RoadmapPage from './pages/roadmap/RoadmapPage';
 import InsightsPage from './pages/InsightsPage';
 import AdminAnalyticsPage from './pages/admin/AdminAnalyticsPage';
 import NotificationSettingsPage from './pages/NotificationSettingsPage';
+import SourcesPage from './pages/SourcesPage';
+import AdminVerificationPage from './pages/admin/AdminVerificationPage';
+import AdminUsersPage from './pages/admin/AdminUsersPage';
+import PetitionsPage from './pages/PetitionsPage';
+import PetitionDetailPage from './pages/PetitionDetailPage';
+import BudgetHearingsPage from './pages/BudgetHearingsPage';
+import LegislativeFeedbackPage from './pages/LegislativeFeedbackPage';
+import AdminParticipationPage from './pages/admin/AdminParticipationPage';
+import AdminAuditPage from './pages/admin/AdminAuditPage';
+import AdminSecurityMonitoringPage from './pages/admin/AdminSecurityMonitoringPage';
+import AdminGovernancePage from './pages/admin/AdminGovernancePage';
 
 export default function App() {
   return (
@@ -146,7 +157,44 @@ export default function App() {
             {/* Civic Intelligence & Insights (Milestone 12) — Public */}
             <Route path="/insights" element={<InsightsPage />} />
 
-            {/* OCL Admin Workspace (Milestone 6, 7, 8, 11, ROADMAP 1) — restricted to Admin, Moderator, Analyst */}
+            {/* Verification & Trust Layer Sources Directory (Milestone 14) — Public */}
+            <Route path="/sources" element={<SourcesPage />} />
+
+            {/* Civic Participation & Petitions (Milestone 15) */}
+            <Route
+              path="/participate/petitions"
+              element={
+                <ProtectedRoute>
+                  <PetitionsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/participate/petitions/:id"
+              element={
+                <ProtectedRoute>
+                  <PetitionDetailPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/participate/hearings"
+              element={
+                <ProtectedRoute>
+                  <BudgetHearingsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/participate/legislative"
+              element={
+                <ProtectedRoute>
+                  <LegislativeFeedbackPage />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* OCL Admin Workspace (Milestone 6, 7, 8, 11, 12, 14, ROADMAP 1) — restricted to Admin, Moderator, Analyst */}
             <Route
               path="/admin"
               element={
@@ -160,8 +208,16 @@ export default function App() {
               <Route path="incidents/:reference" element={<IncidentDetailPage />} />
               <Route path="alerts" element={<AdminAlertsPage />} />
               <Route path="analytics" element={<AdminAnalyticsPage />} />
+              <Route path="verification" element={<AdminVerificationPage />} />
+              <Route path="users" element={<AdminUsersPage />} />
+              <Route path="participation" element={<AdminParticipationPage />} />
               <Route path="notifications" element={<NotificationsPage />} />
+              <Route path="audit" element={<AdminAuditPage />} />
+              <Route path="security-monitoring" element={<AdminSecurityMonitoringPage />} />
+              <Route path="governance" element={<AdminGovernancePage />} />
+              <Route path="settings" element={<AdminGovernancePage />} />
               <Route path="roadmap" element={<RoadmapPage isAdminWorkspace={true} />} />
+              <Route path="milestones" element={<RoadmapPage isAdminWorkspace={true} />} />
             </Route>
 
             {/* Fallback */}

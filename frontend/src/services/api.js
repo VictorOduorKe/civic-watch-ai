@@ -420,6 +420,329 @@ export const subscriptionApi = {
 };
 
 /**
+ * M14 — Verification & Trust Layer API
+ */
+export const trustApi = {
+  async getSources(params = {}) {
+    const response = await apiClient.get('/trust/sources', { params });
+    return response.data;
+  },
+  async getSourceById(id) {
+    const response = await apiClient.get(`/trust/sources/${id}`);
+    return response.data;
+  },
+  async createSource(data) {
+    const response = await apiClient.post('/trust/sources', data);
+    return response.data;
+  },
+  async updateSource(id, data) {
+    const response = await apiClient.put(`/trust/sources/${id}`, data);
+    return response.data;
+  },
+  async getProvenanceDossier(entityType, entityId) {
+    const response = await apiClient.get(`/trust/verify/${entityType}/${entityId}`);
+    return response.data;
+  },
+  async getVerificationHistory(entityType, entityId) {
+    const response = await apiClient.get(`/trust/verify/${entityType}/${entityId}/history`);
+    return response.data;
+  },
+  async getVerificationReferences(entityType, entityId) {
+    const response = await apiClient.get(`/trust/verify/${entityType}/${entityId}/references`);
+    return response.data;
+  },
+  async executeVerificationAction(entityType, entityId, data) {
+    const response = await apiClient.post(`/trust/verify/${entityType}/${entityId}`, data);
+    return response.data;
+  },
+  async addReference(entityType, entityId, data) {
+    const response = await apiClient.post(`/trust/verify/${entityType}/${entityId}/references`, data);
+    return response.data;
+  },
+  async getVerificationQueue(params = {}) {
+    const response = await apiClient.get('/trust/admin/queue', { params });
+    return response.data;
+  },
+  async getVerificationStats() {
+    const response = await apiClient.get('/trust/admin/stats');
+    return response.data;
+  }
+};
+
+/**
+ * Milestone 14-1: Administrative User & Role Management API
+ */
+export const adminUsersApi = {
+  async getUsers(params = {}) {
+    const response = await apiClient.get('/admin/users', { params });
+    return response.data;
+  },
+  async getUserDetails(id) {
+    const response = await apiClient.get(`/admin/users/${id}`);
+    return response.data;
+  },
+  async getUserAudits(id, params = {}) {
+    const response = await apiClient.get(`/admin/users/${id}/audits`, { params });
+    return response.data;
+  },
+  async getGlobalAudits(params = {}) {
+    const response = await apiClient.get('/admin/users/audits', { params });
+    return response.data;
+  },
+  async getUserStats() {
+    const response = await apiClient.get('/admin/users/stats');
+    return response.data;
+  },
+  async updateUserRole(id, data) {
+    const response = await apiClient.patch(`/admin/users/${id}/role`, data);
+    return response.data;
+  },
+  async suspendUser(id, data) {
+    const response = await apiClient.post(`/admin/users/${id}/suspend`, data);
+    return response.data;
+  },
+  async reactivateUser(id, data = {}) {
+    const response = await apiClient.post(`/admin/users/${id}/reactivate`, data);
+    return response.data;
+  },
+  async provisionCountyLiaison(id, data) {
+    const response = await apiClient.patch(`/admin/users/${id}/liaison`, data);
+    return response.data;
+  },
+  async updateIdentityVerification(id, data) {
+    const response = await apiClient.patch(`/admin/users/${id}/identity`, data);
+    return response.data;
+  },
+  async inviteStaff(data) {
+    const response = await apiClient.post('/admin/users/invite', data);
+    return response.data;
+  }
+};
+
+/**
+ * Milestone 15 — Civic Participation & Petitions API methods
+ */
+export const participationApi = {
+  // Petitions
+  async listPetitions(params = {}) {
+    const response = await apiClient.get('/participation/petitions', { params });
+    return response.data;
+  },
+  async getPetition(id) {
+    const response = await apiClient.get(`/participation/petitions/${id}`);
+    return response.data;
+  },
+  async createPetition(data) {
+    const response = await apiClient.post('/participation/petitions', data);
+    return response.data;
+  },
+  async updatePetition(id, data) {
+    const response = await apiClient.patch(`/participation/petitions/${id}`, data);
+    return response.data;
+  },
+  async moderatePetition(id, data) {
+    const response = await apiClient.post(`/participation/petitions/${id}/moderate`, data);
+    return response.data;
+  },
+  async signPetition(id, data = {}) {
+    const response = await apiClient.post(`/participation/petitions/${id}/sign`, data);
+    return response.data;
+  },
+  async withdrawSignature(id) {
+    const response = await apiClient.delete(`/participation/petitions/${id}/sign`);
+    return response.data;
+  },
+  async getSignatures(id, params = {}) {
+    const response = await apiClient.get(`/participation/petitions/${id}/signatures`, { params });
+    return response.data;
+  },
+
+  // Budget Hearings
+  async listHearings(params = {}) {
+    const response = await apiClient.get('/participation/hearings', { params });
+    return response.data;
+  },
+  async getHearing(id) {
+    const response = await apiClient.get(`/participation/hearings/${id}`);
+    return response.data;
+  },
+  async createHearing(data) {
+    const response = await apiClient.post('/participation/hearings', data);
+    return response.data;
+  },
+  async updateHearing(id, data) {
+    const response = await apiClient.patch(`/participation/hearings/${id}`, data);
+    return response.data;
+  },
+  async cancelHearing(id, data) {
+    const response = await apiClient.post(`/participation/hearings/${id}/cancel`, data);
+    return response.data;
+  },
+
+  // Legislative Items & Feedback
+  async listLegislativeItems(params = {}) {
+    const response = await apiClient.get('/participation/legislative-items', { params });
+    return response.data;
+  },
+  async getLegislativeItem(id) {
+    const response = await apiClient.get(`/participation/legislative-items/${id}`);
+    return response.data;
+  },
+  async createLegislativeItem(data) {
+    const response = await apiClient.post('/participation/legislative-items', data);
+    return response.data;
+  },
+  async listFeedback(itemId, params = {}) {
+    const response = await apiClient.get(`/participation/legislative-items/${itemId}/feedback`, { params });
+    return response.data;
+  },
+  async submitFeedback(itemId, data) {
+    const response = await apiClient.post(`/participation/legislative-items/${itemId}/feedback`, data);
+    return response.data;
+  },
+  async moderateFeedback(feedbackId, data) {
+    const response = await apiClient.patch(`/participation/feedback/${feedbackId}/moderate`, data);
+    return response.data;
+  },
+
+  // Audits & Stats
+  async getParticipationStats() {
+    const response = await apiClient.get('/participation/stats');
+    return response.data;
+  },
+  async getAudits(entityType, entityId) {
+    const response = await apiClient.get('/participation/audits', { params: { entityType, entityId } });
+    return response.data;
+  }
+};
+
+/**
+ * System Audit Logging & Compliance API methods (Milestone 16).
+ */
+export const auditApi = {
+  async listEvents(params = {}) {
+    const response = await apiClient.get('/admin/audit', { params });
+    return response.data;
+  },
+  async getEvent(id) {
+    const response = await apiClient.get(`/admin/audit/${id}`);
+    return response.data;
+  },
+  async verifyIntegrity(params = {}) {
+    const response = await apiClient.get('/admin/audit/integrity', { params });
+    return response.data;
+  },
+  async exportEvents(data) {
+    const response = await apiClient.post('/admin/audit/export', data);
+    return response.data;
+  }
+};
+
+/**
+ * Security Intrusion Monitoring API methods (Milestone 16).
+ */
+export const securityMonitoringApi = {
+  async listEvents(params = {}) {
+    const response = await apiClient.get('/admin/security-events', { params });
+    return response.data;
+  },
+  async getStats() {
+    const response = await apiClient.get('/admin/security-events/stats');
+    return response.data;
+  },
+  async getEvent(id) {
+    const response = await apiClient.get(`/admin/security-events/${id}`);
+    return response.data;
+  },
+  async updateStatus(id, data) {
+    const response = await apiClient.patch(`/admin/security-events/${id}/status`, data);
+    return response.data;
+  }
+};
+
+/**
+ * Platform Governance Settings API methods (Milestone 16).
+ * Covers Categories, API Keys, Webhooks, and Security Policies.
+ */
+export const governanceApi = {
+  // Categories
+  async listCategories(params = {}) {
+    const response = await apiClient.get('/admin/categories', { params });
+    return response.data;
+  },
+  async createCategory(data) {
+    const response = await apiClient.post('/admin/categories', data);
+    return response.data;
+  },
+  async updateCategory(id, data) {
+    const response = await apiClient.put(`/admin/categories/${id}`, data);
+    return response.data;
+  },
+  async archiveCategory(id, data = {}) {
+    const response = await apiClient.post(`/admin/categories/${id}/archive`, data);
+    return response.data;
+  },
+
+  // API Keys
+  async listApiKeys() {
+    const response = await apiClient.get('/admin/api-keys');
+    return response.data;
+  },
+  async createApiKey(data) {
+    const response = await apiClient.post('/admin/api-keys', data);
+    return response.data;
+  },
+  async rotateApiKey(id) {
+    const response = await apiClient.post(`/admin/api-keys/${id}/rotate`);
+    return response.data;
+  },
+  async revokeApiKey(id, data = {}) {
+    const response = await apiClient.post(`/admin/api-keys/${id}/revoke`, data);
+    return response.data;
+  },
+
+  // Webhooks
+  async listWebhooks() {
+    const response = await apiClient.get('/admin/webhooks');
+    return response.data;
+  },
+  async createWebhook(data) {
+    const response = await apiClient.post('/admin/webhooks', data);
+    return response.data;
+  },
+  async updateWebhook(id, data) {
+    const response = await apiClient.put(`/admin/webhooks/${id}`, data);
+    return response.data;
+  },
+  async deleteWebhook(id) {
+    const response = await apiClient.delete(`/admin/webhooks/${id}`);
+    return response.data;
+  },
+  async testWebhook(id) {
+    const response = await apiClient.post(`/admin/webhooks/${id}/test`);
+    return response.data;
+  },
+  async listDeliveries(id) {
+    const response = await apiClient.get(`/admin/webhooks/${id}/deliveries`);
+    return response.data;
+  },
+
+  // Security Policies
+  async listSecurityPolicies() {
+    const response = await apiClient.get('/admin/security-policies');
+    return response.data;
+  },
+  async updateSecurityPolicies(data) {
+    const response = await apiClient.put('/admin/security-policies', data);
+    return response.data;
+  },
+  async getPolicyHistory(params = {}) {
+    const response = await apiClient.get('/admin/security-policies/history', { params });
+    return response.data;
+  }
+};
+
+/**
  * Health check API service.
  * Fetches status from GET /api/health
  */
